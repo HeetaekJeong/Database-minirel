@@ -22,9 +22,6 @@ typedef struct PFftab_ele {
 	short		hdrchanged	/* TRUE if file header has changed 	*/
 } PFftab_ele;
 
-typedef struct PFpage {
-    char pagebuf[PAGE_SIZE];		/* actual page data             */
-} PFpage;
 PFftab_ele *PFftable; 
 size_t PFftab_length;
 
