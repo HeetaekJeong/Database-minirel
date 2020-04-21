@@ -52,6 +52,19 @@ typedef  struct _hf_record_identification {
 /******************************************************************************/
 /*   Type definition for pages of the PF layer.                               */
 /******************************************************************************/
+typedef struct PFftab_ele {
+	bool_t		valid;		/* set to TRUE when a file is open 	*/
+	ino_t		inode;		/* inode number of the file 		*/
+	char		*fname;		/* file name				*/
+	int 		unixfd;		/* Unix file descriptor			*/
+	PFhdr_str	hdr		/* file header				*/
+	short		hdrchanged	/* TRUE if file header has changed 	*/
+} PFftab_ele;
+
+typedef struct PFhdr_str {
+	int 	numpages;	/* number of pages in the file */
+}
+
 typedef struct PFpage {
     char pagebuf[PAGE_SIZE];		/* actual page data             */
 } PFpage;
