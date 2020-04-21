@@ -1,4 +1,5 @@
 # Makefile for BF layer
+MINIREL_HOME = /home/huitaek/Class/database/Database/Database-minirel
 LIB	= bf
 INCDIR	= ${MINIREL_HOME}/h
 INCS	= 

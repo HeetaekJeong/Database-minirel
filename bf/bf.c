@@ -2,8 +2,8 @@
 #include <"stdio.h">
 
 
-#include "bf.h"
 #include "bf_component.h"
+#include "bf.h"
 
 /* declare LRU, FRL, HT here */
 static LRU_List *LRU;

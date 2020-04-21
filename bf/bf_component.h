@@ -8,18 +8,18 @@ typedef struct LRU_List {     /* LRU's head is the most recent & tail the oldest
   int           size;         /* total number of pages in LRU */
   BFpage        *head;        /* head|most recent page */
   BFpage        *tail;        /* tail|most old page */
-}
+} LUR_List;
 
 typedef struct Free_List {    /* Singly? Liked List. added & removed at the head */
   int           size;         /* total number of pages in the list */
   int           max_bfpage;   /* maximum number of free pages */
   BFpage        *head;        /* points to head page of the Free list */
-}
+} Free_List;
 
 typedef struct Hash_Table {
   int           hash_size;
   BFhash_entry  **hash_entries;
-}
+} Hash_Table;
 
 // BFpage, BFhash_entry, _buffer_request_control (BFreq)
 typedef struct BFpage {
