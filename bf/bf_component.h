@@ -54,15 +54,15 @@ typedef struct _buffer_request_control {
 // LRU_List Function
 void LRU_List_Init(LRU_List *LRU);                    /* initialize LRU as empty */
 int L_add_page(LRU_List *LRU, BFpage *bfpage);        /* add new page into LRU */
-BFpage* L_find_victim(LRU_List *LRU); // JM_edit - argument를 뭘로 할지?
-int L_make_head(LRU_List *LRU, BFpage *bfpage);       // JM_edit - 만들어야 함.
+BFpage* L_find_victim(LRU_List *LRU);                 // find, remove from LRU and return victim.
+int L_make_head(LRU_List *LRU, BFpage *target_page);  // make the target_page newest (head)
 void LRU_delete(LRU_List *LRU);                       // JM_edit
 
 // Free_List funtions 
 void Free_List_Init(Free_List *FRL, int max_bfpage);
 //void bfpage_clean_val(BFpage *bfpage);
 int F_add_free(Free_List *FRL, BFpage *bfpage);
-BFpage* F_remove_free(Free_List *FRL);
+BFpage* F_remove_free(Free_List *FRL);                // 
 void Free_List_delete(Free_List *FRL);                // JM_edit
 
 // Hash_Table functions

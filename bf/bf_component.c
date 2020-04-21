@@ -38,15 +38,71 @@ int L_add_page(LRU_List *LRU, BFpage *bfpage) {
   return BFE_OK;
 }
 
-BFpage* L_find_victim(LRU_List *LRU) { // JM_edit
-  
+BFpage* L_find_victim(LRU_List *LRU) {
+
+  BFpage* bfpage_ptr; 
+
   // find the victim page, searching from the tail
-  
+  bfpage_ptr = LRU->tail;
+  for (int i = 0; i < LRU->size; i++) {
+    if (bfpage_ptr->count == 0) break;
+    else bfpage_ptr = bfpage_ptr->prevpage;
+  }
+
   // remove the victim from the LRU
+  if (bfpage_ptr->count != 0) // no victim
+    handle_error("There is no victim in the LRU pool");
+
+  else if (LRU->head != bfpage_ptr && LRU->tail != bfpage_ptr) {    // in between 
+    bfpage_ptr->nextpage->prevpage = bfpage_ptr->prevpage;
+    bfpage_ptr->prevpage->nextpage = bfpage_ptr->nextpage;
+  }
+  else if (LRU->head != bfpage_ptr && LRU->tail == bfpage_ptr) {    // tail
+    bfpage_ptr->prevpage->nextpage = NULL;
+    LRU->tail = bfpage_ptr->prevpage;
+  }
+  else if (LRU->head == bfpage_ptr && LRU->tail != bfpage_ptr) {    // first & not only
+    bfpage_ptr->nextpage->prevpage = NULL; 
+    LRU->head = bfpage_ptr->nextpage;
+  }
+  else if (LRU->head == bfpage_ptr && LRU->tail == bfpage_ptr) {    // first & only
+    LRU->head = NULL;
+    LRU->tail = NULL;
+  }
+  LRU->size--;
+
+  return bfpage_ptr;
 }
 
-int L_make_head(LRU_List *LRU, BFpage *bfpage) { // JM_edit
+int L_make_head(LRU_List *LRU, BFpage *target_page) {
 
+  // check if "bfpage" is in hash, but not in LRU?
+  if ((target_page->nextpage == NULL || target_page->prevpage == NULL)
+      && (LRU->head != target_page && LRU->tail == target_page))
+    handle_error("L_make_head error. in HT, but not in LRU");
+
+  // fix the location of the bfpage to the head
+  if (LRU->head != target_page && LRU->tail != target_page) {    // in between 
+    target_page->nextpage->prevpage = target_page->prevpage;
+    target_page->prevpage->nextpage = target_page->nextpage;
+
+    LRU->head->prevpage = target_page;
+    target_page->next_page = LRU->head;
+    target_page->prev_page = NULL;
+    LRU->head = target_page;
+  }
+  else if (LRU->head != target_page && LRU->tail == target_page) {    // tail
+    target_page->prevpage->nextpage = NULL;
+    LRU->tail = target_page->prevpage;
+
+    LRU->head->prevpage = target_page;
+    target_page->next_page = LRU->head;
+    target_page->prev_page = NULL;
+    LRU->head = target_page;
+  }
+  // else -> head -> nothing to do.
+
+  return BFE_OK;
 }
 
 void LRU_delete(LRU_List *LRU) { // JM_edit
@@ -129,7 +185,6 @@ BFpage* F_remove_free(Free_List *FRL) {
 }
 
 void Free_List_delete(Free_List *FRL) { // JM_edit
-
 }
 
 
