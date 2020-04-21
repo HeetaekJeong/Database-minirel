@@ -1,3 +1,4 @@
+#include <string.h>
 #include <stdio.h>
 
 #include "bf_component.h"
@@ -53,22 +54,7 @@ BFpage* L_find_victim(LRU_List *LRU) {
   if (bfpage_ptr->count != 0) // no victim
     handle_error("There is no victim in the LRU pool");
 
-  else if (LRU->head != bfpage_ptr && LRU->tail != bfpage_ptr) {    // in between 
-    bfpage_ptr->nextpage->prevpage = bfpage_ptr->prevpage;
-    bfpage_ptr->prevpage->nextpage = bfpage_ptr->nextpage;
-  }
-  else if (LRU->head != bfpage_ptr && LRU->tail == bfpage_ptr) {    // tail
-    bfpage_ptr->prevpage->nextpage = NULL;
-    LRU->tail = bfpage_ptr->prevpage;
-  }
-  else if (LRU->head == bfpage_ptr && LRU->tail != bfpage_ptr) {    // first & not only
-    bfpage_ptr->nextpage->prevpage = NULL; 
-    LRU->head = bfpage_ptr->nextpage;
-  }
-  else if (LRU->head == bfpage_ptr && LRU->tail == bfpage_ptr) {    // first & only
-    LRU->head = NULL;
-    LRU->tail = NULL;
-  }
+  L_detach_page(LRU, bfpage_ptr);
   LRU->size--;
 
   return bfpage_ptr;
@@ -82,27 +68,49 @@ int L_make_head(LRU_List *LRU, BFpage *target_page) {
     handle_error("L_make_head error. in HT, but not in LRU");
 
   // fix the location of the bfpage to the head
-  if (LRU->head != target_page && LRU->tail != target_page) {    // in between 
-    target_page->nextpage->prevpage = target_page->prevpage;
-    target_page->prevpage->nextpage = target_page->nextpage;
+  L_detach_page(LRU, target_page); 
 
-    LRU->head->prevpage = target_page;
-    target_page->next_page = LRU->head;
-    target_page->prev_page = NULL;
-    LRU->head = target_page;
-  }
-  else if (LRU->head != target_page && LRU->tail == target_page) {    // tail
-    target_page->prevpage->nextpage = NULL;
-    LRU->tail = target_page->prevpage;
-
-    LRU->head->prevpage = target_page;
-    target_page->next_page = LRU->head;
-    target_page->prev_page = NULL;
-    LRU->head = target_page;
-  }
-  // else -> head -> nothing to do.
+  LRU->head->prevpage = target_page;
+  target_page->next_page = LRU->head;
+  target_page->prev_page = NULL;
+  LRU->head = target_page;
 
   return BFE_OK;
+}
+
+BFpage* L_detach_page(LRU_List *LRU, BFpage *bfpage) {
+
+  if (LRU->head != bfpage && LRU->tail != bfpage) {         // in between 
+    bfpage->nextpage->prevpage = bfpage->prevpage;
+    bfpage->prevpage->nextpage = bfpage->nextpage;
+  }
+  else if (LRU->head != bfpage && LRU->tail == bfpage) {    // tail
+    bfpage->prevpage->nextpage = NULL;
+    LRU->tail = bfpage->prevpage;
+  }
+  else if (LRU->head == bfpage && LRU->tail != bfpage) {    // first & not only
+    bfpage->nextpage->prevpage = NULL; 
+    LRU->head = bfpage->nextpage;
+  }
+  else if (LRU->head == bfpage && LRU->tail == bfpage) {    // first & only
+    LRU->head = NULL;
+    LRU->tail = NULL;
+  }
+  return bfpage;
+}
+
+void L_show(LRU_List *LRU) {
+  BFpage *ptr;
+  ptr = LRU->head;
+
+  printf(  "pageNum fd unixfd count dirty");
+
+  for (int i = 0; i < LRU->size; i++) {
+    printf("  %d    %d   %d    %d    %d",ptr->pageNum,ptr->fd,ptr->unixfd,ptr->count,ptr->dirty);  
+    printf("\n");
+    ptr = ptr->nextpage;
+  }
+  printf("\n");
 }
 
 void LRU_delete(LRU_List *LRU) { // JM_edit
@@ -156,7 +164,8 @@ static void bfpage_clean_val(BFpage *bfpage) {
 
 int F_add_free(Free_List *FRL, BFpage *bfpage) {
   // if free list is full, report error
-  if (FRL->size >= FRL->maxsize) return BFE_FREELIST_FULL;
+  if (FRL->size >= FRL->maxsize) 
+    handle_error("Free list is full!");
 
   // clean new free page & link to the head
   bfpage_clean_val(bfpage);
@@ -214,7 +223,7 @@ int H_add_page(Hash_Table *HT, BFpage *add_page) {
   hash_index = H_get_index(HT, add_page->fd, add_page->pageNum);
 
   if (H_get_entry(HT, add_page->fd, add_page->pageNum) != NULL) {
-    return BFE_HASHPAGEEXIST;
+    return BFerrno = BFE_HASHPAGEEXIST;
   }
   else {
 
@@ -279,7 +288,7 @@ int H_remove_page(Hash_Table *HT, int fd, int pageNum) {
   victim_ptr = H_get_entry(HT, fd, pageNum);
 
   // hash_entry is empty
-  if (victim_ptr == NULL) return BFE_HASHNOFOUND;
+  if (victim_ptr == NULL) return BFerrno = BFE_HASHNOFOUND;
 
   // find and remove the hash_entry
   else if (victim_ptr->nextentry != NULL && victim_ptr->preventry != NULL) { // in between

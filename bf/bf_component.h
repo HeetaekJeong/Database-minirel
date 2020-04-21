@@ -1,8 +1,6 @@
 #ifndef __BF_COMPONENT_H
 #define __BF_COMPONENT_H
 
-#define BFE_FREELIST_FULL
-
 
 
 // LRU_List, Free_List, Hash_Table
@@ -56,6 +54,8 @@ void LRU_List_Init(LRU_List *LRU);                    /* initialize LRU as empty
 int L_add_page(LRU_List *LRU, BFpage *bfpage);        /* add new page into LRU */
 BFpage* L_find_victim(LRU_List *LRU);                 // find, remove from LRU and return victim.
 int L_make_head(LRU_List *LRU, BFpage *target_page);  // make the target_page newest (head)
+BFpage* L_detach_page(LRU_List *LRU, BFpage *bfpage);    // detach the target BFpage
+void L_show(LRU_List *LRU);
 void LRU_delete(LRU_List *LRU);                       // JM_edit
 
 // Free_List funtions 
