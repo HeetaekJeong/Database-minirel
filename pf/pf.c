@@ -18,8 +18,8 @@ typedef struct PFftab_ele {
 	ino_t		inode;		/* inode number of the file 		*/
 	char		*fname;		/* file name				*/
 	int 		unixfd;		/* Unix file descriptor			*/
-	PFhdr_str	hdr		/* file header				*/
-	short		hdrchanged	/* TRUE if file header has changed 	*/
+	PFhdr_str	hdr;		/* file header				*/
+	short		hdrchanged;	/* TRUE if file header has changed 	*/
 } PFftab_ele;
 
 PFftab_ele *PFftable; 
@@ -27,6 +27,7 @@ size_t PFftab_length;
 
 void PF_Init(void)
 {
+    int i;
 	/* Invoke the BF_Init() */
 	BF_Init();
 
@@ -34,7 +35,7 @@ void PF_Init(void)
 	PFftable = malloc(sizeof(PFftab_ele)*PF_FTAB_SIZE);
 
 	/*Initialize the file table */
-	for(int i = 0; i < PF_FTAB_SIZE; i++){
+	for(i = 0; i < PF_FTAB_SIZE; i++){
 		PFftable[i].valid = FALSE;
 		PFftable[i].inode = 0;
 		PFftable[i].fname = NULL;
@@ -83,13 +84,14 @@ int PF_CreateFile(const char *filename)
 
 int PF_DestroyFile(const char *filename)
 {
+    int i;
 	/* File exist check */
 	if(access(filename, F_OK) == -1){
 		return PFE_UNIX;
 	}
 
 	/* Find the file by filename */
-	for(int i = 0; i < PF_FTAB_SIZE; i++){
+	for(i = 0; i < PF_FTAB_SIZE; i++){
 		if(strcmp(PFftable[i].fname, filename)){ /* Found the file */
 			/* File open check */
 			if(PFftable[i].valid)
@@ -111,6 +113,7 @@ int PF_OpenFile(const char *filename)
 	int error;
 	PFhdr_str header;
 	struct stat fileStat;
+    int i;
 
 	/* Open the file */
 	if((unixfd = open(filename, O_RDONLY)) < 0){
@@ -120,7 +123,7 @@ int PF_OpenFile(const char *filename)
 	PFfdsc = -1;
 
 	/* Iterate the table and find the empty entry */
-	for(int i = 0; i < PF_FTAB_SIZE; i++){
+	for(i = 0; i < PF_FTAB_SIZE; i++){
 		if(!PFftable[i].valid){ /* Found the target entry */
 			PFfdsc = i; /* Index of the file table entry */
 			if(read(unixfd, &header, sizeof(PFhdr_str)) >= 0) /* Read the header */
@@ -247,7 +250,7 @@ int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf)
 	if(fd < 0 || fd > PF_FTAB_SIZE-1)
 		return PFE_FD;
 		
-	*pageNum = -1;
+	*pagenum = -1;
 
 	return PF_GetNextPage(fd, pagenum, pagebuf);
 }
