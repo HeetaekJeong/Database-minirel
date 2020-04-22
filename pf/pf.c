@@ -10,7 +10,7 @@
 #include "pf.h"
 
 #define FILE_CREATE_MASK (S_IRUSR|S_IWUSR|S_IRGRP)
-
+int PFerrno;
 typedef struct PFhdr_str {
 	int 	numpages;	/* number of pages in the file */
 } PFhdr_str;
@@ -75,28 +75,33 @@ int PF_CreateFile(const char *filename)
 
 	/* File exist check */
 	if(access(filename, F_OK) != -1){
-		return PFE_FD; /* Already exists */
+        PFerrno = PFE_FD;
+        return PFerrno; /* Already exists */
 	}
 
 	/* Create the file */
 	if((unixfd = open(filename, O_RDWR|O_CREAT, FILE_CREATE_MASK)) < 0){
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	/* Fine the inode of the file */
 	if((inode = fstat(unixfd, &fileStat)) < 0){
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	/* Initialize the header and write to the file */
 	header.numpages = 0;
 	if(write(unixfd, &header, sizeof(PFhdr_str)) != sizeof(PFhdr_str)){
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	/* Close the file */
 	if(close(unixfd) < 0){
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	return PFE_OK;
@@ -107,7 +112,8 @@ int PF_DestroyFile(const char *filename)
     int i;
 	/* File exist check */
 	if(access(filename, F_OK) == -1){
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	/* Find the file by filename */
@@ -115,7 +121,8 @@ int PF_DestroyFile(const char *filename)
 		if(strcmp(PFftable[i].fname, filename)){ /* Found the file */
 			/* File open check */
 			if(PFftable[i].valid){
-				return PFE_FILEOPEN;
+                PFerrno = PFE_FILEOPEN;
+                return PFerrno;
 			}
 
 			/* Unlink the file */
@@ -137,12 +144,15 @@ int PF_OpenFile(const char *filename)
     int i;
 
 	/* Check whether the file is already open */
-	if(Ftable_Check(filename))
-			return PFE_FILEOPEN;
+	if(Ftable_Check(filename)){
+        PFerrno = PFE_FILEOPEN;
+        return PFerrno;
+    }
 
 	/* Open the file */
 	if((unixfd = open(filename, O_RDWR)) < 0){
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	PFfdsc = -1;
@@ -153,17 +163,21 @@ int PF_OpenFile(const char *filename)
 			PFfdsc = i; /* Index of the file table entry */
 			if(read(unixfd, &header, sizeof(PFhdr_str)) >= 0) /* Read the header */
 				break;
-			return PFE_UNIX;
+            PFerrno = PFE_UNIX;
+            return PFerrno;
 		}
 	}
 
 	/* Check whether the table is full */
-	if(PFfdsc == -1)
-		return PFE_FTABFULL;
+	if(PFfdsc == -1){
+        PFerrno = PFE_FTABFULL;
+        return PFerrno;
+    }
 
 	/* Find the inode of the file */
 	if((error = fstat(unixfd, &fileStat)) < 0){
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	/* Fill the file table entries accordingly */
@@ -188,13 +202,15 @@ int PF_CloseFile(int fd)
 	/* Invalid PF file descriptor */
 	if(fd < 0 || fd > PF_FTAB_SIZE-1){
 		printf("\nInvalid PF file descriptor\n");
-		return PFE_FD;
+        PFerrno = PFE_FD;
+        return PFerrno;
 	}
 
 	/* Check whether the file is open */
 	if(!PFftable[fd].valid){
 		printf("File is not open\n");
-		return PFE_FILENOTOPEN;
+        PFerrno = PFE_FILENOTOPEN;
+        return PFerrno;
 	}
 
 	/* Find the unix file descriptor in the PF file table */
@@ -215,14 +231,16 @@ int PF_CloseFile(int fd)
 		header = PFftable[fd].hdr;
 		if((error = pwrite(unixfd, &header, sizeof(PFhdr_str), 0)) < 0){
 			printf("Cannot re-write the header\n");
-			return PFE_HDRWRITE;
+            PFerrno = PFE_HDRWRITE;
+            return PFerrno;
 		}
 	}
 
 	/* Close the file */
 	if((error = close(unixfd)) < 0){
 		printf("Close error\n");
-		return PFE_UNIX;
+        PFerrno = PFE_UNIX;
+        return PFerrno;
 	}
 
 	/* Invalid the corresponding entry */
@@ -239,12 +257,16 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf)
     int err; 
 
     /* Invalid PF file descriptor */
-	if (fd < 0 || fd > PF_FTAB_SIZE-1) 
-        return PFE_FD;
+	if (fd < 0 || fd > PF_FTAB_SIZE-1) {
+        PFerrno = PFE_FD;
+        return PFerrno;
+    }
 	
 	/* Invaild page number or page buffer */
-	if (pagenum == NULL || pagebuf == NULL) 
-        return PFE_INVALIDPAGE;
+	if (pagenum == NULL || pagebuf == NULL) {
+        PFerrno = PFE_INVALIDPAGE;
+        return PFerrno;
+    }
 
 	/* Current PF file descriptor */
 	current_pfftab = PFftable + fd;
@@ -256,18 +278,20 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf)
     bq.dirty = TRUE;
     
 	/* Check whether the file is not open */
-	if (current_pfftab->valid == FALSE)
-			return PFE_FILENOTOPEN;
+	if (current_pfftab->valid == FALSE){
+	    PFerrno = PFE_FILENOTOPEN;
+        return PFerrno;
+    }
     
 	/* Append the page to the file */
 	err = BF_AllocBuf(bq, &pfpage);
 	if (err != BFE_OK)
-			return err;
+		return err;
 
 	/* Set the dirty page */
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
-			return err;
+		return err;
 
 	/* Set the return argument */
 	*pagenum = bq.pagenum;
@@ -282,9 +306,10 @@ int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf)
 {   
     int err;
 	/* Invalid PF file descriptor */
-	if(fd < 0 || fd > PF_FTAB_SIZE-1)
-		return PFE_FD;
-		
+	if(fd < 0 || fd > PF_FTAB_SIZE-1){
+        PFerrno = PFE_FD;
+        return PFerrno;
+    }	
 	*pagenum = -1;
    
     err = PF_GetNextPage(fd, pagenum, pagebuf);
@@ -298,8 +323,10 @@ int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)
     int err;
 
 	/* Invalid PF file descriptor */
-	if(fd < 0 || fd > PF_FTAB_SIZE-1)
-			return PFE_FD;
+	if(fd < 0 || fd > PF_FTAB_SIZE-1){
+        PFerrno = PFE_FD;
+        return PFerrno;
+    }
 
     current_pfftab = PFftable + fd;
 
@@ -310,12 +337,16 @@ int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)
     bq.pagenum = (*pagenum) + 1;
 
 	/* Check whether the file is not open */
-    if (current_pfftab->valid == FALSE)
-        return PFE_FILENOTOPEN;
+    if (current_pfftab->valid == FALSE){
+        PFerrno = PFE_FILENOTOPEN;
+        return PFerrno;
+    }
 
 	/* Invalid page number */
-    if (current_pfftab->hdr.numpages <= bq.pagenum || *pagenum < -1)
-        return PFE_EOF;
+    if (current_pfftab->hdr.numpages <= bq.pagenum || *pagenum < -1){
+        PFerrno = PFE_EOF;
+        return PFerrno;
+    }
 
 	/* Get the page buffer with the page number */
     err = BF_GetBuf(bq, &pfpage);
@@ -336,8 +367,10 @@ int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf)
     int err;
 
 	/* Invalid PF file descriptor */
-	if(fd < 0 || fd > PF_FTAB_SIZE-1)
-			return PFE_FD;
+	if(fd < 0 || fd > PF_FTAB_SIZE-1){
+		PFerrno = PFE_FD;
+        return PFerrno;
+    }
 
     current_pfftab = PFftable + fd;
 
@@ -348,12 +381,16 @@ int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf)
     bq.pagenum = pagenum;
 
 	/* Check whether the file is open */
-    if (current_pfftab->valid == FALSE)
-        return PFE_FILENOTOPEN;
+    if (current_pfftab->valid == FALSE){
+        PFerrno = PFE_FILENOTOPEN;
+        return PFerrno;
+    }
 
 	/* Invalid page number */
-    if (current_pfftab->hdr.numpages <= bq.pagenum || pagenum < 0)
-        return PFE_INVALIDPAGE;
+    if (current_pfftab->hdr.numpages <= bq.pagenum || pagenum < 0){
+        PFerrno = PFE_INVALIDPAGE;
+        return PFerrno;
+    }
 
 	/* Get the page buffer with the page number */
     err = BF_GetBuf(bq, &pfpage);
@@ -372,18 +409,24 @@ int  PF_DirtyPage	(int fd, int pagenum)
     int err;
 
 	/* Invalid PF file descriptor */
-	if(fd < 0 || fd > PF_FTAB_SIZE-1)
-		return PFE_FD;
+	if(fd < 0 || fd > PF_FTAB_SIZE-1){
+		PFerrno = PFE_FD;
+        return PFerrno;
+    }
 
     current_pfftab = PFftable + fd;
 
 	/* Check whether the file is open */
-    if (current_pfftab->valid == FALSE)
-        return PFE_FILENOTOPEN;
+    if (current_pfftab->valid == FALSE){
+        PFerrno = PFE_FILENOTOPEN;
+        return PFerrno;
+    }
 	
 	/* Invalid page number */
-    if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0)
-        return PFE_INVALIDPAGE;
+    if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0){
+        PFerrno = PFE_INVALIDPAGE;
+        return PFerrno;
+    }
 
     bq.fd = fd;
     bq.unixfd = current_pfftab->unixfd;
@@ -404,18 +447,24 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty)
     int err;
 
 	/* Invalid PF file descriptor */
-	if(fd < 0 || fd > PF_FTAB_SIZE-1)
-			return PFE_FD;
+	if(fd < 0 || fd > PF_FTAB_SIZE-1){
+		PFerrno = PFE_FD;
+        return PFerrno;
+    }
 
     current_pfftab = PFftable + fd;
  
 	/* Check whether the file is open */
- 	if (current_pfftab->valid == FALSE)
-        return PFE_FILENOTOPEN;
+ 	if (current_pfftab->valid == FALSE){
+        PFerrno = PFE_FILENOTOPEN;
+        return PFerrno;
+    }
 
 	/* Invalid page number */
-    if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0)
-        return PFE_INVALIDPAGE;
+    if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0){
+        PFerrno = PFE_INVALIDPAGE;
+        return PFerrno;
+    }
 
     bq.fd = fd;
     bq.unixfd = current_pfftab->unixfd;
@@ -437,6 +486,29 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty)
 
 void PF_PrintError(const char *errString)
 {
+	switch(PFerrno){
+		case PFE_INVALIDPAGE: printf("PF: PFE_INVALIDPAGE\n"); break;
+		
+		case PFE_FD: printf("PF: PFE_FD\n");break;
+
+		case PFE_EOF: printf("PF: PFE_EOF\n");break;
+
+		case PFE_UNIX: printf("PF: PFE_UNIX)\n");break;
+
+		case PFE_FILENOTOPEN:printf("PF: FILENOTOPEN\n");break;
+	
+		case PFE_FILEOPEN:printf("PF: PFE_FILEOPEN\n");break;
+
+		case PFE_FILENOTEXISTS:printf("PF: PFE_FILENOTEXISTS\n");break;
+
+		case PFE_FTABFULL: printf("PF: PFE_FTABFULL\n");break;
+
+		case PFE_NULLARG: printf("PF: PFE_NULLARG\n");break;
+
+		case PFE_OK: printf("PF: PFE_OK\n "); break;
+
+		default: printf( " \n  PF: unused error code : %d \n\n ", error);
+	}
 	printf("PF Error : %s", errString);
 	exit(1);
 }
