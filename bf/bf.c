@@ -1,12 +1,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "minirel.h"
 #include "bf.h"
 #include "bf_component.h"
 
+#define handle_error(msg) \
+  do { perror(msg); exit(EXIT_FAILURE); } while(0)
 /* declare LRU, FRL, HT here */
 static LRU_List *LRU;
 static Free_List *FRL;
@@ -18,7 +21,7 @@ static writeback(BFpage* victim) {
     handle_error("Tried to writeback, when the victim is not dirty");
   else {
     if (pwrite(victim->unixfd, victim->fpage.pagebuf, PAGE_SIZE, ((victim->pagenum))*PAGE_SIZE) != PAGE_SIZE) {
-      return BFerrno = BFE_INCOMPLETEWRITE;
+      return BFE_INCOMPLETEWRITE;
     }
   }
 }
@@ -43,7 +46,7 @@ int BF_GetBuf(BFreq bq, PFpage **fpage) {
   if (get_entry != NULL) {
     get_entry->bpage->count++;
     res = L_make_head(LRU, get_entry->bpage);
-    if (res != 0) return BFerrno = res;
+    if (res != 0) return res;
   }
    
   /* if not resident in LRU, get new page from freelist. */
@@ -66,11 +69,11 @@ int BF_GetBuf(BFreq bq, PFpage **fpage) {
   bfpage_ptr->unixfd = bq.unixfd;
 
   if (L_add_page(LRU, bfpage_ptr) != BFE_OK || H_add_page(HT, bfpage_ptr) != BFE_OK)
-    return BFerrno = BFE_PAGENOTINBUF;
+    return BFE_PAGENOTINBUF;
 
   /* read the file asked (using the unixfd) */
   if (pread(bfpage_ptr->unixfd, bfpage_ptr->fpage.pagebuf, PAGE_SIZE, (bq.pagenum)*PAGE_SIZE) == -1)
-    return BFerrno = BFE_INCOMPLETEREAD;
+    return BFE_INCOMPLETEREAD;
 
   *fpage = &(bfpage_ptr->fpage);
   return BFE_OK;
@@ -86,7 +89,7 @@ int BF_AllocBuf(BFreq bq, PFpage **fpage) {
   /* check HT to find if it's in Buffer (LRU). if resident, return error */
   new_entry = H_get_entry(HT, bq.fd, bq.pagenum);
   if (new_entry != NULL) 
-    return BFerrno = BFE_PAGEINBUF;    
+    return BFE_PAGEINBUF;    
 
   /* get new page from the Free_List.  */
   bfpage_ptr = F_remove_free(FRL); 
@@ -108,7 +111,7 @@ int BF_AllocBuf(BFreq bq, PFpage **fpage) {
   bfpage_ptr->unixfd = bq.unixfd;
 
   if (L_add_page(LRU, bfpage_ptr) != BFE_OK || H_add_page(HT, bfpage_ptr) != BFE_OK)
-    return BFerrno = BFE_PAGENOTINBUF;
+    return BFE_PAGENOTINBUF;
 
   return BFE_OK;
 }
@@ -124,9 +127,9 @@ int BF_UnpinBuf(BFreq bq) {
 
   /* if not resident || count == 0, error */
   if (unpin_entry == NULL)
-    return BFerrno = BFE_PAGENOTINBUF;
+    return BFE_PAGENOTINBUF;
   else if (unpin_entry->bpage->count < 0)
-    return BFerrno = BFE_PAGEUNPINNED;
+    return BFE_PAGEUNPINNED;
 
   /* decrease the pin. */
   unpin_entry->bpage->count--;
@@ -143,14 +146,14 @@ int BF_TouchBuf(BFreq bq) {
 
   /* if not resident || count == 0, error */
   if (touch_entry == NULL) 
-    return BFerrno = BFE_PAGENOTINBUF;
+    return BFE_PAGENOTINBUF;
   else if (touch_entry->bpage->count < 0) 
-    return BFerrno = BFE_PAGEUNPINNED;
+    return BFE_PAGEUNPINNED;
 
   /* make it dirty & make it head & count++ */
   touch_entry->bpage->dirty = TRUE;
   if (res = L_make_head(LRU, touch_entry->bpage) != BFE_OK) 
-    return BFerrno = res;
+    return res;
   touch_entry->bpage->count++;
 
   return BFE_OK;
@@ -175,9 +178,9 @@ int BF_FlushBuf(int fd) {
       LRU->size--;
       if (bfpage_ptr->dirty == TRUE) writeback(bfpage_ptr);             /* writeback if dirty */
       if (res = H_remove_page(HT, bfpage_ptr->fd, bfpage_ptr->pagenum)  /* remove from HT */
-          != BFE_OK) return BFerrno = res;
+          != BFE_OK) return res;
       if (res = F_add_free(FRL, bfpage_ptr)                             /* add to FRL */
-          != BFE_OK) return BFerrno = res;
+          != BFE_OK) return res;
     }
     bfpage_ptr = bfpage_ptr->prevpage;
   }
@@ -191,7 +194,6 @@ void BF_ShowBuf(void) {
 
 void BF_PrintError(const char *s) {
   /* perror("%s, %d",s,BFerrno); */
-  printf("%s, %d",s,BFerrno); 
   exit(-1);
 }
 

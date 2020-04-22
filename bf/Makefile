@@ -3,7 +3,7 @@ MINIREL_HOME = /home/huitaek/Class/database/Database/Database-minirel
 LIB	= bf
 INCDIR	= ${MINIREL_HOME}/h
 INCS	= 
-SRCS	= bf.c
+SRCS	= bf.c bf_component.c
 TESTS	= bftest.c
 OBJS	= ${SRCS:.c=.o}
 LIBS	= lib${LIB}.a

@@ -1,11 +1,12 @@
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
+#include "minirel.h"
 #include "bf_component.h"
-
+#include "bf.h"
 #define handle_error(msg) \
   do { perror(msg); exit(EXIT_FAILURE); } while(0)
-
 
 /* =========================
  *  LRU_List !!
@@ -29,8 +30,8 @@ int L_add_page(LRU_List *LRU, BFpage *bfpage) {
   /* add to the head (new page is the most recent) */
   else {
     LRU->head->prevpage = bfpage; 
-    bfpage->next_page = LRU->head;
-    bfpage->prevpage = NULL
+    bfpage->nextpage = LRU->head;
+    bfpage->prevpage = NULL;
 
     LRU->head = bfpage;
   }
@@ -42,10 +43,11 @@ int L_add_page(LRU_List *LRU, BFpage *bfpage) {
 BFpage* L_find_victim(LRU_List *LRU) {
 
   BFpage* bfpage_ptr; 
+  int i;
 
   /* find the victim page, searching from the tail */
   bfpage_ptr = LRU->tail;
-  for (int i = 0; i < LRU->size; i++) {
+  for (i = 0; i < LRU->size; i++) {
     if (bfpage_ptr->count == 0) break;
     else bfpage_ptr = bfpage_ptr->prevpage;
   }
@@ -71,8 +73,8 @@ int L_make_head(LRU_List *LRU, BFpage *target_page) {
   L_detach_page(LRU, target_page); 
 
   LRU->head->prevpage = target_page;
-  target_page->next_page = LRU->head;
-  target_page->prev_page = NULL;
+  target_page->nextpage = LRU->head;
+  target_page->prevpage = NULL;
   LRU->head = target_page;
 
   return BFE_OK;
@@ -101,12 +103,13 @@ BFpage* L_detach_page(LRU_List *LRU, BFpage *bfpage) {
 
 void L_show(LRU_List *LRU) {
   BFpage *ptr;
+  int i;
   ptr = LRU->head;
 
   printf(  "pageNum fd unixfd count dirty");
 
-  for (int i = 0; i < LRU->size; i++) {
-    printf("  %d    %d   %d    %d    %d",ptr->pageNum,ptr->fd,ptr->unixfd,ptr->count,ptr->dirty);  
+  for (i = 0; i < LRU->size; i++) {
+    printf("  %d    %d   %d    %d    %d",ptr->pagenum,ptr->fd,ptr->unixfd,ptr->count,ptr->dirty);  
     printf("\n");
     ptr = ptr->nextpage;
   }
@@ -126,6 +129,7 @@ void Free_List_Init(Free_List *FRL, int max_bfpage) {
  
   BFpage* cur_ptr;
   BFpage* next_ptr;
+  int i;
 
   /* set size, max_bfpage, *head */
   FRL->size = 1;
@@ -138,33 +142,33 @@ void Free_List_Init(Free_List *FRL, int max_bfpage) {
 
   /* create lists of free pages (only next, no prev) */
   cur_ptr = FRL->head;
-  for (int i = 0; i < FRL->max_bfpage; i++) {
-    if ( (next_ptr = malloc(sizeof(BFpage)) ) == NULL) 
-      handle_error("Free_List free page %d malloc failed",i);
+  for (i = 0; i < FRL->max_bfpage; i++) {
+    if ((next_ptr = malloc(sizeof(BFpage)) ) == NULL) 
+      handle_error("Free_List free page %d malloc failed");
     bfpage_clean_val(next_ptr);
 
     cur_ptr->nextpage = next_ptr;
     cur_ptr->prevpage = NULL;
 
     next_ptr = cur_ptr;
-    FRL->num_bfpage++;
+    FRL->size++;
   }
   next_ptr->nextpage = NULL;
   next_ptr->prevpage = NULL;
 }
 
-static void bfpage_clean_val(BFpage *bfpage) {
+void bfpage_clean_val(BFpage *bfpage) {
   strcpy(bfpage->fpage.pagebuf,"");
   bfpage->dirty = 0;
   bfpage->count = 0;
-  bfpage->pageNum = 0;
+  bfpage->pagenum = 0;
   bfpage->fd = 0;
   bfpage->unixfd = 0;
 }
 
 int F_add_free(Free_List *FRL, BFpage *bfpage) {
   /* if free list is full, report error */
-  if (FRL->size >= FRL->maxsize) 
+  if (FRL->size >= FRL->max_bfpage) 
     handle_error("Free list is full!");
 
   /* clean new free page & link to the head */
@@ -204,15 +208,16 @@ void Free_List_delete(Free_List *FRL) { /* JM_edit */
 
 
 void Hash_Table_Init(Hash_Table *HT, int hash_size) {
-  HT->hash_size = hash_size;
-  HT->hash_entries = malloc(sizeof(BFhash_entry*)*HT->hash_size);
-  for (int i = 0; i < HT->hash_size; i++) {
-    HT->hash_entires[i] = NULL;
+  int i;
+  HT->size = hash_size;
+  HT->hash_entries = malloc(sizeof(BFhash_entry*)*HT->size);
+  for (i = 0; i < HT->size; i++) {
+    (HT->hash_entries)[i] = NULL;
   }
 }
 
-int H_get_index(Hash_Table *HT, int fd, int pageNum) {
-  return (123 * (fd + 13) * (pagenum + 17) + 87) % 31 % ht->size; /* JM_edit */
+int H_get_index(Hash_Table *HT, int fd, int pagenum) {
+        return (123 * (fd + 13) * (pagenum + 17) + 87) % 31 % HT->size; /* JM_edit */
 }
 
 int H_add_page(Hash_Table *HT, BFpage *add_page) {
@@ -220,16 +225,16 @@ int H_add_page(Hash_Table *HT, BFpage *add_page) {
   BFhash_entry *new_entry;
   BFhash_entry *hash_entry_ptr;
 
-  hash_index = H_get_index(HT, add_page->fd, add_page->pageNum);
+  hash_index = H_get_index(HT, add_page->fd, add_page->pagenum);
 
-  if (H_get_entry(HT, add_page->fd, add_page->pageNum) != NULL) {
-    return BFerrno = BFE_HASHPAGEEXIST;
+  if (H_get_entry(HT, add_page->fd, add_page->pagenum) != NULL) {
+    return BFE_HASHPAGEEXIST;
   }
   else {
 
     new_entry = malloc(sizeof(BFhash_entry)); 
     new_entry->fd = add_page->fd;
-    new_entry->pageNum = add_page->pageNum;
+    new_entry->pagenum = add_page->pagenum;
     new_entry->bpage = add_page;
 
     if (HT->hash_entries[hash_index] == NULL) {   /* was empty */
@@ -253,19 +258,19 @@ int H_add_page(Hash_Table *HT, BFpage *add_page) {
   }
 }
 
-BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pageNum) {
+BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pagenum) {
   int hash_index;
   BFhash_entry *hash_entry_ptr;
 
-  hash_index = H_get_index(HT, fd, pageNum);
-  hash_entry_ptr = HT->hash_entries[hash_index]
+  hash_index = H_get_index(HT, fd, pagenum);
+  hash_entry_ptr = HT->hash_entries[hash_index];
 
   if (hash_entry_ptr == NULL) {
     return NULL;
   }
   else {
     while(1) {
-      if (hash_entry_ptr->fd == fd && hash_entry_ptr->pageNum == pageNum) {
+      if (hash_entry_ptr->fd == fd && hash_entry_ptr->pagenum == pagenum) {
         return hash_entry_ptr;
       }
       else {
@@ -278,17 +283,17 @@ BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pageNum) {
   return  NULL;
 }
 
-int H_remove_page(Hash_Table *HT, int fd, int pageNum) {
+int H_remove_page(Hash_Table *HT, int fd, int pagenum) {
 
   BFhash_entry *victim_ptr;
   int hash_index;
    
   /* find the hash_entry corresponding to the requested fd + pageNum.  */
-  hash_index = H_get_index(HT, remove_page->fd, remove_page->pageNum);
-  victim_ptr = H_get_entry(HT, fd, pageNum);
+  hash_index = H_get_index(HT, fd, pagenum);
+  victim_ptr = H_get_entry(HT, fd, pagenum);
 
   /* hash_entry is empty */
-  if (victim_ptr == NULL) return BFerrno = BFE_HASHNOFOUND;
+  if (victim_ptr == NULL) return BFE_HASHNOTFOUND;
 
   /* find and remove the hash_entry */
   else if (victim_ptr->nextentry != NULL && victim_ptr->preventry != NULL) { /* in between */

@@ -35,7 +35,7 @@ typedef struct Free_List {    /* Singly? Liked List. added & removed at the head
 } Free_List;
 
 typedef struct Hash_Table {
-  int           hash_size;
+  int           size;
   BFhash_entry  **hash_entries;
 } Hash_Table;
 
@@ -50,7 +50,7 @@ void LRU_delete(LRU_List *LRU);                       /* JM_edit*/
 
 /* Free_List funtions */
 void Free_List_Init(Free_List *FRL, int max_bfpage);
-/* void bfpage_clean_val(BFpage *bfpage);*/
+void bfpage_clean_val(BFpage *bfpage);
 int F_add_free(Free_List *FRL, BFpage *bfpage);
 BFpage* F_remove_free(Free_List *FRL);                
 void Free_List_delete(Free_List *FRL);                /* JM_edit*/
