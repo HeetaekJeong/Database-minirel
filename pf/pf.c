@@ -27,6 +27,24 @@ typedef struct PFftab_ele {
 PFftab_ele *PFftable; 
 size_t PFftab_length;
 
+int Ftable_Check(const char *filename)
+{
+	int i, found;
+	found = 0;
+
+	for(i = 0; i < PF_FTAB_SIZE; i++){
+		if(strcmp(PFftable[i].fname, filename)){
+				found = 1;
+				break;
+		}
+	}
+
+	if(found)
+			return 1;
+
+	return 0;
+}
+
 void PF_Init(void)
 {
     int i;
@@ -62,7 +80,7 @@ int PF_CreateFile(const char *filename)
 
 	/* Create the file */
 	if((unixfd = open(filename, O_RDWR|O_CREAT, FILE_CREATE_MASK)) < 0){
-		return PFE_FILEOPEN;
+		return PFE_UNIX;
 	}
 
 	/* Fine the inode of the file */
@@ -96,8 +114,9 @@ int PF_DestroyFile(const char *filename)
 	for(i = 0; i < PF_FTAB_SIZE; i++){
 		if(strcmp(PFftable[i].fname, filename)){ /* Found the file */
 			/* File open check */
-			if(PFftable[i].valid)
+			if(PFftable[i].valid){
 				return PFE_FILEOPEN;
+			}
 
 			/* Unlink the file */
 			unlink(filename);
@@ -116,9 +135,14 @@ int PF_OpenFile(const char *filename)
 	PFhdr_str header;
 	struct stat fileStat;
     int i;
+
+	/* Check whether the file is already open */
+	if(Ftable_Check(filename))
+			return PFE_FILEOPEN;
+
 	/* Open the file */
 	if((unixfd = open(filename, O_RDWR)) < 0){
-		return PFE_FILEOPEN;
+		return PFE_UNIX;
 	}
 
 	PFfdsc = -1;
