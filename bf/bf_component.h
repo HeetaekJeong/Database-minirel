@@ -1,6 +1,8 @@
 #ifndef __BF_COMPONENT_H
 #define __BF_COMPONENT_H
 
+int BFerrno;
+
 /* BFpage, BFhash_entry, _buffer_request_control (BFreq) */
 typedef struct BFpage {
   PFpage         fpage;       /* page data from the file                 */
@@ -26,6 +28,7 @@ typedef struct LRU_List {     /* LRU's head is the most recent & tail the oldest
   int           size;         /* total number of pages in LRU */
   BFpage        *head;        /* head|most recent page */
   BFpage        *tail;        /* tail|most old page */
+  int           max_size;
 } LRU_List;
 
 typedef struct Free_List {    /* Singly? Liked List. added & removed at the head */
@@ -53,6 +56,7 @@ void Free_List_Init(Free_List *FRL, int max_bfpage);
 void bfpage_clean_val(BFpage *bfpage);
 int F_add_free(Free_List *FRL, BFpage *bfpage);
 BFpage* F_remove_free(Free_List *FRL);                
+void F_show(Free_List *FRL);
 void Free_List_delete(Free_List *FRL);                /* JM_edit*/
 
 /* Hash_Table functions*/
@@ -61,6 +65,7 @@ int H_get_index(Hash_Table *HT, int fd, int pageNum); /* JM_edit - hash function
 int H_add_page(Hash_Table *HT, BFpage *add_page);
 BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pageNum);
 int H_remove_page(Hash_Table *HT, int fd, int pageNum);
+void Show_Hash(Hash_Table *HT);
 void Hash_Table_delete(Hash_Table *HT);               /* JM_edit*/
 
 #endif
