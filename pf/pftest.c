@@ -26,41 +26,40 @@ void writefile(const char *fname)
 
     /* open file1, and allocate a few pages in there */
     if ((fd=PF_OpenFile(fname))<0){
-	PF_PrintError((char*)"open file1");
-	exit(1);
+		PF_PrintError((char*)"open file1");
+		exit(1);
     }
     printf("\n******** %s opened for write ***********\n",fname);
 
     for (i=0; i < 2 * BF_MAX_BUFS; i++){
-	if ((error = PF_AllocPage(fd,&pagenum,&buf))!= PFE_OK){
-printf("PF_AllocPage fails (i=%d)\n",i);
-	    PF_PrintError("first buffer\n");
-	    exit(1);
-	}
-	memcpy(buf, (char *)&i, sizeof(int));
-	/*((int*)buf)[0] = i;*/
-	printf("allocated page %d, value_written %d\n",pagenum, i);
+		if ((error = PF_AllocPage(fd,&pagenum,&buf))!= PFE_OK){
+			printf("PF_AllocPage fails (i=%d)\n",i);
+	    	PF_PrintError("first buffer\n");
+	    	exit(1);
+		}
+		
+		memcpy(buf, (char *)&i, sizeof(int));
+		/*((int*)buf)[0] = i;*/
+		printf("allocated page %d, value_written %d\n",pagenum, i);
 
-	/* mark all these pages dirty */
-	if(PF_DirtyPage(fd, pagenum) != PFE_OK){
-	    PF_PrintError("PF_DirtyPage");
-	    exit(1);
-	}
+		/* mark all these pages dirty */
+		if(PF_DirtyPage(fd, pagenum) != PFE_OK){
+	    	PF_PrintError("PF_DirtyPage");
+	    	exit(1);
+		}
 
-	/* unfix these pages */
-	if ((error = PF_UnpinPage(fd, pagenum,FALSE))!= PFE_OK){
-	    PF_PrintError("unfix buffer");
-	    exit(1);
-	}
-
+		/* unfix these pages */
+		if ((error = PF_UnpinPage(fd, pagenum,FALSE))!= PFE_OK){
+	    	PF_PrintError("unfix buffer");
+	    	exit(1);
+		}
     }
 
     /* close the file */
     if ((error = PF_CloseFile(fd))!= PFE_OK){
-	PF_PrintError("close file1");
-	exit(1);
+		PF_PrintError("close file1");
+		exit(1);
     }
-
 }
 
 /*
@@ -74,36 +73,42 @@ void printfile(int fd)
 
     printf("\n ********* reading file **********\n");
     /* pagenum = -1 means from the beginning */
-/*
+
     pagenum = -1;
-*/
 
+	/* Read the first page */
     if ((error = PF_GetFirstPage(fd,&pagenum,&buf))== PFE_OK) {
-	memcpy((char *)&i, buf, sizeof(int));
-	printf("got page %d, value_read %d\n",pagenum,i);
-	fflush(stdout);
-	if ((error = PF_UnpinPage(fd,pagenum,FALSE))!= PFE_OK){
-	    PF_PrintError("unfix");
-	    exit(1);
-	}
+		memcpy((char *)&i, buf, sizeof(int));
+		printf("got page %d, value_read %d\n",pagenum,i);
+		fflush(stdout);
+	
+		/* Unpin the page */
+		if ((error = PF_UnpinPage(fd,pagenum,FALSE))!= PFE_OK){
+	    	PF_PrintError("unfix");
+	    	exit(1);
+		}
     } else {
-	PF_PrintError("First Page");
-printf("error = %d\n",error);
-	exit(1);
+		PF_PrintError("First Page");
+		printf("error = %d\n",error);
+		exit(1);
     }
 
+	/* Read the next page */
     while ((error = PF_GetNextPage(fd,&pagenum,&buf))== PFE_OK){
-	memcpy((char *)&i, buf, sizeof(int));
-	printf("got page %d, value_read %d\n",pagenum,i);
-	fflush(stdout);
-	if ((error = PF_UnpinPage(fd,pagenum,FALSE))!= PFE_OK){
-	    PF_PrintError("unfix");
-	    exit(1);
-	}
+		memcpy((char *)&i, buf, sizeof(int));
+		printf("got page %d, value_read %d\n",pagenum,i);
+		fflush(stdout);
+		
+		if ((error = PF_UnpinPage(fd,pagenum,FALSE))!= PFE_OK){
+	    	PF_PrintError("unfix");
+	    	exit(1);
+		}
     }
+
+	/* Check EOF */
     if (error != PFE_EOF){
-	PF_PrintError("not eof");
-	exit(1);
+		PF_PrintError("not eof");
+		exit(1);
     }
     printf("\n ********** eof reached **********\n");
 
@@ -118,14 +123,20 @@ void readfile(const char *fname)
     int fd;
 
     printf("\n ********** %s opened for read ********\n",fname);
-    if ((fd=PF_OpenFile(fname))<0){
-	PF_PrintError("open file");
-	exit(1);
+    
+	/* Open the file */
+	if ((fd=PF_OpenFile(fname))<0){
+		PF_PrintError("open file");
+		exit(1);
     }
+
+	/* Print the file */
     printfile(fd);
-    if ((error = PF_CloseFile(fd))!= PFE_OK){
-	PF_PrintError("close file");
-	exit(1);
+    
+	/* Close the file */
+	if ((error = PF_CloseFile(fd))!= PFE_OK){
+		PF_PrintError("close file");
+		exit(1);
     }
 }
 
@@ -145,8 +156,8 @@ void testpf1(void)
 
     /* create a few files */
     if ((error = PF_CreateFile(FILE1)) != PFE_OK){
-	PF_PrintError(FILE1);
-	exit(1);
+		PF_PrintError(FILE1);
+		exit(1);
     }
     printf("\n*********** %s created *********\n", FILE1);
 

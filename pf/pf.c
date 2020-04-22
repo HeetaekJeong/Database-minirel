@@ -50,6 +50,7 @@ int PF_CreateFile(const char *filename)
 	int inode;
 	struct stat fileStat;
 	BFreq bq;
+	PFhdr_str header;
 
 	/* File exist check */
 	if(access(filename, F_OK) != -1){
@@ -67,6 +68,10 @@ int PF_CreateFile(const char *filename)
 	}
 
 	/* Initialize the header and write to the file */
+	header.numpages = 0;
+	if(write(unixfd, header, sizeof(PFhdr_str)) != sizeof(PFhdr_str)){
+		return PFE_UNIX;
+	}
 
 	/* Close the file */
 	if(close(unixfd) < 0){
@@ -95,14 +100,16 @@ int PF_DestroyFile(const char *filename)
 			break;
 		}
 	}
+
+	return PFE_OK;
 }
 
 int PF_OpenFile(const char *filename)
 {
 	int unixfd;
-	int header;
 	int PFfdsc;
-	int inode;
+	int error;
+	PFhdr_str header;
 	struct stat fileStat;
 
 	/* Open the file */
@@ -110,17 +117,18 @@ int PF_OpenFile(const char *filename)
 		return PFE_FILEOPEN;
 	}
 
-	/* Read the header in the file */
+	/* Iterate the table and find the empty entry */
 	for(int i = 0; i < PF_FTAB_SIZE; i++){
-		if(strcmp(PFftable[i].fname, filename)){ /* Found the file */
-			header = PFftable[i].hdr.numpages; /* File header */
-			PFfdsc = i; /* PF file descriptor */
-			break;
+		if(!PFftable[i].valid){ /* Found the target entry */
+			PFfdsc = i; /* Index of the file table entry */
+			if(read(unixfd, &header, sizeof(PFhdr_str)) > 0) /* Read the header */
+				break;
+			return PFE_UNIX;
 		}
 	}
 
 	/* Find the inode of the file */
-	if((inode = fstat(unixfd, &fileStat)) < 0){
+	if((error = fstat(unixfd, &fileStat)) < 0){
 		return PFE_UNIX;
 	}
 
@@ -129,37 +137,41 @@ int PF_OpenFile(const char *filename)
 	PFftable[PFfdsc].inode = fileStat.st_ino;
 	PFftable[PFfdsc].fname = filename;
 	PFftable[PFfdsc].unixfd = unixfd;
-	PFftable[PFfdsc].hdr = header;
+	PFftable[PFfdsc].hdr.numpages = header.numpages;
 	PFftable[PFfdsc].hdrchanged = FALSE;
+
+	/* Return the PF file descriptor */
+	return PFfdsc;
 }
 
 int PF_CloseFile(int fd)
 {
 	int unixfd;
-	int CurrNum, NextNum;
 	int error;
-	BFreq bq;
+	PFhdr_str header;
 	char **pagebuf;
+
+	/* Check whether the file is open */
+	if(!PFftable[fd].valid)
+		return PFE_FILENOTOPEN;
 
 	/* Find the unix file descriptor in the PF file table */
 	unixfd = PFftable[fd].unixfd;
 
-	/* Release all the buffer pages belonging to the file to the FREE list */
-	if(BF_FlushBuf(fd) != BFE_OK){
-		/* Unpin all the buffer pages */
-		if(PF_GetFirstPage(fd, CurrNum, pagebuf) != PFE_OK){
-			return PFE_INVALIDPAGE;
-		}
-		/* Create the buffer request */
-		bq.fd = fd;
-		bq.unixfd = unixfd;
-		bq.pagenum = CurrNum;
-		bq.dirty = FALSE;
-		BF_UnpinBuf(bq); /* Unpin the buffer page */
-	}
+	/* 
+	 * Release all the buffer pages belonging to the file to the FREE list 
+	 * Dirty pages will be written to the disk
+	 */
+	if((error = BF_FlushBuf(fd)) != BFE_OK)
+		return error;
 
-	/* Unpin all the buffer pages */
-	/* FIXME */
+	/* Check whether the header is changed */
+	if(PFftable[fd].hdrchanged){
+		/* Re-write the header in the file */
+		header = PFftable[fd].hdr;
+		if((error = pwrite(unixfd, header, sizeof(PFhdr_str), 0)) < 0)
+			return PFE_UNIX;
+	}
 
 	/* Close the file */
 	if((error = close(unixfd)) < 0){
@@ -179,15 +191,15 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
     PFftab_ele *current_pfftab;
     int err; 
 
+    current_pfftab = PFftab + fd;
     if (fd < 0 || fd >= PFtab_length) 
         return PFE_FD;
     if (pagenum == NULL || pagebuf == NULL) /*error code chekc*/
         return PFE_INVALIDPAGE;
 
     bq.fd = fd;
-    current_pfftab = PFftab + fd;
-    bq.pagenum = current_pfftab->hdr.numpages;
-    bq.unixfd = current_pfftab->unixfd;
+	bq.pagenum = current_pfftab->hdr.numpages;
+	bq.unixfd = current_pfftab->unixfd;
     bq.dirty = TRUE;
     
     if (current_pfftab->valid == FALSE)
@@ -196,6 +208,9 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
     err = BF_AllocBuf(bq, &pfpage);
     if (err != BFE_OK)
         return PFE_INVALIDPAGE;
+//    err = BF_AllocBuf(bq, &pfpage);
+    if ((err = BF_AllocBuf(bq, &pfpage)) != BFE_OK)
+        BF_ErrorHandler(err);
 
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
