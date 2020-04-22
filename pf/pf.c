@@ -9,6 +9,8 @@
 #include "bf.h"
 #include "pf.h"
 
+#define FILE_CREATE_MASK (S_IRUSR|S_IWUSR|S_IRGRP)
+
 typedef struct PFhdr_str {
 	int 	numpages;	/* number of pages in the file */
 } PFhdr_str;
@@ -59,7 +61,7 @@ int PF_CreateFile(const char *filename)
 	}
 
 	/* Create the file */
-	if((unixfd = open(filename, O_RDWR|O_CREATE, FILE_CREATE_MASK)) < 0){
+	if((unixfd = open(filename, O_RDWR|O_CREAT, FILE_CREATE_MASK)) < 0){
 		return PFE_FILEOPEN;
 	}
 
@@ -70,7 +72,7 @@ int PF_CreateFile(const char *filename)
 
 	/* Initialize the header and write to the file */
 	header.numpages = 1;
-	if(write(unixfd, header, sizeof(PFhdr_str)) != sizeof(PFhdr_str)){
+	if(write(unixfd, &header, sizeof(PFhdr_str)) != sizeof(PFhdr_str)){
 		return PFE_UNIX;
 	}
 
@@ -144,7 +146,7 @@ int PF_OpenFile(const char *filename)
 	/* Fill the file table entries accordingly */
 	PFftable[PFfdsc].valid = TRUE;
 	PFftable[PFfdsc].inode = fileStat.st_ino;
-	PFftable[PFfdsc].fname = filename;
+	PFftable[PFfdsc].fname = (char*)filename;
 	PFftable[PFfdsc].unixfd = unixfd;
 	PFftable[PFfdsc].hdr.numpages = header.numpages;
 	PFftable[PFfdsc].hdrchanged = FALSE;
