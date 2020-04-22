@@ -488,26 +488,20 @@ void PF_PrintError(const char *errString)
 {
 	switch(PFerrno){
 		case PFE_INVALIDPAGE: printf("PF: PFE_INVALIDPAGE\n"); break;
-		
-		case PFE_FD: printf("PF: PFE_FD\n");break;
-
-		case PFE_EOF: printf("PF: PFE_EOF\n");break;
-
-		case PFE_UNIX: printf("PF: PFE_UNIX)\n");break;
-
-		case PFE_FILENOTOPEN:printf("PF: FILENOTOPEN\n");break;
-	
-		case PFE_FILEOPEN:printf("PF: PFE_FILEOPEN\n");break;
-
-		case PFE_FILENOTEXISTS:printf("PF: PFE_FILENOTEXISTS\n");break;
-
 		case PFE_FTABFULL: printf("PF: PFE_FTABFULL\n");break;
-
-		case PFE_NULLARG: printf("PF: PFE_NULLARG\n");break;
-
+		case PFE_FD: printf("PF: PFE_FD\n");break;
+		case PFE_EOF: printf("PF: PFE_EOF\n");break;
+		case PFE_FILEOPEN:printf("PF: PFE_FILEOPEN\n");break;
+		case PFE_FILENOTOPEN:printf("PF: FILENOTOPEN\n");break;
+        case PFE_HDRREAD:printf("PF: PFE_HDRREAD\n");break;
+        case PFE_HDRWRITE:printf("PF: PFE_HDRWRITE\n");break;
+        case PFE_PAGEFREE:printf("PF: PFE_PAGEFREE\n");break;
+        case PFE_NOUSERS:printf("PF: PFE_NOUSERS\n");break;
+        case PFE_MSGERR:printf("PF: PFE_MSGERR\n");break;
+		case PFE_UNIX: printf("PF: PFE_UNIX)\n");break;
 		case PFE_OK: printf("PF: PFE_OK\n "); break;
 
-		default: printf( " \n  PF: unused error code : %d \n\n ", error);
+		default: printf( "PF: unknown error code: %d \n", PFerrno);
 	}
 	printf("PF Error : %s", errString);
 	exit(1);
