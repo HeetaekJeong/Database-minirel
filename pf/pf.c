@@ -68,7 +68,7 @@ int PF_CreateFile(const char *filename)
 	}
 
 	/* Initialize the header and write to the file */
-	header.numpages = 0;
+	header.numpages = 1;
 	if(write(unixfd, header, sizeof(PFhdr_str)) != sizeof(PFhdr_str)){
 		return PFE_UNIX;
 	}
