@@ -125,6 +125,8 @@ int BF_AllocBuf(BFreq bq, PFpage **fpage) {
   bfpage_ptr->pagenum = bq.pagenum;
   bfpage_ptr->fd = bq.fd;
   bfpage_ptr->unixfd = bq.unixfd;
+  bfpage_ptr->prevpage = NULL;
+  bfpage_ptr->nextpage = NULL;
 
   if (L_add_page(LRU, bfpage_ptr) != BFE_OK) {
     BFerrno = BFE_PAGENOTINBUF; return BFE_PAGENOTINBUF;

@@ -48,7 +48,7 @@ void writefile(const char *fname)
     breq.fd = FD1;
     breq.unixfd = unixfd;
 
-    for (i=0; i < 2 * BF_MAX_BUFS; i++){
+    for (i=0; i < 3 * BF_MAX_BUFS; i++){
         breq.pagenum = i;
 
         /* allocate a page */
@@ -114,7 +114,7 @@ void readfile(const char *fname)
     breq.fd = FD1;
     breq.unixfd = unixfd;
 
-    for (i=0; i < 2 * BF_MAX_BUFS; i++){
+    for (i=0; i < 3 * BF_MAX_BUFS; i++){
         breq.pagenum = i;
 
 	if((error = BF_GetBuf(breq, &fpage)) != BFE_OK) {
