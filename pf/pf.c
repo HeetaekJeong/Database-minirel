@@ -117,15 +117,21 @@ int PF_OpenFile(const char *filename)
 		return PFE_FILEOPEN;
 	}
 
+	PFfdsc = -1;
+
 	/* Iterate the table and find the empty entry */
 	for(int i = 0; i < PF_FTAB_SIZE; i++){
 		if(!PFftable[i].valid){ /* Found the target entry */
 			PFfdsc = i; /* Index of the file table entry */
-			if(read(unixfd, &header, sizeof(PFhdr_str)) > 0) /* Read the header */
+			if(read(unixfd, &header, sizeof(PFhdr_str)) >= 0) /* Read the header */
 				break;
 			return PFE_UNIX;
 		}
 	}
+
+	/* Check whether the table is full */
+	if(PFfdsc == -1)
+		return PFE_FTABFULL;
 
 	/* Find the inode of the file */
 	if((error = fstat(unixfd, &fileStat)) < 0){
