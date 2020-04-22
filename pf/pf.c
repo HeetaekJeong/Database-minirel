@@ -33,8 +33,11 @@ int Ftable_Check(const char *filename)
 	found = 0;
 
 	for(i = 0; i < PF_FTAB_SIZE; i++){
+		if(!PFftable[i].valid)
+			continue;
 		if(PFftable[i].fname == NULL)
-				continue;
+			continue;
+		
 		if(!strcmp(PFftable[i].fname, filename)){
 				found = 1;
 				break;
