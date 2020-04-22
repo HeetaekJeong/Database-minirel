@@ -65,13 +65,15 @@ int PF_CreateFile(const char *filename)
 		return PFE_FILEOPEN;
 	}
 
+	printf("Unix file descriptor %d\n", unixfd);
+
 	/* Fine the inode of the file */
 	if((inode = fstat(unixfd, &fileStat)) < 0){
 		return PFE_UNIX;
 	}
 
 	/* Initialize the header and write to the file */
-	header.numpages = 1;
+	header.numpages = 0;
 	if(write(unixfd, &header, sizeof(PFhdr_str)) != sizeof(PFhdr_str)){
 		return PFE_UNIX;
 	}
@@ -122,6 +124,8 @@ int PF_OpenFile(const char *filename)
 		return PFE_FILEOPEN;
 	}
 
+	printf("Open file %d\n", unixfd);
+
 	PFfdsc = -1;
 
 	/* Iterate the table and find the empty entry */
@@ -151,6 +155,8 @@ int PF_OpenFile(const char *filename)
 	PFftable[PFfdsc].hdr.numpages = header.numpages;
 	PFftable[PFfdsc].hdrchanged = FALSE;
 
+	printf("Unixfd in ftable %d\n", PFftable[PFfdsc].unixfd);
+
 	/* Return the PF file descriptor */
 	return PFfdsc;
 }
@@ -163,12 +169,16 @@ int PF_CloseFile(int fd)
 	char **pagebuf;
 
 	/* Invalid PF file descriptor */
-	if(fd < 0 || fd > PF_FTAB_SIZE-1)
+	if(fd < 0 || fd > PF_FTAB_SIZE-1){
+		printf("\nInvalid PF file descriptor\n");
 		return PFE_FD;
+	}
 
 	/* Check whether the file is open */
-	if(!PFftable[fd].valid)
+	if(!PFftable[fd].valid){
+		printf("File is not open\n");
 		return PFE_FILENOTOPEN;
+	}
 
 	/* Find the unix file descriptor in the PF file table */
 	unixfd = PFftable[fd].unixfd;
@@ -177,19 +187,24 @@ int PF_CloseFile(int fd)
 	 * Release all the buffer pages belonging to the file to the FREE list 
 	 * Dirty pages will be written to the disk
 	 */
-	if((error = BF_FlushBuf(fd)) != BFE_OK)
+	if((error = BF_FlushBuf(fd)) != BFE_OK){
+		printf("Cannot flush, not all the buffer page is unppined\n");		
 		return error;
-
+	}
+	
 	/* Check whether the header is changed */
 	if(PFftable[fd].hdrchanged){
 		/* Re-write the header in the file */
 		header = PFftable[fd].hdr;
-		if((error = pwrite(unixfd, header, sizeof(PFhdr_str), 0)) < 0)
-			return PFE_UNIX;
+		if((error = pwrite(unixfd, &header, sizeof(PFhdr_str), 0)) < 0){
+			printf("Cannot re-write the header\n");
+			return PFE_HDRWRITE;
+		}
 	}
 
 	/* Close the file */
 	if((error = close(unixfd)) < 0){
+		printf("Close error\n");
 		return PFE_UNIX;
 	}
 

@@ -37,7 +37,6 @@ void writefile(const char *fname)
 	    	PF_PrintError("first buffer\n");
 	    	exit(1);
 		}
-		
 		memcpy(buf, (char *)&i, sizeof(int));
 		/*((int*)buf)[0] = i;*/
 		printf("allocated page %d, value_written %d\n",pagenum, i);
@@ -47,7 +46,6 @@ void writefile(const char *fname)
 	    	PF_PrintError("PF_DirtyPage");
 	    	exit(1);
 		}
-
 		/* unfix these pages */
 		if ((error = PF_UnpinPage(fd, pagenum,FALSE))!= PFE_OK){
 	    	PF_PrintError("unfix buffer");
