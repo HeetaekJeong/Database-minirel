@@ -147,30 +147,31 @@ int PF_OpenFile(const char *filename)
 int PF_CloseFile(int fd)
 {
 	int unixfd;
-	int CurrNum, NextNum;
 	int error;
-	BFreq bq;
+	PFhdr_str header;
 	char **pagebuf;
+
+	/* Check whether the file is open */
+	if(!PFftable[fd].valid)
+		return PFE_FILENOTOPEN;
 
 	/* Find the unix file descriptor in the PF file table */
 	unixfd = PFftable[fd].unixfd;
 
-	/* Release all the buffer pages belonging to the file to the FREE list */
-	if((error = BF_FlushBuf(fd)) != BFE_OK){
-		/* Unpin all the buffer pages */
-		if((error = PF_GetFirstPage(fd, CurrNum, pagebuf)) != PFE_OK){
-			return PFE_INVALIDPAGE;
-		}
-		/* Create the buffer request */
-		bq.fd = fd;
-		bq.unixfd = unixfd;
-		bq.pagenum = CurrNum;
-		bq.dirty = FALSE;
-		BF_UnpinBuf(bq); /* Unpin the buffer page */
-	}
+	/* 
+	 * Release all the buffer pages belonging to the file to the FREE list 
+	 * Dirty pages will be written to the disk
+	 */
+	if((error = BF_FlushBuf(fd)) != BFE_OK)
+		return error;
 
-	/* Unpin all the buffer pages */
-	/* FIXME */
+	/* Check whether the header is changed */
+	if(PFftable[fd].hdrchanged){
+		/* Re-write the header in the file */
+		header = PFftable[fd].hdr;
+		if((error = pwrite(unixfd, header, sizeof(PFhdr_str), 0)) < 0)
+			return PFE_UNIX;
+	}
 
 	/* Close the file */
 	if((error = close(unixfd)) < 0){
