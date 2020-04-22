@@ -1,4 +1,5 @@
 # Makefile for PF layer
+MINIREL_HOME = ../
 LIB	= pf
 INCDIR	= ${MINIREL_HOME}/h
 INCS	= 
