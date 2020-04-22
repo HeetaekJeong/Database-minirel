@@ -50,6 +50,7 @@ int PF_CreateFile(const char *filename)
 	int inode;
 	struct stat fileStat;
 	BFreq bq;
+	PFhdr_str header;
 
 	/* File exist check */
 	if(access(filename, F_OK) != -1){
@@ -67,6 +68,10 @@ int PF_CreateFile(const char *filename)
 	}
 
 	/* Initialize the header and write to the file */
+	header.numpages = 0;
+	if(write(unixfd, header, sizeof(PFhdr_str)) != sizeof(PFhdr_str)){
+		return PFE_UNIX;
+	}
 
 	/* Close the file */
 	if(close(unixfd) < 0){
