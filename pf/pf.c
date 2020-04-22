@@ -191,10 +191,11 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
     PFftab_ele *current_pfftab;
     int err; 
 
-    current_pfftab = PFftab + fd;
+    current_pfftab = PFftable + fd;
     if (fd < 0 || fd >= PFtab_length) 
         return PFE_FD;
-    if (pagenum == NULL || pagebuf == NULL) /*error code chekc*/
+	
+	if (pagenum == NULL || pagebuf == NULL) /* error code check */
         return PFE_INVALIDPAGE;
 
     bq.fd = fd;
@@ -202,23 +203,23 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
 	bq.unixfd = current_pfftab->unixfd;
     bq.dirty = TRUE;
     
-    if (current_pfftab->valid == FALSE)
-        return PFE_FILENOTOPEN;
+	if (current_pfftab->valid == FALSE)
+			return PFE_FILENOTOPEN;
     
-    err = BF_AllocBuf(bq, &pfpage);
-    if (err != BFE_OK)
-        return PFE_INVALIDPAGE;
+	err = BF_AllocBuf(bq, &pfpage);
+	if (err != BFE_OK)
+			return err;
 
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
-        return PFE_INVALIDPAGE;
+			return err;
 
-    *pagenum = bq.pagenum;
-    *(pagebuf) = pfpage->pagebuf;
-    current_pfftab->hdrchanged = TRUE;
-    current_pfftab->hdr.numpages++;
+	*pagenum = bq.pagenum;
+	*(pagebuf) = pfpage->pagebuf;
+	current_pfftab->hdrchanged = TRUE;
+	current_pfftab->hdr.numpages++;
 
-    return PFE_OK;
+	return PFE_OK;
 }
 int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf){
     *pageNum = -1;
@@ -232,7 +233,7 @@ int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf){
     PFftab_ele *current_pfftab;
     int err;
 
-    current_pfftab = PFftab + fd;
+    current_pfftab = PFftable + fd;
     bq.fd = fd;
     bq.unixfd = current_pfftab->unixfd;
     bq.dirty = FALSE;
@@ -243,11 +244,11 @@ int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf){
     if (current_pfftab->hdr.numpages <= bq.pagenum)
         return PFE_EOF;
 
-    err = BF_GetBuf(bq, &fpage);
+    err = BF_GetBuf(bq, &pfpage);
     if (err != BFE_OK)
-        return PFE_NOUSERS;
+        return err;
 
-    *pagebuf = fpage->pagebuf;
+    *pagebuf = pfpage->pagebuf;
     *pagenum++;
 
     return PFE_OK;
@@ -259,22 +260,22 @@ int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf){
     PFftab_ele *current_pfftab;
     int err;
 
-    current_pfftab = PFftab + fd;
+    current_pfftab = PFftable + fd;
     bq.fd = fd;
     bq.unixfd = current_pfftab->unixfd;
     bq.dirty = FALSE;
-    bq.pagenum = (*pagenum);
+    bq.pagenum = pagenum;
 
     if (current_pfftab->valid == FALSE)
         return PFE_FILENOTOPEN;
     if (current_pfftab->hdr.numpages <= bq.pagenum)
         return PFE_EOF;
 
-    err = BF_GetBuf(bq, &fpage);
+    err = BF_GetBuf(bq, &pfpage);
     if (err != BFE_OK)
-        return PFE_NOUSERS;
+        return err;
 
-    *pagebuf = fpage->pagebuf;
+    *pagebuf = pfpage->pagebuf;
 
     return PFE_OK;
 }
@@ -284,10 +285,7 @@ int  PF_DirtyPage	(int fd, int pagenum){
     PFftab_ele *current_pfftab;
     int err;
 
-    if (fd >= PFftab_length || fd < 0)
-        return PFE_FD;
-
-    current_pfftab = PFftab + fd;
+    current_pfftab = PFftable + fd;
 
     if (current_pfftab->valid == FALSE)
         return PFE_FILENOTOPEN;
@@ -301,7 +299,7 @@ int  PF_DirtyPage	(int fd, int pagenum){
 
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
-        return PFE_NOUSERS;
+        return err;
 
     return PFE_OK;
 }
@@ -311,11 +309,9 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty){
     PFftab_ele *current_pfftab;
     int err;
 
-    if (fd >= PFftab_length || fd < 0)
-        return PFE_FD;
-
-    current_pfftab = PFftab + fd;
-    if (current_pfftab->valid == FALSE)
+    current_pfftab = PFftable + fd;
+ 
+ 	if (current_pfftab->valid == FALSE)
         return PFE_FILENOTOPEN;
     if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0)
         return PFE_INVALIDPAGE;
@@ -328,12 +324,12 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty){
     if (dirty){
         err = BF_TouchBuf(bq);
         if (err != BFE_OK)
-            return PFE_INVALIDPAGE;
+            return err;
     }
     
     err = BF_UnpinBuf(bq);
     if (err != BFE_OK)
-        return PFE_INVALIDPAGE;
+        return err;
 
     return PFE_OK;
 }
