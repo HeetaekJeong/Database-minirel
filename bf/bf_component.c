@@ -125,7 +125,7 @@ void L_show(LRU_List *LRU) {
   printf(  "pagenum fd unixfd count dirty\n");
 
   for (i = 0; i < LRU->size; i++) {
-    printf("  %d    %d   %d    %d    %d  %d",ptr->pagenum,ptr->fd,ptr->unixfd,ptr->count,ptr->dirty,*(ptr->fpage.pagebuf));  
+    printf("  %d    %d   %d    %d    %d",ptr->pagenum,ptr->fd,ptr->unixfd,ptr->count,ptr->dirty);  
     printf("\n");
     ptr = ptr->nextpage;
   }
@@ -249,9 +249,16 @@ void Hash_Table_Init(Hash_Table *HT, int hash_size) {
   }
 }
 
+/*
 int H_get_index(Hash_Table *HT, int fd, int pagenum) {
-        return (123 * (fd + 13) * (pagenum + 17) + 87) % 31 % HT->size; /* JM_edit */
+        return (123 * (fd + 13) * (pagenum + 17) + 87) % 31 % HT->size; 
 }
+*/
+int H_get_index(Hash_Table *HT, int fd, int pagenum) {
+  return (fd^pagenum)%HT->size;
+}
+
+
 
 int H_add_page(Hash_Table *HT, BFpage *add_page) {
 #if DEBUG == 1
