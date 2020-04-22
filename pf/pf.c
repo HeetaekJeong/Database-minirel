@@ -222,7 +222,8 @@ int PF_CloseFile(int fd)
 	 */
 	if((error = BF_FlushBuf(fd)) != BFE_OK){
 		printf("Cannot flush, not all the buffer page is unppined\n");		
-		return error;
+        PFerrno = PFE_PAGEFREE;
+        return PFerrno;
 	}
 	
 	/* Check whether the header is changed */
@@ -285,13 +286,16 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf)
     
 	/* Append the page to the file */
 	err = BF_AllocBuf(bq, &pfpage);
-	if (err != BFE_OK)
-		return err;
-
+	if (err != BFE_OK){
+	    PFerrno = PFE_INVALIDPAGE;
+        return PFerrno;
+    }
 	/* Set the dirty page */
     err = BF_TouchBuf(bq);
-    if (err != BFE_OK)
-		return err;
+    if (err != BFE_OK){
+	    PFerrno = PFE_INVALIDPAGE;
+        return PFerrno;
+    }
 
 	/* Set the return argument */
 	*pagenum = bq.pagenum;
@@ -304,7 +308,6 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf)
 
 int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf)
 {   
-    int err;
 	/* Invalid PF file descriptor */
 	if(fd < 0 || fd > PF_FTAB_SIZE-1){
         PFerrno = PFE_FD;
@@ -312,8 +315,7 @@ int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf)
     }	
 	*pagenum = -1;
    
-    err = PF_GetNextPage(fd, pagenum, pagebuf);
-	return err;
+    return PF_GetNextPage(fd, pagenum, pagebuf);
 }
 int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)
 {
@@ -350,8 +352,10 @@ int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)
 
 	/* Get the page buffer with the page number */
     err = BF_GetBuf(bq, &pfpage);
-    if (err != BFE_OK)
-        return err;
+    if (err != BFE_OK){
+        PFerrno = PFE_NOUSERS;
+        return PFerrno;
+    }
 
 	/* Set the return argument */
     *pagebuf = pfpage->pagebuf;
@@ -394,8 +398,10 @@ int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf)
 
 	/* Get the page buffer with the page number */
     err = BF_GetBuf(bq, &pfpage);
-    if (err != BFE_OK)
-        return err;
+    if (err != BFE_OK){
+        PFerrno = PFE_NOUSERS;
+        return PFerrno;
+    }
 
 	/* Set the return argument */
     *pagebuf = pfpage->pagebuf;
@@ -435,9 +441,10 @@ int  PF_DirtyPage	(int fd, int pagenum)
 
 	/* Set the page as dirty */
     err = BF_TouchBuf(bq);
-    if (err != BFE_OK)
-        return err;
-
+    if (err != BFE_OK){
+        PFerrno = PFE_NOUSERS;
+        return PFerrno;
+    }
     return PFE_OK;
 }
 int  PF_UnpinPage	(int fd, int pagenum, int dirty)
@@ -473,13 +480,17 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty)
     
     if (dirty){
         err = BF_TouchBuf(bq);
-        if (err != BFE_OK)
-            return err;
+        if (err != BFE_OK){
+            PFerrno = PFE_NOUSERS;
+            return PFerrno;
+        }
     }
     
     err = BF_UnpinBuf(bq);
-    if (err != BFE_OK)
-        return err;
+    if (err != BFE_OK){
+        PFerrno = PFE_NOUSERS;
+        return PFerrno;
+    }
 
     return PFE_OK;
 }
