@@ -120,7 +120,7 @@ int PF_OpenFile(const char *filename)
     int i;
 
 	/* Open the file */
-	if((unixfd = open(filename, O_RDONLY)) < 0){
+	if((unixfd = open(filename, O_RDWR)) < 0){
 		return PFE_FILEOPEN;
 	}
 
