@@ -208,9 +208,6 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
     err = BF_AllocBuf(bq, &pfpage);
     if (err != BFE_OK)
         return PFE_INVALIDPAGE;
-//    err = BF_AllocBuf(bq, &pfpage);
-    if ((err = BF_AllocBuf(bq, &pfpage)) != BFE_OK)
-        BF_ErrorHandler(err);
 
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
