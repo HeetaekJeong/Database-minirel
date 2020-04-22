@@ -181,7 +181,7 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
 
     if (fd < 0 || fd >= PFtab_length) 
         return PFE_FD;
-    if (pagenum == NULL || pagebuf == NULL)
+    if (pagenum == NULL || pagebuf == NULL) /*error code chekc*/
         return PFE_INVALIDPAGE;
 
     bq.fd = fd;
@@ -190,13 +190,16 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
     bq.unixfd = current_pfftab->unixfd;
     bq.dirty = TRUE;
     
+    if (current_pfftab->valid == FALSE)
+        return PFE_FILENOTOPEN;
+    
     err = BF_AllocBuf(bq, &pfpage);
     if (err != BFE_OK)
-        BF_ErrorHandler(err);
+        return PFE_INVALIDPAGE;
 
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
-        BF_ErrorHandler(err);
+        return PFE_INVALIDPAGE;
 
     *pagenum = bq.pagenum;
     *(pagebuf) = pfpage->pagebuf;
@@ -223,12 +226,14 @@ int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf){
     bq.dirty = FALSE;
     bq.pagenum = (*pagenum) + 1;
 
+    if (current_pfftab->valid == FALSE)
+        return PFE_FILENOTOPEN;
     if (current_pfftab->hdr.numpages <= bq.pagenum)
         return PFE_EOF;
 
     err = BF_GetBuf(bq, &fpage);
-    if (err < BFE_OK)
-        BF_ErrorHandler(err);
+    if (err != BFE_OK)
+        return PFE_NOUSERS;
 
     *pagebuf = fpage->pagebuf;
     *pagenum++;
@@ -248,12 +253,14 @@ int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf){
     bq.dirty = FALSE;
     bq.pagenum = (*pagenum);
 
+    if (current_pfftab->valid == FALSE)
+        return PFE_FILENOTOPEN;
     if (current_pfftab->hdr.numpages <= bq.pagenum)
         return PFE_EOF;
 
     err = BF_GetBuf(bq, &fpage);
-    if (err < BFE_OK)
-        BF_ErrorHandler(err);
+    if (err != BFE_OK)
+        return PFE_NOUSERS;
 
     *pagebuf = fpage->pagebuf;
 
@@ -270,6 +277,8 @@ int  PF_DirtyPage	(int fd, int pagenum){
 
     current_pfftab = PFftab + fd;
 
+    if (current_pfftab->valid == FALSE)
+        return PFE_FILENOTOPEN;
     if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0)
         return PFE_INVALIDPAGE;
 
@@ -280,7 +289,7 @@ int  PF_DirtyPage	(int fd, int pagenum){
 
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
-        BF_ErrorHandler(err);
+        return PFE_NOUSERS;
 
     return PFE_OK;
 }
@@ -294,7 +303,8 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty){
         return PFE_FD;
 
     current_pfftab = PFftab + fd;
-
+    if (current_pfftab->valid == FALSE)
+        return PFE_FILENOTOPEN;
     if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0)
         return PFE_INVALIDPAGE;
 
@@ -306,12 +316,12 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty){
     if (dirty){
         err = BF_TouchBuf(bq);
         if (err != BFE_OK)
-            BF_ErrorHandler(err);
+            return PFE_INVALIDPAGE;
     }
     
     err = BF_UnpinBuf(bq);
     if (err != BFE_OK)
-        BF_ErrorHandler(err);
+        return PFE_INVALIDPAGE;
 
     return PFE_OK;
 }
