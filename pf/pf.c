@@ -107,9 +107,9 @@ int PF_DestroyFile(const char *filename)
 int PF_OpenFile(const char *filename)
 {
 	int unixfd;
-	int header;
 	int PFfdsc;
-	int inode;
+	int error;
+	PFhdr_str header;
 	struct stat fileStat;
 
 	/* Open the file */
@@ -117,17 +117,18 @@ int PF_OpenFile(const char *filename)
 		return PFE_FILEOPEN;
 	}
 
-	/* Read the header in the file */
+	/* Iterate the table and find the empty entry */
 	for(int i = 0; i < PF_FTAB_SIZE; i++){
-		if(strcmp(PFftable[i].fname, filename)){ /* Found the file */
-			header = PFftable[i].hdr.numpages; /* File header */
-			PFfdsc = i; /* PF file descriptor */
-			break;
+		if(!PFftable[i].valid){ /* Found the target entry */
+			PFfdsc = i; /* Index of the file table entry */
+			if(read(unixfd, &header, sizeof(PFhdr_str)) > 0) /* Read the header */
+				break;
+			return PFE_UNIX;
 		}
 	}
 
 	/* Find the inode of the file */
-	if((inode = fstat(unixfd, &fileStat)) < 0){
+	if((error = fstat(unixfd, &fileStat)) < 0){
 		return PFE_UNIX;
 	}
 
@@ -136,8 +137,11 @@ int PF_OpenFile(const char *filename)
 	PFftable[PFfdsc].inode = fileStat.st_ino;
 	PFftable[PFfdsc].fname = filename;
 	PFftable[PFfdsc].unixfd = unixfd;
-	PFftable[PFfdsc].hdr.numpages = header;
+	PFftable[PFfdsc].hdr.numpages = header.numpages;
 	PFftable[PFfdsc].hdrchanged = FALSE;
+
+	/* Return the PF file descriptor */
+	return PFfdsc;
 }
 
 int PF_CloseFile(int fd)
