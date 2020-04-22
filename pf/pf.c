@@ -35,7 +35,7 @@ int Ftable_Check(const char *filename)
 	for(i = 0; i < PF_FTAB_SIZE; i++){
 		if(PFftable[i].fname == NULL)
 				continue;
-		if(strcmp(PFftable[i].fname, filename)){
+		if(!strcmp(PFftable[i].fname, filename)){
 				found = 1;
 				break;
 		}
@@ -120,7 +120,7 @@ int PF_DestroyFile(const char *filename)
 
 	/* Find the file by filename */
 	for(i = 0; i < PF_FTAB_SIZE; i++){
-		if(strcmp(PFftable[i].fname, filename)){ /* Found the file */
+		if(!strcmp(PFftable[i].fname, filename)){ /* Found the file */
 			/* File open check */
 			if(PFftable[i].valid){
                 PFerrno = PFE_FILEOPEN;
