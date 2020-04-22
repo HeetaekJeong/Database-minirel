@@ -82,6 +82,8 @@ int PF_DestroyFile(const char *filename)
 			break;
 		}
 	}
+
+	return PFE_OK;
 }
 
 int PF_OpenFile(const char *filename)
@@ -116,7 +118,7 @@ int PF_OpenFile(const char *filename)
 	PFftable[PFfdsc].inode = fileStat.st_ino;
 	PFftable[PFfdsc].fname = filename;
 	PFftable[PFfdsc].unixfd = unixfd;
-	PFftable[PFfdsc].hdr = header;
+	PFftable[PFfdsc].hdr.numpages = header;
 	PFftable[PFfdsc].hdrchanged = FALSE;
 }
 
@@ -132,9 +134,9 @@ int PF_CloseFile(int fd)
 	unixfd = PFftable[fd].unixfd;
 
 	/* Release all the buffer pages belonging to the file to the FREE list */
-	if(BF_FlushBuf(fd) != BFE_OK){
+	if((error = BF_FlushBuf(fd)) != BFE_OK){
 		/* Unpin all the buffer pages */
-		if(PF_GetFirstPage(fd, CurrNum, pagebuf) != PFE_OK){
+		if((error = PF_GetFirstPage(fd, CurrNum, pagebuf)) != PFE_OK){
 			return PFE_INVALIDPAGE;
 		}
 		/* Create the buffer request */
@@ -163,22 +165,26 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
 
     PFpage* pfpage;
     BFreq bq;
-    PFftab_ele *current_pfftab;
+//    PFftab_ele *current_pfftab;
     int err; 
 
+/*
     if (fd < 0 || fd >= PFtab_length) 
         return PFE_FD;
+*/
     if (pagenum == NULL || pagebuf == NULL)
         return PFE_INVALIDPAGE;
 
     bq.fd = fd;
-    current_pfftab = PFftab + fd;
-    bq.pagenum = current_pfftab->hdr.numpages;
-    bq.unixfd = current_pfftab->unixfd;
+//    current_pfftab = PFftab + fd;
+//    bq.pagenum = current_pfftab->hdr.numpages;
+//    bq.unixfd = current_pfftab->unixfd;
+	bq.pagenum = PFftable[fd].hdr.numpages;
+	bq.unixfd = PFftable[fd].unixfd;
     bq.dirty = TRUE;
     
-    err = BF_AllocBuf(bq, &pfpage);
-    if (err != BFE_OK)
+//    err = BF_AllocBuf(bq, &pfpage);
+    if ((err = BF_AllocBuf(bq, &pfpage)) != BFE_OK)
         BF_ErrorHandler(err);
 
     err = BF_TouchBuf(bq);
