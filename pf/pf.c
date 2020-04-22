@@ -151,6 +151,10 @@ int PF_CloseFile(int fd)
 	PFhdr_str header;
 	char **pagebuf;
 
+	/* Invalid PF file descriptor */
+	if(fd < 0 || fd > PF_FTAB_SIZE-1)
+		return PFE_FD;
+
 	/* Check whether the file is open */
 	if(!PFftable[fd].valid)
 		return PFE_FILENOTOPEN;
@@ -184,36 +188,45 @@ int PF_CloseFile(int fd)
 	return PFE_OK;
 }
 
-int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
-
+int PF_AllocPage (int fd, int *pagenum, char **pagebuf)
+{
     PFpage* pfpage;
     BFreq bq;
     PFftab_ele *current_pfftab;
     int err; 
 
-    current_pfftab = PFftable + fd;
-    if (fd < 0 || fd >= PFtab_length) 
+    /* Invalid PF file descriptor */
+	if (fd < 0 || fd > PF_FTAB_SIZE-1) 
         return PFE_FD;
 	
-	if (pagenum == NULL || pagebuf == NULL) /* error code check */
+	/* Invaild page number or page buffer */
+	if (pagenum == NULL || pagebuf == NULL) 
         return PFE_INVALIDPAGE;
 
+	/* Current PF file descriptor */
+	current_pfftab = PFftable + fd;
+
+	/* Wrap the BF layer request */
     bq.fd = fd;
 	bq.pagenum = current_pfftab->hdr.numpages;
 	bq.unixfd = current_pfftab->unixfd;
     bq.dirty = TRUE;
     
+	/* Check whether the file is not open */
 	if (current_pfftab->valid == FALSE)
 			return PFE_FILENOTOPEN;
     
+	/* Append the page to the file */
 	err = BF_AllocBuf(bq, &pfpage);
 	if (err != BFE_OK)
 			return err;
 
+	/* Set the dirty page */
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
 			return err;
 
+	/* Set the return argument */
 	*pagenum = bq.pagenum;
 	*(pagebuf) = pfpage->pagebuf;
 	current_pfftab->hdrchanged = TRUE;
@@ -221,74 +234,109 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf){
 
 	return PFE_OK;
 }
-int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf){
-    *pageNum = -1;
 
-    return PF_GetNextPage(fd, pagenum, pagebuf);
+int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf)
+{    
+	/* Invalid PF file descriptor */
+	if(fd < 0 || fd > PF_FTAB_SIZE-1)
+		return PFE_FD;
+		
+	*pageNum = -1;
+
+	return PF_GetNextPage(fd, pagenum, pagebuf);
 }
-int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf){
-
+int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)
+{
     PFpage* pfpage;
     BFreq bq;
     PFftab_ele *current_pfftab;
     int err;
 
+	/* Invalid PF file descriptor */
+	if(fd < 0 || fd > PF_FTAB_SIZE-1)
+			return PFE_FD;
+
     current_pfftab = PFftable + fd;
+
+	/* Wrap the BF layer request */
     bq.fd = fd;
     bq.unixfd = current_pfftab->unixfd;
     bq.dirty = FALSE;
     bq.pagenum = (*pagenum) + 1;
 
+	/* Check whether the file is not open */
     if (current_pfftab->valid == FALSE)
         return PFE_FILENOTOPEN;
-    if (current_pfftab->hdr.numpages <= bq.pagenum)
+
+	/* Invalid page number */
+    if (current_pfftab->hdr.numpages <= bq.pagenum || *pagenum < -1)
         return PFE_EOF;
 
+	/* Get the page buffer with the page number */
     err = BF_GetBuf(bq, &pfpage);
     if (err != BFE_OK)
         return err;
 
+	/* Set the return argument */
     *pagebuf = pfpage->pagebuf;
     *pagenum++;
 
     return PFE_OK;
 }
-int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf){
-    
+int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf)
+{    
     PFpage* pfpage;
     BFreq bq;
     PFftab_ele *current_pfftab;
     int err;
 
+	/* Invalid PF file descriptor */
+	if(fd < 0 || fd > PF_FTAB_SIZE-1)
+			return PFE_FD;
+
     current_pfftab = PFftable + fd;
+
+	/* Wrap the BF layer request */
     bq.fd = fd;
     bq.unixfd = current_pfftab->unixfd;
     bq.dirty = FALSE;
     bq.pagenum = pagenum;
 
+	/* Check whether the file is open */
     if (current_pfftab->valid == FALSE)
         return PFE_FILENOTOPEN;
-    if (current_pfftab->hdr.numpages <= bq.pagenum)
-        return PFE_EOF;
 
+	/* Invalid page number */
+    if (current_pfftab->hdr.numpages <= bq.pagenum || pagenum < 0)
+        return PFE_INVALIDPAGE;
+
+	/* Get the page buffer with the page number */
     err = BF_GetBuf(bq, &pfpage);
     if (err != BFE_OK)
         return err;
 
+	/* Set the return argument */
     *pagebuf = pfpage->pagebuf;
 
     return PFE_OK;
 }
-int  PF_DirtyPage	(int fd, int pagenum){
-    
+int  PF_DirtyPage	(int fd, int pagenum)
+{    
     BFreq bq;
     PFftab_ele *current_pfftab;
     int err;
 
+	/* Invalid PF file descriptor */
+	if(fd < 0 || fd > PF_FTAB_SIZE-1)
+		return PFE_FD;
+
     current_pfftab = PFftable + fd;
 
+	/* Check whether the file is open */
     if (current_pfftab->valid == FALSE)
         return PFE_FILENOTOPEN;
+	
+	/* Invalid page number */
     if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0)
         return PFE_INVALIDPAGE;
 
@@ -297,22 +345,30 @@ int  PF_DirtyPage	(int fd, int pagenum){
     bq.dirty = TRUE;
     bq.pagenum = pagenum;
 
+	/* Set the page as dirty */
     err = BF_TouchBuf(bq);
     if (err != BFE_OK)
         return err;
 
     return PFE_OK;
 }
-int  PF_UnpinPage	(int fd, int pagenum, int dirty){
-
+int  PF_UnpinPage	(int fd, int pagenum, int dirty)
+{
     BFreq bq;
     PFftab_ele *current_pfftab;
     int err;
 
+	/* Invalid PF file descriptor */
+	if(fd < 0 || fd > PF_FTAB_SIZE-1)
+			return PFE_FD;
+
     current_pfftab = PFftable + fd;
  
+	/* Check whether the file is open */
  	if (current_pfftab->valid == FALSE)
         return PFE_FILENOTOPEN;
+
+	/* Invalid page number */
     if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0)
         return PFE_INVALIDPAGE;
 
