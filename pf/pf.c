@@ -124,8 +124,6 @@ int PF_OpenFile(const char *filename)
 		return PFE_FILEOPEN;
 	}
 
-	printf("Open file %d\n", unixfd);
-
 	PFfdsc = -1;
 
 	/* Iterate the table and find the empty entry */
@@ -154,8 +152,6 @@ int PF_OpenFile(const char *filename)
 	PFftable[PFfdsc].unixfd = unixfd;
 	PFftable[PFfdsc].hdr.numpages = header.numpages;
 	PFftable[PFfdsc].hdrchanged = FALSE;
-
-	printf("Unixfd in ftable %d\n", PFftable[PFfdsc].unixfd);
 
 	/* Return the PF file descriptor */
 	return PFfdsc;
