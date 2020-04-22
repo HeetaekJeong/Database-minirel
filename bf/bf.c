@@ -184,6 +184,8 @@ int BF_FlushBuf(int fd) {
 
   int res;
   int i;
+  int count;
+
   /* check parameters. */ /* JM_edit */
 
   /* if LRU is empty, return */
@@ -192,7 +194,8 @@ int BF_FlushBuf(int fd) {
   if (bfpage_ptr == NULL) return BFE_OK;
 
   /* search from tail to head, checking fd */
-  for (i = 0; i < LRU->size; i++) {
+  count = LRU->size;
+  for (i = 0; i < count; i++) {
     /*printf("FLUSH int i: %d\n",i); */
     /* BF_ShowBuf();  JM_edit */
 

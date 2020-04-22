@@ -114,8 +114,9 @@ void L_show(LRU_List *LRU) {
   BFpage *ptr;
   int i;
   ptr = LRU->head;
- 
+
   printf("\nThe buffer pool content:\n");
+  printf("size: %d\n",LRU->size);
   if (LRU->size == 0) {
     printf("Buffer Pool is empty\n");
     return;
