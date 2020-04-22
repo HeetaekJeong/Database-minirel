@@ -38,7 +38,7 @@ void writefile(const char *fname)
 	    	exit(1);
 		}
 		memcpy(buf, (char *)&i, sizeof(int));
-		/*((int*)buf)[0] = i;*/
+		/* ((int*)buf)[0] = i; */
 		printf("allocated page %d, value_written %d\n",pagenum, i);
 
 		/* mark all these pages dirty */
@@ -46,6 +46,7 @@ void writefile(const char *fname)
 	    	PF_PrintError("PF_DirtyPage");
 	    	exit(1);
 		}
+
 		/* unfix these pages */
 		if ((error = PF_UnpinPage(fd, pagenum,FALSE))!= PFE_OK){
 	    	PF_PrintError("unfix buffer");
@@ -72,14 +73,13 @@ void printfile(int fd)
     printf("\n ********* reading file **********\n");
     /* pagenum = -1 means from the beginning */
 
-    pagenum = -1;
+    /* pagenum = -1; */
 
 	/* Read the first page */
     if ((error = PF_GetFirstPage(fd,&pagenum,&buf))== PFE_OK) {
 		memcpy((char *)&i, buf, sizeof(int));
 		printf("got page %d, value_read %d\n",pagenum,i);
 		fflush(stdout);
-	
 		/* Unpin the page */
 		if ((error = PF_UnpinPage(fd,pagenum,FALSE))!= PFE_OK){
 	    	PF_PrintError("unfix");
@@ -96,7 +96,6 @@ void printfile(int fd)
 		memcpy((char *)&i, buf, sizeof(int));
 		printf("got page %d, value_read %d\n",pagenum,i);
 		fflush(stdout);
-		
 		if ((error = PF_UnpinPage(fd,pagenum,FALSE))!= PFE_OK){
 	    	PF_PrintError("unfix");
 	    	exit(1);

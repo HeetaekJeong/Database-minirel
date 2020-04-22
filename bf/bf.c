@@ -23,7 +23,7 @@ static writeback(BFpage* victim) {
   if (victim->dirty == FALSE)
     handle_error("Tried to writeback, when the victim is not dirty");
   else {
-    if (pwrite(victim->unixfd, victim->fpage.pagebuf, PAGE_SIZE, ((victim->pagenum))*PAGE_SIZE) != PAGE_SIZE) {
+    if (pwrite(victim->unixfd, victim->fpage.pagebuf, PAGE_SIZE, ((victim->pagenum+1))*PAGE_SIZE) != PAGE_SIZE) {
       { BFerrno = BFE_INCOMPLETEWRITE; return BFE_INCOMPLETEWRITE; }
     }
   }
@@ -88,7 +88,7 @@ int BF_GetBuf(BFreq bq, PFpage **fpage) {
     { BFerrno = BFE_PAGENOTINBUF; return BFE_PAGENOTINBUF; }
 
   /* read the file asked (using the unixfd) */
-  if (pread(bfpage_ptr->unixfd, bfpage_ptr->fpage.pagebuf, PAGE_SIZE, (bq.pagenum)*PAGE_SIZE) == -1)
+  if (pread(bfpage_ptr->unixfd, bfpage_ptr->fpage.pagebuf, PAGE_SIZE, (bq.pagenum+1)*PAGE_SIZE) == -1)
     { BFerrno = BFE_INCOMPLETEREAD; return BFE_INCOMPLETEREAD; }
 
   *fpage = &(bfpage_ptr->fpage);

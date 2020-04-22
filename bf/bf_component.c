@@ -125,7 +125,7 @@ void L_show(LRU_List *LRU) {
   printf(  "pagenum fd unixfd count dirty\n");
 
   for (i = 0; i < LRU->size; i++) {
-    printf("  %d    %d   %d    %d    %d  %s",ptr->pagenum,ptr->fd,ptr->unixfd,ptr->count,ptr->dirty,ptr->fpage.pagebuf);  
+    printf("  %d    %d   %d    %d    %d  %d",ptr->pagenum,ptr->fd,ptr->unixfd,ptr->count,ptr->dirty,*(ptr->fpage.pagebuf));  
     printf("\n");
     ptr = ptr->nextpage;
   }
