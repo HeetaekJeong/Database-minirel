@@ -65,8 +65,6 @@ int PF_CreateFile(const char *filename)
 		return PFE_FILEOPEN;
 	}
 
-	printf("Unix file descriptor %d\n", unixfd);
-
 	/* Fine the inode of the file */
 	if((inode = fstat(unixfd, &fileStat)) < 0){
 		return PFE_UNIX;
@@ -118,7 +116,6 @@ int PF_OpenFile(const char *filename)
 	PFhdr_str header;
 	struct stat fileStat;
     int i;
-
 	/* Open the file */
 	if((unixfd = open(filename, O_RDWR)) < 0){
 		return PFE_FILEOPEN;
@@ -258,14 +255,16 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf)
 }
 
 int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf)
-{    
+{   
+    int err;
 	/* Invalid PF file descriptor */
 	if(fd < 0 || fd > PF_FTAB_SIZE-1)
 		return PFE_FD;
 		
 	*pagenum = -1;
-
-	return PF_GetNextPage(fd, pagenum, pagebuf);
+   
+    err = PF_GetNextPage(fd, pagenum, pagebuf);
+	return err;
 }
 int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)
 {
@@ -301,7 +300,7 @@ int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)
 
 	/* Set the return argument */
     *pagebuf = pfpage->pagebuf;
-    *pagenum++;
+    *pagenum = *pagenum + 1;
 
     return PFE_OK;
 }
