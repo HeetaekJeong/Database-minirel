@@ -126,11 +126,9 @@ void readfile(const char *fname)
 		PF_PrintError("open file");
 		exit(1);
     }
-    printf("open finish\n");
 	/* Print the file */
     printfile(fd);
     
-    printf("print finish\n");
 	/* Close the file */
 	if ((error = PF_CloseFile(fd))!= PFE_OK){
 		PF_PrintError("close file");
