@@ -53,8 +53,6 @@ int BF_GetBuf(BFreq bq, PFpage **fpage) {
 
   /* check HT to find if it's in Buffer (LRU). if resident, return. */
   get_entry = H_get_entry(HT, bq.fd, bq.pagenum);
-  /*printf("GetBuf show\n"); JM_edit
-  fflush(stdout); */
   if (get_entry != NULL) {
     get_entry->bpage->count++;
     res = L_make_head(LRU, get_entry->bpage);
@@ -62,10 +60,6 @@ int BF_GetBuf(BFreq bq, PFpage **fpage) {
   }
    
   /* if not resident in LRU, get new page from freelist. */
-  /*printf("FRL show\n");
-  fflush(stdout);
-  F_show(FRL); JM_edit */
-  /*fflush(stdout);JM_edit */
   bfpage_ptr = F_remove_free(FRL);
 
   /* if free list is empty, find a victim in LRU (remove from LRU & HT) & write to disk if dirty. */
@@ -104,7 +98,7 @@ int BF_AllocBuf(BFreq bq, PFpage **fpage) {
   
   /* check HT to find if it's in Buffer (LRU). if resident, return error */
   new_entry = H_get_entry(HT, bq.fd, bq.pagenum);
-  if (new_entry != NULL) 
+  if (new_entry != NULL)
     { BFerrno = BFE_PAGEINBUF; return BFE_PAGEINBUF; }
 
   /* get new page from the Free_List.  */
@@ -198,7 +192,7 @@ int BF_FlushBuf(int fd) {
   if (bfpage_ptr == NULL) return BFE_OK;
 
   /* search from tail to head, checking fd */
-  for (i = 0; i < FRL->max_bfpage; i++) {
+  for (i = 0; i < LRU->size; i++) {
     /*printf("FLUSH int i: %d\n",i); */
     /* BF_ShowBuf();  JM_edit */
 

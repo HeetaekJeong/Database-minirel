@@ -261,7 +261,7 @@ int H_get_index(Hash_Table *HT, int fd, int pagenum) {
 
 
 int H_add_page(Hash_Table *HT, BFpage *add_page) {
-#if DEBUG == 1
+#if DEBUG == 2
   printf("\nH_add_page\n");
   Show_Hash(HT); /*JM_EDIT*/
 #endif
@@ -285,7 +285,9 @@ int H_add_page(Hash_Table *HT, BFpage *add_page) {
 
     if (HT->hash_entries[hash_index] == NULL) {   /* was empty */
       new_entry->nextentry = NULL;
+      /*new_entry->preventry = HT->hash_entries[hash_index];*/
       new_entry->preventry = NULL;
+
       HT->hash_entries[hash_index] = new_entry;
       return BFE_OK;
     }
@@ -294,7 +296,7 @@ int H_add_page(Hash_Table *HT, BFpage *add_page) {
       while(1) {
         if (hash_entry_ptr->nextentry == NULL) {
           hash_entry_ptr->nextentry = new_entry;
-          new_entry->preventry = hash_entry_ptr->nextentry;
+          new_entry->preventry = hash_entry_ptr;
           return BFE_OK;
         }
         else {
@@ -303,9 +305,6 @@ int H_add_page(Hash_Table *HT, BFpage *add_page) {
       }
     }
 
-#if DEBUG == 1
-  Show_Hash(HT); /*JM_EDIT*/
-#endif
   }
 }
 
@@ -343,7 +342,7 @@ BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pagenum) {
 }
 
 int H_remove_page(Hash_Table *HT, int fd, int pagenum) {
-#if DEBUG == 1
+#if DEBUG == 3
   printf("\nremove page\n");
   Show_Hash(HT); /*JM_EDIT*/
 #endif
@@ -374,7 +373,7 @@ int H_remove_page(Hash_Table *HT, int fd, int pagenum) {
     HT->hash_entries[hash_index] = NULL;
   }
 
-#if DEBUG == 1
+#if DEBUG == 3
   Show_Hash(HT); /*JM_EDIT*/
 #endif
 
@@ -390,7 +389,7 @@ void Show_Hash(Hash_Table *HT) {
   for (i = 0; i < HT->size; i++) {
     ptr = HT->hash_entries[i];
     if (ptr == NULL) continue;
-    while (ptr->nextentry != NULL) {
+    while (ptr != NULL) {
       printf("HT_entries[%d]: fd %d, pagenum %d\n", i, ptr->fd, ptr->pagenum);
       ptr = ptr->nextentry;
     }
