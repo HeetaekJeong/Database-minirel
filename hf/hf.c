@@ -14,13 +14,13 @@
 typedef struct  HFftab_ele {
     bool_t valid;
     HFHeader hfh;
-    int pfd;
+    int pffd;
 } HFftab_ele;
 
 /* HF scan table element. */
 typedef struct  HFstab_ele {
     bool_t valid;
-    int hfd;
+    int hffd;
     char attrType;
     int attrLength;
     int attrOffset;
@@ -53,21 +53,71 @@ void 	HF_Init(void){
 int 	HF_CreateFile(const char *fileName, int RecSize){
     PFftab_ele *PFftable;
     HFHeader hfh;
-    int pfd;
+    int pffd;
 
     if (PF_CreateFile(fileName) != PFE_OK) {
         return HFE_PF;
     }
 
-    if ((pfd = PF_OpenFile(fileName) < 0)) {
+    if ((pffd = PF_OpenFile(fileName) < 0)) {
         return HFE_PF;
     }
 
-    
+    hfh.RecSize = recSize;
+    hfh.RecPage = (double) (PAGE_SIZE) / ((double)(recSize)+0.125);
+    hfh.NumPg = 0;
+
+    if (PF_CloseFile(pffd) != PFE_OK) {
+        return HFE_PF;
+    }
+    return HFE_OK;
 }
-int 	HF_DestroyFile(const char *fileName);
-int 	HF_OpenFile(const char *fileName);
-int	HF_CloseFile(int fileDesc);
+int 	HF_DestroyFile(const char *fileName) {
+    if (PF_DestroyFile(filename) != PFE_OK) {
+        return HFE_PF;
+    }
+    return HFE_OK;
+}
+int 	HF_OpenFile(const char *fileName) {
+    HFftab_ele *HFftable_cur; 
+    int pffd, hffd;
+
+    pffd = PF_OpenFile(fileName);
+    if(pffd < 0) {
+        return HFE_PF;
+    }
+
+    for (hffd = 0; hffd < HF_FTAB_SIZE; hffd++) {
+        HFftable_cur = &HFftable[hffd];
+        if(HFftable_cur->valid == FALSE) {
+            if( HFftable_cur->hfheader.RecSize <= 0 || HFftable_cur->hfheader.RecPage <= 0) { // CCC
+                PF_CloseFile(pffd);
+                return HFE_PF;
+            }
+            HFftable_cur->valid = TRUE;
+            HFftable_cur->pffd = pffd;
+
+            return hffd;
+        }
+    }
+
+    PF_CloseFile(pffd);
+    return HFE_FTABFULL;
+}
+int	HF_CloseFile(int HFfd) {
+    int pffd;
+    
+    if (PF_CloseFile(pffd) != PFE_OK) {
+        return HFE_PF;
+    }
+
+    HFftable[HFfd].valid = FALSE;
+    HFftable[HFfd].hfheader.RecSize = 0;
+    HFftable[HFfd].hfheader.RecPage = 0;
+    HFftable[HFfd].hfheader.NumPg = 0;
+
+    return HFE_OK;
+}
 RECID	HF_InsertRec(int fileDesc, char *record);
 int 	HF_DeleteRec(int fileDesc, RECID recId);
 RECID 	HF_GetFirstRec(int fileDesc, char *record);
