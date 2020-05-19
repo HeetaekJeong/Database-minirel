@@ -10,12 +10,23 @@
 #include "pf.h"
 #include "am.h"
 #include "hf.h"
-/* JM_edit
-#include "../pf/pfUtils.h"
-#include "../hf/hfUtils.h"
-#include "../am/amUtils.h"
-*/
 
+#define OffsetNodeNumKeys (sizeof(bool_t))
+#define OffsetNodeLastPointer (sizeof(bool_t)+sizeof(int))
+#define OffsetNodeCouple (sizeof(bool_t)+2*sizeof(int))
+#define OffsetLeafNumKeys (sizeof(bool_t))
+#define OffsetLeafCouple (sizeof(bool_t)+3*sizeof(int))
+#define FIRST_LEAF -1
+#define LAST_LEAF -1
+
+#define AME_INDEXNOTOPEN    (-25)
+#define AME_WRONGROOT                   (-26)
+#define AME_ATTRTYPE      (-27) /* Invalid attribute type in file scan*/
+/* #define AME_ATTRLENGTH      (-28)  Invalid attribute length */
+/* #define AME_ATTROFFSET      (-29)  Invalid attribute offset */
+/* #define AME_OPERATOR        (-30)  Invalid Operator in file scan */
+#define AME_SCANNOTOPEN         (-31)
+/* #define AME_NOINSERTION     (-32) */
 
 typedef struct AM_Header{ /* AM B+tree index table's header (different from node's header */
 	int   indexNo;           
@@ -28,11 +39,23 @@ typedef struct AM_Header{ /* AM B+tree index table's header (different from node
 } AM_Header;
 
 /* ================================== *
- * node's header: bool_t / if_leaf    *
+ * leaf node's header:                *
+ *                bool_t / if_leaf    *
  *                int    / num_keys   *
  *                int    / previous   *
  *                int    / next       *
- *                RECID  / recId      *
+ *                keyval / keyval     *
+ *                ...                 *
+ *                                    *
+ *=================================== *
+ *                                    *
+ * internal node's header:            *
+ *                bool_t / if_leaf    *
+ *                int    / num_keys   *
+ *                int    / last_ptr   *
+ *                keyval / keyval     *
+ *                ...                 *
+ *                                    *
  * ================================== */
 
 typedef struct AM_itab_entry {
@@ -56,55 +79,55 @@ typedef struct AM_scantab_entry {
 } AM_scantab_entry;
 
 /* */
-typedef struct icouple {
+typedef struct ikeyval {
   int pagenum;
   int key;
-} icouple;
+} ikeyval;
 
-typedef struct fcouple {
+typedef struct fkeyval {
   int pagenum;
   float key;
-} fcouple;
+} fkeyval;
 
-typedef struct ccouple {
+typedef struct ckeyval {
   int pagenum;
   char* key; 
-} ccouple;
+} ckeyval;
 
-typedef struct icoupleLeaf {
+typedef struct ikeyvalLeaf {
   RECID recid;
      int key;
-} icoupleLeaf;
+} ikeyvalLeaf;
 
-typedef struct fcoupleLeaf {
+typedef struct fkeyvalLeaf {
   RECID recid;
    float  key;
-} fcoupleLeaf;
+} fkeyvalLeaf;
 
-typedef struct ccoupleLeaf {
+typedef struct ckeyvalLeaf {
   RECID recid;
    char* key;
-} ccoupleLeaf;
+} ckeyvalLeaf;
 
 typedef struct inode {
   bool_t is_leaf;   
   int num_keys;   
   int last_pt;   
-  icouple* couple;
+  ikeyval* keyval;
 } inode;
 
 typedef struct fnode {
   bool_t is_leaf;   
   int num_keys;   
   int last_pt;   
-  fcouple* couple;   
+  fkeyval* keyval;   
 } fnode;
 
 typedef struct cnode {
   bool_t is_leaf;            
   int num_keys;   
   int last_pt;   
-  ccouple* couple;
+  ckeyval* keyval;
 } cnode;
 
 typedef struct ileaf {
@@ -112,7 +135,7 @@ typedef struct ileaf {
   int num_keys;   
   int previous;  
   int next; 
-  icoupleLeaf* couple;    
+  ikeyvalLeaf* keyval;    
 } ileaf;
 
 typedef struct fleaf {
@@ -120,7 +143,7 @@ typedef struct fleaf {
   int num_keys;   
   int previous;  
   int next;
-  fcoupleLeaf* couple;     
+  fkeyvalLeaf* keyval;     
 } fleaf;
 
 typedef struct cleaf {
@@ -128,11 +151,8 @@ typedef struct cleaf {
   int num_keys; 
   int previous;
   int next; 
-  ccoupleLeaf* couple;     
+  ckeyvalLeaf* keyval;     
 } cleaf;
-
-
-
 
 /* ================================================================= */
 
@@ -141,6 +161,11 @@ static AM_itab_entry *AM_itab;
 static AM_iscan_entry *AM_iscantab;
 static size_t AM_itab_length;
 static size_t AM_iscantab_length;
+
+/* B+tree related functions */
+static int Find_leaf_keypos( int idesc, char* value, int* tab);
+static int Key_position(int pos, int fanout, char* value, char attrType, int attrLength, char* pagebuf);
+static int Check_pointer(int pos, int fanout, char* value, char attrType, int attrLength,char* pagebuf);
 
 /* some sniffet functions declaration */
 static void set_current_iscantab_value(int &a, int &b, int &c, const AM_iscantab_entry &D);
@@ -153,16 +178,8 @@ static bool_t char_comparison(char* a, char* b, int op, int len);
 static void insert_keyval() /* JM_edit */
 static void set_node_header() /* JM_edit */
 
-
-/* some B+tree related functions declaration */
-Btree_FindLeaf(   )
-
-
-
-
-
-
 /* ================================================================= */
+
 void AM_Init(void) {
   AM_itab = malloc(sizeof(AM_itab_entry) * AM_ITAB_SIZE);
   AM_iscantab = malloc(sizeof(AM_iscantab_iter) * MAXSCANS);
@@ -381,9 +398,9 @@ int AM_DeleteEntry(int AM_fd, char *value, RECID recId) {
   if (AM_itab_iter->valid != TRUE) return AME_INDEXNOTOPEN;
 
   /* set the visited_path_node, according to the height of the treefile 
-   * set the target_leaf, using the AM_FindLeaf function*/
+   * set the target_leaf, using the Find_leaf_keypos function*/
   visited_path_node = malloc( AM_itab_iter->header.height_tree * sizeof(int));
-  target_leaf = AM_FindLeaf(AM_fd, value, visited_path_node);
+  target_leaf = Find_leaf_keypos(AM_fd, value, visited_path_node);
   if (target_leaf < 0) return AME_KEYNOTFOUND;
 
   /* set the target_leaf_num, to use the PF_GetThisPage && read the page to page_buf*/
@@ -464,8 +481,8 @@ int AM_OpenIndexScan(int AM_fd, int op, char *value) {
   visited_path_node = malloc(AM_itab_iter->header.height_tree * sizeof(int));
  
   /* if NE_OP, use the min_val to get the left most leaf */
-  if (op == NE_OP) key = AM_FindLeaf(AM_fd, (char*) &min_val, visited_path_node); 
-  else key = AM_FindLeaf(AM_fd, value, visited_path_node);
+  if (op == NE_OP) key = Find_leaf_keypos(AM_fd, (char*) &min_val, visited_path_node); 
+  else key = Find_leaf_keypos(AM_fd, value, visited_path_node);
 
   /* set the new target AM_iscantab_iter properly */
   AM_iscantab_iter->current_page = visited_path_node[(AM_itab_iter->header.height_tree)-1];
@@ -746,7 +763,7 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
   /* set visited_path_node & metadata & read the leaf page */
   visited_path_node = malloc(AM_itab_iter->header.height_tree * sizeof(int));
   /* Find the insert key position, in node/page: <0: error, else: key position */
-  if ( (insert_pos = AM_FindLeaf(AM_fd, value, visited_path_node)) < 0) return AME_KEYNOTFOUND;
+  if ( (insert_pos = Find_leaf_keypos(AM_fd, value, visited_path_node)) < 0) return AME_KEYNOTFOUND;
   len_visited_path_node = AM_itab_iter->header.height_tree;
   cur_leafnode = visited_path_node[(AM_itab_iter->header.height_tree)-1];
 
@@ -755,7 +772,7 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
 
   /* Check the number of keys in the leaf node */
   memcpy((int*) &num_keys, (char*)(page_buf + sizeof(bool_t)), sizeof(int));
-  /* set the keyval_size (couple_size) accordingly to the RECID & attrType */
+  /* set the keyval_size (keyval_size) accordingly to the RECID & attrType */
   keyval_size = sizeof(RECID) + AM_itab_iter->header.attrLength;
 
 
@@ -803,7 +820,14 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
    * Phase2: Write&Update old & new leafnode
    *
    * Phase3: Loop into Parent Node
-   *                                                    */
+   * Phase4: Parent is Roots
+   * Phase5: Parent is Not Root
+   *  Phase5.1: Insert the key at last
+   *  Phase5.2: Insert the key at middle
+   *
+   * Phase6: No More Splitting
+   * Phase7: More Splitting
+   *  */
 
   else {
     /* temp_buf to hold the entire node's "keyval"s */
@@ -907,42 +931,29 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
     /*=== Phase3: Loop into Parent Node ===*/
     cur_leafnode = visited_path_node[(AM_itab_iter->header.height_tree)-1];
     parent = 0;
-
     left_node = cur_leafnode;
     right_node = new_leafnode;
 
-    for(i = len_visited_path_node; i>0; i--){
+    for (i = len_visited_path_node; i > 0; i--) {
 
-      parent = visited_path_node[i - 1];
-      printf("parent page : %d\n", parent);
+      parent = visited_path_node[i - 1]; /* single level above node */
 
-      /* CASE : PARENT IS ROOT */
-      if(parent == len_visited_path_node){
-        printf("LOL\n");
-      }
+      /*=== Phase4: Parent is Root ===*/
+      if (parent == AM_itab_iter->header.racine_page) {
 
-      if(parent == AM_itab_iter->header.racine_page){
-        printf("create internal node in the root\n");
-
-        error = PF_AllocPage(AM_itab_iter->fd, &nodeNum, &page_buf);
-        if (error!=PFE_OK)
-          PF_ErrorHandler(error);
+        /* Allocate new page/node */
+        if ( (error = PF_AllocPage(AM_itab_iter->fd, &nodeNum, &page_buf)) != PFE_OK) PF_ErrorHandler(error);
 
         is_leaf = 0;
         num_keys = 1;
         last_pt = right_node;
 
-        mem_off = 0;
-        memcpy((char*)(page_buf + mem_off), (int*)&is_leaf, sizeof(bool_t));
-        mem_off += sizeof(bool_t);
-        memcpy((char*)(page_buf + mem_off), (int*)&num_keys, sizeof(int));
-        mem_off += sizeof(int);
-        memcpy((char*)(page_buf + mem_off), (int*)&last_pt, sizeof(int));
-        mem_off += sizeof(int);
-
-        memcpy((char*)(page_buf + mem_off), (int*)&left_node, sizeof(int));
-        mem_off += sizeof(int);
-
+        /* properly set internal node's header */
+        memcpy((char*)(page_buf), (int*)&is_leaf, sizeof(bool_t));
+        memcpy((char*)(page_buf + sizeof(bool_t)), (int*)&num_keys, sizeof(int));
+        memcpy((char*)(page_buf + sizeof(bool_t) + sizeof(int)), (int*)&last_pt, sizeof(int));
+        memcpy((char*)(page_buf + sizeof(bool_t) + sizeof(int)*2), (int*)&left_node, sizeof(int));
+        mem_off = sizeof(bool_t) + sizeof(int)*3; /*  */
         /*insert key */
         switch (AM_itab_iter->header.attrType){
           case 'c':
@@ -958,65 +969,77 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
             return AME_INVALIDATTRTYPE;
             break;
         }
-        mem_off += AM_itab_iter->header.attrLength;
-
-        /* last_pt
-        memcpy((char*)(page_buf + mem_off), (int*)&new_leafnode, sizeof(int));
-        */
-
+        mem_off += AM_itab_iter->header.attrLength; /* JM_edit is this correct? is all value set? */
+        
+        /* modify B+tree's header */
         AM_itab_iter->header.height_tree++;
         AM_itab_iter->header.num_pages++;
         AM_itab_iter->header.racine_page = nodeNum;
         AM_itab_iter->dirty = TRUE;
 
-        error = PF_UnpinPage(AM_itab_iter->fd, nodeNum, 1);
-        if (error!=PFE_OK)
-          PF_ErrorHandler(error);
+        /* Unpin the created page */
+        if ( (error = PF_UnpinPage(AM_itab_iter->fd, nodeNum, 1)) != PFE_OK) PF_ErrorHandler(error);
 
-        printf("New root on page : %d\n", nodeNum);
-
-
-        /*print_page(AM_fd, nodeNum);*/
         free(visited_path_node);
         return AME_OK;
       }
 
-      /* PARENT IS NOT ROOT */
-      else{
+      /*=== Phase5: Parent is Not Root ===*/
+      else {
+        /* situation: left_node, right_node, parent */
         parent = visited_path_node[i - 2];
-        printf("Insert left node : %d, right node : %d  Into parent : %d\n", left_node, right_node, parent);
 
-        /* get parent page ; if not full insert and return AME_OK */
-        error = PF_GetThisPage(AM_itab_iter->fd, parent, &page_buf);
-        if (error != PFE_OK)
-          PF_ErrorHandler(error);
+        /* read the parent page to page_buf */
+        if ( (error = PF_GetThisPage(AM_itab_iter->fd, parent, &page_buf)) != PFE_OK) PF_ErrorHandler(error);
 
-        mem_off = sizeof(bool_t);
-        memcpy((int*) &num_keys, (char*)(page_buf+mem_off), sizeof(int));
+        /* set num_keys of parent node */
+        memcpy((int*) &num_keys, (char*)(page_buf+sizeof(bool_t)), sizeof(int));
         mem_off += sizeof(int);
-
+        
+        /* pointer to node & key */
         keyval_size = sizeof(int) + AM_itab_iter->header.attrLength;
 
-        insert_pos = num_keys; /* NEED TO BE CHANGED :get the good insert_position 'ask paul'*/
+        insert_pos = num_keys; /* JM_edit insert_pos -> Find_leaf_keypos function? */
 
-        /* temp buffer hold the node with the inserted value
-         * if good size, copy yo page_buf
-         * else split in 2 nodes
-         */
-        temp_buf = malloc(keyval_size*(num_keys + 1) + sizeof(bool_t) + 2 * sizeof(int) );
-        memcpy((char*) temp_buf, (char*)(page_buf), sizeof(bool_t) + 2 * sizeof(int) + keyval_size*(num_keys + 1) );
+        /* copy the page_buf into temp_buf & create space for new "keyval", from below */
+        temp_buf = malloc(sizeof(bool_t) + sizeof(int)*2 + keyval_size*(num_keys + 1));
+        memcpy((char*) temp_buf, (char*)(page_buf), sizeof(bool_t) + sizeof(int)*2 + keyval_size*(num_keys + 1));
 
-        if (insert_pos == num_keys){
-          /*INSERT THE KEY IN LAST POSITION*/
-          /* create a couple with the value and the ex last pointer, insert it  */
-          memcpy((int*)&last_pt, (char *) (temp_buf + mem_off), sizeof(int));
-          mem_off += sizeof(int) + insert_pos*keyval_size;
+        /*=== Phase5.1 Insert the key at last ===*/   
+        if (insert_pos == num_keys) {
 
-          /* insert right_node pagenum of couple */
+          /* create a space for "value" from below & ex-last_ptr */
+          memcpy((int*)&last_pt, (char*)(temp_buf + sizeof(bool_t) + sizeof(int)), sizeof(int));
+          mem_off += sizeof(bool_t) + sizeof(int)*2 + insert_pos*keyval_size;
+
+          /* insert ex-last_ptr, then "value" */
           memcpy((char*)(temp_buf + mem_off), (int *)&last_pt, sizeof(int));
           mem_off += sizeof(int);
 
-          /*insert key */
+          /* insert key */
+          switch (AM_itab_iter->header.attrType) {
+            case 'c':
+              memcpy((char*)(temp_buf + mem_off), (char*) cvalue, AM_itab_iter->header.attrLength);
+              break;
+            case 'i':
+              memcpy((char*)(temp_buf + mem_off), (int*) &ivalue, AM_itab_iter->header.attrLength);
+              break;
+            case 'f':
+              memcpy((char*)(temp_buf + mem_off), (float*) &fvalue, AM_itab_iter->header.attrLength);
+              break;
+            default:
+              return AME_INVALIDATTRTYPE;
+              break;
+          }
+        } /*=== Phase5.2 Insert the key at middle ===*/   
+        else {
+          
+          /*                                       this is first ptr */
+          mem_off = sizeof(bool_t) + 2*sizeof(int) + sizeof(int) + keyval_size*insert_pos; 
+
+          memmove((char*)(temp_buf + mem_off + keyval_size),(char*)(temp_buf + mem_off), keyval_size*(num_keys - insert_pos)-sizeof(int));
+
+          /* insert a key & ptr */
           switch (AM_itab_iter->header.attrType){
             case 'c':
               memcpy((char*)(temp_buf + mem_off), (char*) cvalue, AM_itab_iter->header.attrLength);
@@ -1032,116 +1055,68 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
               break;
           }
         }
-        else{
-          /*INSERT THE KEY IN ANOTHER POSITION */
-          mem_off = sizeof(bool_t) + 2 * sizeof(int) + sizeof(int) + keyval_size*insert_pos; /* the last sizeof int represent the first pointer that won't move*/
-          /*
-           * node : header+ p4 + |p1| key1 |p2| key 2|p3| key3
-           insert key4, p5 in insert_pos 0 => node : header+ p4 + |p1| key4|p5| key1 |p2| key 2|p3| key3
-          */
 
-          memmove((char*) (temp_buf + mem_off + keyval_size), (char*) (temp_buf + mem_off), keyval_size*(num_keys - insert_pos)-sizeof(int));
+        /* update last_ptr  */
+        memcpy((char*)(temp_buf + sizeof(bool_t) + sizeof(int)), (int*)&right_node, sizeof(int));
 
-          /*insert the couple starting with the key */
-          switch (AM_itab_iter->header.attrType){
-            case 'c':
-              memcpy((char*)(temp_buf + mem_off), (char*) cvalue, AM_itab_iter->header.attrLength);
-              break;
-            case 'i':
-              memcpy((char*)(temp_buf + mem_off), (int*) &ivalue, AM_itab_iter->header.attrLength);
-              break;
-            case 'f':
-              memcpy((char*)(temp_buf + mem_off), (float*) &fvalue, AM_itab_iter->header.attrLength);
-              break;
-            default:
-              return AME_INVALIDATTRTYPE;
-              break;
-          }
-          mem_off += AM_itab_iter->header.attrLength;
-        }
+        /*=== Phase6: No More Splitting ===*/
+        if (num_keys < AM_itab_iter->fanout - 1) {
 
-        mem_off = sizeof(bool_t) + sizeof(int);
+          /* write to the node, from temp_buf */
+          memcpy((char*)(page_buf), (char*)temp_buf, sizeof(bool_t) + 2*sizeof(int) + keyval_size*(num_keys + 1));
 
-        /* update last AM_itab_iter */
-        memcpy((char*)(temp_buf + mem_off), (int *)&right_node, sizeof(int));
-
-
-        if (num_keys < AM_itab_iter->fanout -1){
-
-          if (insert_pos == num_keys ){
-
-            memcpy((char*)(page_buf), (char*) temp_buf, sizeof(bool_t) + 2 * sizeof(int) + keyval_size*(num_keys + 1) );
-            free(temp_buf);
-          }
-          /* insert the new pointer and the num key */
-          else{
-
-            memcpy((char*)(page_buf), (char*) temp_buf, sizeof(bool_t) + 2 * sizeof(int) + keyval_size*(num_keys + 1) );
-            free(temp_buf);
-          }
-
-          /*then update the number of key*/
+          /* update the num_keys, of the node */
           num_keys++;
           memcpy((char*)(page_buf + sizeof(bool_t)), (int*)&num_keys, sizeof(int));
-          error = PF_UnpinPage(AM_itab_iter->fd, parent, 1);
-          if (error !=PFE_OK)
-            PF_ErrorHandler(error);
+          if ( (error = PF_UnpinPage(AM_itab_iter->fd, parent, 1)) != PFE_OK) PF_ErrorHandler(error);
 
-          /*print_page(AM_fd, parent);*/
           free(visited_path_node);
+          free(temp_buf);
           return AME_OK;
         }
-
+        /*=== Phase7: More Splitting ===*/
         else {
-          /*printf("No more space in the node\n");*/
+
           split_pos = num_keys / 2;
 
           /* Allocate a page for the new node */
-          error = PF_AllocPage(AM_itab_iter->fd, &right_node, &new_node_buf);
-          if (error != PFE_OK){
-            PF_ErrorHandler(error);
-          }
+          if ( (error = PF_AllocPage(AM_itab_iter->fd, &right_node, &new_node_buf)) != PFE_OK) PF_ErrorHandler(error);
 
-          /* Update new node */
+          /* Update new (internal) node (from split_pos to end) */
           is_leaf = 0;
           num_keys = (AM_itab_iter->fanout -1 ) - split_pos;
           memcpy((int*) &last_pt, (char*)(temp_buf + sizeof(bool_t) + sizeof(int)), sizeof(int));
 
-          mem_off = 0;
-          memcpy((char *) (new_node_buf + mem_off), (bool_t*) &is_leaf, sizeof(bool_t));
-          mem_off += sizeof(bool_t);
-          memcpy((char *) (new_node_buf + mem_off), (int*) &num_keys, sizeof(int));
-          mem_off += sizeof(int);
-          memcpy((char *) (new_node_buf + mem_off), (int*)&last_pt, sizeof(int));
-          mem_off += sizeof(int);
-          memcpy((char *) (new_node_buf + mem_off), (char *) (temp_buf + mem_off + keyval_size*split_pos), keyval_size * num_keys);
-
+          /* set metadat of the new node */
+          memcpy((char*)(new_node_buf), (bool_t*) &is_leaf, sizeof(bool_t));
+          memcpy((char*)(new_node_buf + sizeof(bool_t)), (int*) &num_keys, sizeof(int));
+          memcpy((char*)(new_node_buf + sizeof(bool_t) + sizeof(int)), (int*)&last_pt, sizeof(int));
+          mem_off = sizeof(bool_t) + sizeof(int)*2
+          memcpy((char*)(new_node_buf + mem_off), (char*)(temp_buf + mem_off + keyval_size*split_pos),
+              keyval_size*num_keys);
 
           /* Update old node */
           num_keys = split_pos;
-          memcpy((int*) &last_pt, (char*) (temp_buf + mem_off + keyval_size*(split_pos - 1)), sizeof(int) );
+          mem_off = sizeof(bool_t) + sizeof(int)*2
+          memcpy((int*) &last_pt, (char*)(temp_buf + mem_off + keyval_size*(split_pos - 1)), sizeof(int));
 
-          mem_off = sizeof(bool_t);
-          memcpy((char *) (page_buf + mem_off), (int*) &num_keys, sizeof(int));
-          mem_off += sizeof(int);
-          memcpy((char *) (page_buf + mem_off), (int*) &last_pt, sizeof(int));
-          mem_off += sizeof(int);
-          memcpy((char *) (page_buf + mem_off), (char *)(temp_buf + mem_off), keyval_size*split_pos);
+          /* set metadata of the old node */
+          memcpy((char*)(page_buf + sizeof(bool_t)), (int*) &num_keys, sizeof(int));
+          memcpy((char*)(page_buf + sizeof(bool_t) + sizeof(int)), (int*) &last_pt, sizeof(int));
+          mem_off = sizeof(bool_t) + sizeof(int)*2
+          memcpy((char*)(page_buf + mem_off), (char *)(temp_buf + mem_off), keyval_size*split_pos);
 
-          /* get the value to push up for other nodes (aka te first value in the new node) */
-          mem_off = sizeof(bool_t) + 2 * sizeof(int) + sizeof(int);
+          /* get the value to push up for other nodes (the first value in the new node) */
+          mem_off = sizeof(bool_t) + 2*sizeof(int) + sizeof(int);
           switch (AM_itab_iter->header.attrType){
             case 'c':
               memcpy((char*) cvalue, (char*)(new_node_buf + mem_off), AM_itab_iter->header.attrLength);
-              printf("Value to insert in upper node : %s\n", cvalue);
               break;
             case 'i':
               memcpy((int*) &ivalue, (char*)(new_node_buf + mem_off), AM_itab_iter->header.attrLength);
-              printf("Value to insert in upper node : %d\n", ivalue);
               break;
             case 'f':
               memcpy((float*) &fvalue, (char*)(new_node_buf + mem_off), AM_itab_iter->header.attrLength);
-              printf("Value to insert in upper node : %f\n", fvalue);
               break;
             default:
               return AME_INVALIDATTRTYPE;
@@ -1150,32 +1125,20 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
 
           free(temp_buf);
 
-          error = PF_UnpinPage(AM_itab_iter->fd, right_node, 1);
-          if (error!= PFE_OK)
-            PF_ErrorHandler(error);
+          /* Unpin the right_node & parent */
+          if ( (error = PF_UnpinPage(AM_itab_iter->fd, right_node, 1)) != PFE_OK) PF_ErrorHandler(error);
+          if ( (error = PF_UnpinPage(AM_itab_iter->fd, parent, 1)) != PFE_OK) PF_ErrorHandler(error);
 
-          error = PF_UnpinPage(AM_itab_iter->fd, parent, 1);
-          if (error!= PFE_OK)
-            PF_ErrorHandler(error);
-
-          printf("Node %d splitted to node %d\n", parent, right_node);
-          printf("pushing the key up\n\n");
-
+          /* modify the B+tree's header */
           AM_itab_iter->header.num_pages++;
           AM_itab_iter->dirty = TRUE;
 
           left_node = parent;
         }
-
-
-
-        return AME_NOINSERTION;
+        /* return AME_NOINSERTION; JM_edit*/
       }
-
-
     }
   }
-
   free(visited_path_node);
   return AME_OK;
 }
@@ -1201,7 +1164,243 @@ int AM_CloseIndexScan(int scanDesc) {
   return AME_OK;
 }
 
+void AM_PrintTable(void){
+  size_t i;
+  printf("\n\n******** AM Table ********\n");
+  printf("******* Length : %d *******\n",(int) AMitab_length);
+  for(i=0; i<AMitab_length; i++){
+    printf("**** %d | %s | %d racine_page | %d fanout | %d leaf_fanout | %d (nb_leaf) | %d (height_tree)\n", (int)i, AMitab[i].iname, AMitab[i].header.racine_page, AMitab[i].fanout, AMitab[i].fanout_leaf, AMitab[i].header.nb_leaf, AMitab[i].header.height_tree);
+  }
+  printf("**************************\n\n");
+
+}
+
+int Check_pointer(int pos, int fanout, char* value, char attrType, int attrLength,char* pagebuf){
+  /*use to get any type of node and leaf from a buffer page*/
+  inode inod;
+  fnode fnod;
+  cnode cnod;
+  char * key; /* used to get the key of the keyval at the index of value "pos" in the array of keyval*/
+  /* use to get the page an return it */
+  int ikey;
+  int tmp_ivalue;
+  float fkey;
+  float tmp_fvalue;
+  int pagenum;
+
+  switch(attrType){
+    case 'i':
+      /* fill the struct using offset and cast operations*/
+      memcpy((int*)&inod.num_keys, (char*) (pagebuf+OffsetNodeNumKeys ), sizeof(int));
+      memcpy((int*)&inod.last_pt, (char*) (pagebuf+OffsetNodeLastPointer), sizeof(int));
+
+      memcpy((int*) &ikey,(char*) (pagebuf+OffsetNodeCouple+pos*(sizeof(int)+attrLength)+sizeof(int)),  attrLength);
+      memcpy((int*) &pagenum,(pagebuf+OffsetNodeCouple+pos*(sizeof(int)+attrLength)),  sizeof(int));
+      tmp_ivalue=*((int*)value);
+
+      if( pos<(inod.num_keys-1)){
+        if( tmp_ivalue<ikey ) return pagenum;
+        return 0;
+      }
+      else if( pos==(inod.num_keys-1)) {
+        if( tmp_ivalue<ikey) return pagenum;
+        return inod.last_pt;
+      }
+      else {
+        printf( "DEBUG: pb with fanout or position given \n");
+        exit( -1);
+      }
+      break;
+
+    case 'c':  /* fill the struct using offsets */
+      memcpy((int*)&cnod.num_keys, (char*) (pagebuf+OffsetNodeNumKeys ), sizeof(int));
+      memcpy((int*)&cnod.last_pt, (char*) (pagebuf+OffsetNodeLastPointer), sizeof(int));
+
+      memcpy((int*) &pagenum,(pagebuf+OffsetNodeCouple+pos*(sizeof(int)+attrLength)),  sizeof(int));
+      memcpy((char*) &key,(char*) (pagebuf+OffsetNodeCouple+pos*(sizeof(int)+attrLength)+sizeof(int)),  attrLength);
+
+      if( pos<(cnod.num_keys-1)){
+        if( strncmp((char*) value, key,  attrLength) <0) {
+
+           return pagenum;
+        }
+        return -1;
+      }
+      else if( pos==(cnod.num_keys-1)) {
+        if(strncmp((char*) value,(char*) key,  attrLength) >=0) return cnod.last_pt;
+        return pagenum;
+      }
+      else {
+        printf( "DEBUG: Node pb with fanout or position given \n");
+        return -1;
+      }
+      break;
+
+    case 'f':  /* fill the struct using offset and cast operations */
+      memcpy((int*)&fnod.num_keys, (char*) (pagebuf+sizeof(bool_t)), sizeof(int));
+      memcpy((int*)&fnod.last_pt, (char*) (pagebuf+OffsetNodeLastPointer), sizeof(int));
 
 
+      memcpy((int*) &pagenum,(pagebuf+OffsetNodeCouple+pos*(sizeof(int)+attrLength)),  sizeof(int));
+      memcpy((float*) &fkey,(char*) (pagebuf+OffsetNodeCouple+pos*(sizeof(int)+attrLength)+sizeof(int)),  attrLength);
+      tmp_fvalue=*((float*)value);
+      /*printf("\n node key %f, value %f , la tentative %d\n", fkey, tmp_fvalue,  inod.last_pt);*/
 
+      if ( pos<(fnod.num_keys-1)){ /* fanout -1 is the number of keyval (pointer, key)*/
+        if( tmp_fvalue<fkey ) return pagenum;
+        return -1;
+      }
+      else if(pos==(fnod.num_keys-1)) {
+        if(  tmp_fvalue>=fkey ) return fnod.last_pt;
+        return pagenum;
+      }
+      else {
+        printf( "DEBUG: pb with a too high position given \n");
+        exit( -1);
+      }
+      break;
+    default:
+      return AME_ATTRTYPE;
+  }
+}
+
+int Key_position(int pos, int fanout, char* value, char attrType, int attrLength, char* pagebuf) {
+  /*use to get any type of node and leaf from a buffer page*/
+  ileaf inod;
+  fleaf fnod;
+  cleaf cnod;
+
+  char* key;
+  int ikey;
+  int tmp_ivalue;
+  float fkey;
+  float tmp_fvalue;
+  int tmp_page;
+
+  switch(attrType){
+    case 'i':
+      /* fill the struct using offset and cast operations */
+      memcpy((int*)&inod.num_keys, (char*) (pagebuf+OffsetLeafNumKeys), sizeof(int));
+      inod.keyval=(ikeyvalLeaf *)(pagebuf+OffsetLeafCouple);
+      memcpy((int*) &ikey,(char*) (pagebuf+OffsetLeafCouple+pos*(2*sizeof(int)+attrLength)+2*sizeof(int)),  attrLength);
+      tmp_ivalue=*((int*)value);
+
+      if( pos<(inod.num_keys-1)){ /* fanout -1 is the number of keyval (pointer, key)*/
+        if( tmp_ivalue<=ikey ) return pos;
+        return -1;
+      }
+      else if( pos==(inod.num_keys-1)) {
+        if( tmp_ivalue<=ikey) return pos;
+        return pos+1;
+      }
+      else {
+        printf( "DEBUG: pb with fanout or position given ooo \n");
+        exit( -1);
+      }
+      break;
+
+    case 'c':  /* fill the struct using offset and cast operations */
+      memcpy((int*)&cnod.num_keys, (char*) (pagebuf+OffsetLeafNumKeys), sizeof(int));
+      memcpy((char*) key,(char*) (pagebuf+OffsetLeafCouple+pos*(2*sizeof(int)+attrLength)+2*sizeof(int)),  attrLength);
+
+      if ( pos<(cnod.num_keys-1)){ /* fanout -1 is the number of keyval (pointer, key)*/
+        if ( strncmp((char*) value,(char*) key ,   attrLength) <=0) return pos;
+        return -1;
+      }
+      else if( pos==(cnod.num_keys-1)) {
+        if(strncmp( (char*) value,(char*)  key,  attrLength) <=0) return pos;
+        return pos+1;
+      }
+      else {
+        printf( "DEBUG: pb with fanout or position given \n");
+        exit( -1);
+      }
+      break;
+
+    case 'f':  /* fill the struct using offset and cast operations */
+      memcpy((int*)&fnod.num_keys, (char*) (pagebuf+OffsetLeafNumKeys), sizeof(int));
+      fnod.keyval=(fkeyvalLeaf*)(pagebuf+OffsetLeafCouple);
+      memcpy((float*) &fkey,(char*) (pagebuf+OffsetLeafCouple+pos*(2*sizeof(int)+attrLength)+2*sizeof(int)),  attrLength);
+      tmp_fvalue=*((float*)value);
+
+      if (pos<(fnod.num_keys-1)) { /* fanout -1 is the number of keyval (pointer, key)*/
+        if (tmp_fvalue<=fkey) {
+          return pos;
+        }
+        return -1;
+      }
+      else if(pos==(fnod.num_keys-1)) {
+        if (tmp_fvalue<=fkey) return pos;
+        return pos+1;
+      }
+      else {
+        printf( "DEBUG: pb with fanout or position given \n");
+        exit(-1);
+      }
+      break;
+    default:
+      return AME_ATTRTYPE;
+  }
+}
+
+int Find_leaf_keypos(int idesc, char* value, int* tab){
+  int error,  pagenum;
+  bool_t is_leaf, pt_find;
+  int key_pos;
+  AMitab_ele* pt;
+  int fanout;
+  char* pagebuf;
+  int i,j;
+
+  /* all verifications of idesc and root number has already been done by the caller function */
+  pt=AMitab+idesc;
+
+  tab[0]=pt->header.racine_page;
+
+  if(tab[0]<=1) return AME_WRONGROOT;
+
+  for (i = 0; i < (pt->header.height_tree); i++) {
+
+    error=PF_GetThisPage(pt->fd, tab[i], &pagebuf);
+    if(error!=PFE_OK) PF_ErrorHandler(error);
+
+    /*check if this node is a leaf */
+    memcpy((bool_t*) &is_leaf, (char*) pagebuf, sizeof(bool_t));
+
+    if (is_leaf == FALSE) {
+      fanout=pt->fanout;
+      pt_find=FALSE;
+      j=0;
+      /* have to find the next child using comparison */
+      /* fanout = n ==> n-1 key */
+      while (pt_find == FALSE) { /*normally is sure to find a key, since even if value is greater than all key: the last pointer is taken*/
+        pagenum=Check_pointer(j, pt->fanout,  value, pt->header.attrType, pt->header.attrLength, pagebuf);
+        /* printf("pagenum %d, header num pages %d \n ", pagenum, pt->header.num_pages);*/
+        if (pagenum>0 && pt->header.num_pages>=pagenum){
+          tab[i+1]=pagenum;
+          pt_find=TRUE; 
+        }
+        else j++;
+      }
+    }
+    else {
+      fanout=pt->fanout;
+      j=0;
+      /* have to find the next child using comparison */
+
+      while(1) { /*normally is sure to find a key, since even if value is greater than all key: the last pointer is taken*/
+        key_pos=Key_position(j, pt->fanout,  value, pt->header.attrType, pt->header.attrLength, pagebuf);
+        if (key_pos>=0) {
+          /*print_page(idesc, tab[i]);*/
+          error=PF_UnpinPage(pt->fd, tab[i], 0);
+          if (error!=PFE_OK) PF_ErrorHandler(error);
+          return key_pos;
+        }
+        else j++;
+      }
+    }
+    error=PF_UnpinPage(pt->fd, tab[i], 0);
+    if (error!=PFE_OK) PF_ErrorHandler(error);
+  }
+}
 

@@ -4,468 +4,654 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-ALL	./h/catalog.h	60;"	d
-ALL_OP	./h/minirel.h	31;"	d
-AME_DUPLICATEKEY	./h/am.h	66;"	d
-AME_DUPLICATEOPEN	./h/am.h	46;"	d
-AME_DUPLICATERECID	./h/am.h	51;"	d
-AME_EOF	./h/am.h	40;"	d
-AME_FD	./h/am.h	43;"	d
-AME_FULLTABLE	./h/am.h	41;"	d
-AME_INVALIDATTR	./h/am.h	61;"	d
-AME_INVALIDATTRLENGTH	./h/am.h	53;"	d
-AME_INVALIDATTRTYPE	./h/am.h	42;"	d
-AME_INVALIDOP	./h/am.h	44;"	d
-AME_INVALIDPARA	./h/am.h	45;"	d
-AME_INVALIDRECORD	./h/am.h	63;"	d
-AME_INVALIDSCANDESC	./h/am.h	48;"	d
-AME_KEYNOTFOUND	./h/am.h	65;"	d
-AME_NOMEM	./h/am.h	62;"	d
-AME_OK	./h/am.h	38;"	d
-AME_PF	./h/am.h	39;"	d
-AME_RECNOTFOUND	./h/am.h	50;"	d
-AME_ROOTNULL	./h/am.h	59;"	d
-AME_SCANOPEN	./h/am.h	52;"	d
-AME_SCANTABLEFULL	./h/am.h	47;"	d
-AME_TOOMANYRECSPERKEY	./h/am.h	64;"	d
-AME_TREETOODEEP	./h/am.h	60;"	d
-AME_UNABLETOSCAN	./h/am.h	49;"	d
-AME_UNIX	./h/am.h	58;"	d
-AM_ITAB_SIZE	./h/am.h	6;"	d
-AM_NERRORS	./h/am.h	33;"	d
-ATTRCATNAME	./h/catalog.h	18;"	d
-ATTRCAT_NATTRS	./h/catalog.h	52;"	d
-ATTRDESCSIZE	./h/catalog.h	51;"	d
-ATTRDESCTYPE	./h/catalog.h	/^} ATTRDESCTYPE;$/;"	t	typeref:struct:_attribute_desc
-ATTR_DESCR	./h/fe.h	/^} ATTR_DESCR;$/;"	t	typeref:struct:__anon2
-ATTR_VAL	./h/fe.h	/^} ATTR_VAL;$/;"	t	typeref:struct:__anon4
-BFE_HASHNOTFOUND	./h/bf.h	47;"	d
-BFE_HASHPAGEEXIST	./h/bf.h	48;"	d
-BFE_INCOMPLETEREAD	./h/bf.h	43;"	d
-BFE_INCOMPLETEWRITE	./h/bf.h	42;"	d
-BFE_INVALIDTID	./h/bf.h	45;"	d
-BFE_MISSDIRTY	./h/bf.h	44;"	d
-BFE_MSGERR	./h/bf.h	46;"	d
-BFE_NOBUF	./h/bf.h	37;"	d
-BFE_NOMEM	./h/bf.h	36;"	d
-BFE_OK	./h/bf.h	35;"	d
-BFE_PAGEINBUF	./h/bf.h	40;"	d
-BFE_PAGENOTINBUF	./h/bf.h	41;"	d
-BFE_PAGEPINNED	./h/bf.h	38;"	d
-BFE_PAGEUNPINNED	./h/bf.h	39;"	d
-BFE_UNIX	./h/bf.h	53;"	d
-BF_AllocBuf	./bf/bf.c	/^int BF_AllocBuf(BFreq bq, PFpage **fpage) {$/;"	f
-BF_FlushBuf	./bf/bf.c	/^int BF_FlushBuf(int fd) {$/;"	f
-BF_GetBuf	./bf/bf.c	/^int BF_GetBuf(BFreq bq, PFpage **fpage) {$/;"	f
-BF_HASH_TBL_SIZE	./h/bf.h	16;"	d
-BF_Init	./bf/bf.c	/^void BF_Init(void) {$/;"	f
-BF_MAX_BUFS	./h/bf.h	11;"	d
-BF_NERRORS	./h/bf.h	33;"	d
-BF_PrintError	./bf/bf.c	/^void BF_PrintError(const char *s) {$/;"	f
-BF_ShowBuf	./bf/bf.c	/^void BF_ShowBuf(void) {$/;"	f
-BF_TouchBuf	./bf/bf.c	/^int BF_TouchBuf(BFreq bq) {$/;"	f
-BF_UnpinBuf	./bf/bf.c	/^int BF_UnpinBuf(BFreq bq) {$/;"	f
-BFhash_entry	./bf/bf_component.h	/^typedef struct BFhash_entry {$/;"	s
-BFhash_entry	./bf/bf_component.h	/^} BFhash_entry;$/;"	t	typeref:struct:BFhash_entry
-BFpage	./bf/bf_component.h	/^typedef struct BFpage {$/;"	s
-BFpage	./bf/bf_component.h	/^} BFpage;$/;"	t	typeref:struct:BFpage
-BFreq	./h/minirel.h	/^} BFreq;$/;"	t	typeref:struct:_buffer_request_control
-BOOL_TYPE	./h/catalog.h	71;"	d
-CC	./am/Makefile	/^CC	= gcc$/;"	m
-CC	./bf/Makefile	/^CC	= gcc$/;"	m
-CC	./fe/Makefile	/^CC	= gcc$/;"	m
-CC	./hf/Makefile	/^CC	= gcc$/;"	m
-CC	./pf/Makefile	/^CC	= gcc$/;"	m
-CFLAGS	./am/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
-CFLAGS	./bf/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
-CFLAGS	./fe/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
-CFLAGS	./hf/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
-CFLAGS	./pf/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
-EQ_OP	./h/minirel.h	25;"	d
-FALSE	./h/minirel.h	/^typedef enum { FALSE = 0, TRUE } bool_t;$/;"	e	enum:__anon1
-FD1	./bf/bftest.c	17;"	d	file:
-FEE_ALREADYINDEXED	./h/fe.h	119;"	d
-FEE_AM	./h/fe.h	155;"	d
-FEE_ATTRNAMETOOLONG	./h/fe.h	120;"	d
-FEE_CATALOGCHANGE	./h/fe.h	145;"	d
-FEE_DUPLATTR	./h/fe.h	121;"	d
-FEE_EOF	./h/fe.h	144;"	d
-FEE_HF	./h/fe.h	154;"	d
-FEE_INCOMPATJOINTYPES	./h/fe.h	122;"	d
-FEE_INCORRECTNATTRS	./h/fe.h	123;"	d
-FEE_INTERNAL	./h/fe.h	124;"	d
-FEE_INVALIDOP	./h/fe.h	150;"	d
-FEE_INVALIDSCAN	./h/fe.h	148;"	d
-FEE_INVALIDSCANDESC	./h/fe.h	149;"	d
-FEE_INVATTRTYPE	./h/fe.h	125;"	d
-FEE_INVNBUCKETS	./h/fe.h	126;"	d
-FEE_NOMEM	./h/fe.h	143;"	d
-FEE_NOSUCHATTR	./h/fe.h	128;"	d
-FEE_NOSUCHDB	./h/fe.h	129;"	d
-FEE_NOSUCHREL	./h/fe.h	130;"	d
-FEE_NOTFROMJOINREL	./h/fe.h	127;"	d
-FEE_NOTINDEXED	./h/fe.h	131;"	d
-FEE_OK	./h/fe.h	118;"	d
-FEE_PARTIAL	./h/fe.h	132;"	d
-FEE_PF	./h/fe.h	156;"	d
-FEE_PRIMARYINDEX	./h/fe.h	133;"	d
-FEE_RELCAT	./h/fe.h	134;"	d
-FEE_RELEXISTS	./h/fe.h	135;"	d
-FEE_RELNAMETOOLONG	./h/fe.h	136;"	d
-FEE_RELNOTSAME	./h/fe.h	142;"	d
-FEE_SAMEJOINEDREL	./h/fe.h	137;"	d
-FEE_SCANTABLEFULL	./h/fe.h	147;"	d
-FEE_SELINTOSRC	./h/fe.h	138;"	d
-FEE_STRTOOLONG	./h/fe.h	146;"	d
-FEE_THISATTRTWICE	./h/fe.h	139;"	d
-FEE_UNIONCOMPAT	./h/fe.h	140;"	d
-FEE_UNIX	./h/fe.h	153;"	d
-FEE_WRONGVALTYPE	./h/fe.h	141;"	d
-FE_NERRORS	./h/fe.h	116;"	d
-FILE1	./am/amtest.c	19;"	d	file:
-FILE1	./bf/bftest.c	16;"	d	file:
-FILE1	./hf/hftest.c	13;"	d	file:
-FILE1	./pf/pftest.c	14;"	d	file:
-FILE2	./hf/hftest.c	14;"	d	file:
-FILE_CREATE_MASK	./bf/bftest.c	11;"	d	file:
-FRL	./bf/bf.c	/^static Free_List *FRL;$/;"	v	file:
-F_add_free	./bf/bf_component.c	/^int F_add_free(Free_List *FRL, BFpage *bfpage) {$/;"	f
-F_remove_free	./bf/bf_component.c	/^BFpage* F_remove_free(Free_List *FRL) {$/;"	f
-Free_List	./bf/bf_component.h	/^typedef struct Free_List {    \/* Singly? Liked List. added & removed at the head *\/$/;"	s
-Free_List	./bf/bf_component.h	/^} Free_List;$/;"	t	typeref:struct:Free_List
-Free_List_Init	./bf/bf_component.c	/^void Free_List_Init(Free_List *FRL, int max_bfpage) {$/;"	f
-Free_List_delete	./bf/bf_component.c	/^void Free_List_delete(Free_List *FRL) { \/* JM_edit *\/$/;"	f
-GE_OP	./h/minirel.h	29;"	d
-GT_OP	./h/minirel.h	27;"	d
-HFE_ATTRLENGTH	./h/hf.h	56;"	d
-HFE_ATTROFFSET	./h/hf.h	57;"	d
-HFE_ATTRTYPE	./h/hf.h	55;"	d
-HFE_EOF	./h/hf.h	49;"	d
-HFE_FD	./h/hf.h	46;"	d
-HFE_FILE	./h/hf.h	59;"	d
-HFE_FILENOTOPEN	./h/hf.h	53;"	d
-HFE_FILEOPEN	./h/hf.h	51;"	d
-HFE_FTABFULL	./h/hf.h	44;"	d
-HFE_INTERNAL	./h/hf.h	60;"	d
-HFE_INVALIDRECORD	./h/hf.h	48;"	d
-HFE_INVALIDSTATS	./h/hf.h	65;"	d
-HFE_OK	./h/hf.h	42;"	d
-HFE_OPERATOR	./h/hf.h	58;"	d
-HFE_PAGE	./h/hf.h	62;"	d
-HFE_PF	./h/hf.h	43;"	d
-HFE_RECSIZE	./h/hf.h	50;"	d
-HFE_SCANNOTOPEN	./h/hf.h	54;"	d
-HFE_SCANOPEN	./h/hf.h	52;"	d
-HFE_SD	./h/hf.h	47;"	d
-HFE_STABFULL	./h/hf.h	45;"	d
-HFHeader	./h/hf.h	/^} HFHeader;$/;"	t	typeref:struct:__anon5
-HF_FTAB_SIZE	./h/hf.h	6;"	d
-HF_NERRORS	./h/hf.h	40;"	d
-HT	./bf/bf.c	/^static Hash_Table *HT;$/;"	v	file:
-H_add_page	./bf/bf_component.c	/^int H_add_page(Hash_Table *HT, BFpage *add_page) {$/;"	f
-H_get_entry	./bf/bf_component.c	/^BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pagenum) {$/;"	f
-H_get_index	./bf/bf_component.c	/^int H_get_index(Hash_Table *HT, int fd, int pagenum) {$/;"	f
-H_remove_page	./bf/bf_component.c	/^int H_remove_page(Hash_Table *HT, int fd, int pagenum) {$/;"	f
-Hash_Table	./bf/bf_component.h	/^typedef struct Hash_Table {$/;"	s
-Hash_Table	./bf/bf_component.h	/^} Hash_Table;$/;"	t	typeref:struct:Hash_Table
-Hash_Table_Init	./bf/bf_component.c	/^void Hash_Table_Init(Hash_Table *HT, int hash_size) {$/;"	f
-Hash_Table_delete	./bf/bf_component.c	/^void Hash_Table_delete(Hash_Table *HT) { \/* JM_edit *\/$/;"	f
-INCDIR	./am/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
-INCDIR	./bf/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
-INCDIR	./fe/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
-INCDIR	./hf/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
-INCDIR	./pf/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
-INCS	./am/Makefile	/^INCS	= $/;"	m
-INCS	./bf/Makefile	/^INCS	= $/;"	m
-INCS	./fe/Makefile	/^INCS	= $/;"	m
-INCS	./hf/Makefile	/^INCS	= $/;"	m
-INCS	./pf/Makefile	/^INCS	= $/;"	m
-INDEXED	./h/catalog.h	61;"	d
-INT_SIZE	./h/fe.h	159;"	d
-INT_TYPE	./h/minirel.h	18;"	d
-LE_OP	./h/minirel.h	28;"	d
-LIB	./am/Makefile	/^LIB	= am$/;"	m
-LIB	./bf/Makefile	/^LIB	= bf$/;"	m
-LIB	./fe/Makefile	/^LIB	= fe$/;"	m
-LIB	./hf/Makefile	/^LIB	= hf$/;"	m
-LIB	./pf/Makefile	/^LIB	= pf$/;"	m
-LIBS	./am/Makefile	/^LIBS	= lib${LIB}.a ..\/pf\/libpf.a ..\/hf\/libhf.a ..\/bf\/libbf.a$/;"	m
-LIBS	./bf/Makefile	/^LIBS	= lib${LIB}.a$/;"	m
-LIBS	./fe/Makefile	/^LIBS	= lib${LIB}.a ..\/am\/libam.a ..\/hf\/libhf.a ..\/pf\/libpf.a ..\/bf\/libbf.a$/;"	m
-LIBS	./hf/Makefile	/^LIBS	= lib${LIB}.a ..\/pf\/libpf.a ..\/bf\/libbf.a$/;"	m
-LIBS	./pf/Makefile	/^LIBS	= lib${LIB}.a ..\/bf\/libbf.a$/;"	m
-LRU	./bf/bf.c	/^static LRU_List *LRU;$/;"	v	file:
-LRU_List	./bf/bf_component.h	/^typedef struct LRU_List {     \/* LRU's head is the most recent & tail the oldest *\/$/;"	s
-LRU_List	./bf/bf_component.h	/^} LRU_List;$/;"	t	typeref:struct:LRU_List
-LRU_List_Init	./bf/bf_component.c	/^void LRU_List_Init(LRU_List *LRU) {$/;"	f
-LRU_delete	./bf/bf_component.c	/^void LRU_delete(LRU_List *LRU) { \/* JM_edit *\/$/;"	f
-LT_OP	./h/minirel.h	26;"	d
-L_add_page	./bf/bf_component.c	/^int L_add_page(LRU_List *LRU, BFpage *bfpage) {$/;"	f
-L_detach_page	./bf/bf_component.c	/^BFpage* L_detach_page(LRU_List *LRU, BFpage *bfpage) {$/;"	f
-L_find_victim	./bf/bf_component.c	/^BFpage* L_find_victim(LRU_List *LRU) {$/;"	f
-L_make_head	./bf/bf_component.c	/^int L_make_head(LRU_List *LRU, BFpage *target_page) {$/;"	f
-L_show	./bf/bf_component.c	/^void L_show(LRU_List *LRU) {$/;"	f
-MAXISCANS	./h/am.h	7;"	d
-MAXNAME	./h/catalog.h	22;"	d
-MAXNAME	./h/fe.h	11;"	d
-MAXOPENFILES	./h/minirel.h	36;"	d
-MAXSCANS	./h/hf.h	7;"	d
-MAXSTRINGLEN	./h/fe.h	17;"	d
-MAXSTRLEN	./fe/studprofdb-schema.h	1;"	d
-MINIREL_HOME	./bf/Makefile	/^MINIREL_HOME = \/home\/huitaek\/Class\/database\/Database\/Database-minirel$/;"	m
-NE_OP	./h/minirel.h	30;"	d
-NTYPES	./h/minirel.h	17;"	d
-NUMBER	./hf/hftest.c	11;"	d	file:
-NumFrPgFile	./h/hf.h	/^    int NumFrPgFile;             \/* Number of free pages in the file *\/ $/;"	m	struct:__anon5
-NumPg	./h/hf.h	/^    int NumPg;                   \/* Number of pages in file *\/$/;"	m	struct:__anon5
-OBJS	./am/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
-OBJS	./bf/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
-OBJS	./fe/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
-OBJS	./hf/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
-OBJS	./pf/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
-PAGENUM	./h/hf.h	76;"	d
-PAGE_SIZE	./h/minirel.h	39;"	d
-PFE_EOF	./h/pf.h	46;"	d
-PFE_FD	./h/pf.h	45;"	d
-PFE_FILENOTOPEN	./h/pf.h	48;"	d
-PFE_FILEOPEN	./h/pf.h	47;"	d
-PFE_FTABFULL	./h/pf.h	44;"	d
-PFE_HDRREAD	./h/pf.h	49;"	d
-PFE_HDRWRITE	./h/pf.h	50;"	d
-PFE_INVALIDPAGE	./h/pf.h	43;"	d
-PFE_MSGERR	./h/pf.h	53;"	d
-PFE_NOUSERS	./h/pf.h	52;"	d
-PFE_OK	./h/pf.h	42;"	d
-PFE_PAGEFREE	./h/pf.h	51;"	d
-PFE_UNIX	./h/pf.h	58;"	d
-PF_AllocPage	./pf/pf.c	/^int PF_AllocPage (int fd, int *pagenum, char **pagebuf){$/;"	f
-PF_AllocPage	./pf/ref.c	/^int PF_AllocPage (int fd, int *pagenum, char **pagebuf) {$/;"	f
-PF_CloseFile	./pf/pf.c	/^int PF_CloseFile(int fd)$/;"	f
-PF_CloseFile	./pf/ref.c	/^int PF_CloseFile (int fd) {$/;"	f
-PF_CreateFile	./pf/pf.c	/^int PF_CreateFile(const char *filename)$/;"	f
-PF_CreateFile	./pf/ref.c	/^int PF_CreateFile(char *filename){$/;"	f
-PF_DestroyFile	./pf/pf.c	/^int PF_DestroyFile(const char *filename)$/;"	f
-PF_DestroyFile	./pf/ref.c	/^int PF_DestroyFile (char *filename) {$/;"	f
-PF_DirtyPage	./pf/pf.c	/^int  PF_DirtyPage	(int fd, int pagenum){$/;"	f
-PF_DirtyPage	./pf/ref.c	/^int PF_DirtyPage(int fd, int pageNum) {$/;"	f
-PF_ErrorHandler	./pf/ref.c	/^void PF_ErrorHandler(int error){$/;"	f
-PF_FTAB_SIZE	./h/pf.h	11;"	d
-PF_GetFirstPage	./pf/pf.c	/^int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf){$/;"	f
-PF_GetFirstPage	./pf/ref.c	/^int PF_GetFirstPage (int fd, int *pageNum, char **pagebuf){$/;"	f
-PF_GetNextPage	./pf/pf.c	/^int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf){$/;"	f
-PF_GetNextPage	./pf/ref.c	/^int PF_GetNextPage (int fd, int *pageNum, char **pagebuf){$/;"	f
-PF_GetThisPage	./pf/pf.c	/^int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf){$/;"	f
-PF_GetThisPage	./pf/ref.c	/^int PF_GetThisPage (int fd, int pageNum, char **pagebuf){$/;"	f
-PF_Init	./pf/pf.c	/^void PF_Init(void)$/;"	f
-PF_Init	./pf/ref.c	/^void PF_Init(void){$/;"	f
-PF_NERRORS	./h/pf.h	40;"	d
-PF_OpenFile	./pf/pf.c	/^int PF_OpenFile(const char *filename)$/;"	f
-PF_OpenFile	./pf/ref.c	/^int PF_OpenFile (char *filename) {$/;"	f
-PF_PAGE_SIZE	./h/minirel.h	40;"	d
-PF_PAGE_SIZE	./h/pf.h	17;"	d
-PF_PrintError	./pf/pf.c	/^void PF_PrintError(const char *errString)$/;"	f
-PF_PrintError	./pf/ref.c	/^void PF_PrintError (char* error){$/;"	f
-PF_PrintTable	./pf/ref.c	/^void PF_PrintTable(void){$/;"	f
-PF_UnpinPage	./pf/pf.c	/^int  PF_UnpinPage	(int fd, int pagenum, int dirty){$/;"	f
-PF_UnpinPage	./pf/ref.c	/^int PF_UnpinPage(int fd, int pageNum, int dirty) {	$/;"	f
-PFftab	./pf/ref.c	/^PFftab_ele *PFftab; $/;"	v
-PFftab_ele	./pf/pf.c	/^typedef struct PFftab_ele {$/;"	s	file:
-PFftab_ele	./pf/pf.c	/^} PFftab_ele;$/;"	t	typeref:struct:PFftab_ele	file:
-PFftab_length	./pf/pf.c	/^size_t PFftab_length;$/;"	v
-PFftab_length	./pf/ref.c	/^size_t PFftab_length;$/;"	v
-PFftable	./pf/pf.c	/^PFftab_ele *PFftable; $/;"	v
-PFhdr_str	./pf/pf.c	/^typedef struct PFhdr_str {$/;"	s	file:
-PFhdr_str	./pf/pf.c	/^} PFhdr_str;$/;"	t	typeref:struct:PFhdr_str	file:
-PFpage	./h/minirel.h	/^typedef struct PFpage {$/;"	s
-PFpage	./h/minirel.h	/^} PFpage;$/;"	t	typeref:struct:PFpage
-PROFREL	./fe/fetest-ddl.c	19;"	d	file:
-PROFREL	./fe/fetest-dml.c	19;"	d	file:
-PROF_FILE	./fe/studprofdb-schema.h	14;"	d
-PROF_LOADFILE	./fe/fetest-ddl.c	23;"	d	file:
-PROF_NUM	./fe/studprofdb-schema.h	15;"	d
-PROF_NUM_ATTRS	./fe/studprofdb-schema.h	16;"	d
-REAL_SIZE	./h/fe.h	160;"	d
-REAL_TYPE	./h/minirel.h	19;"	d
-RECID	./h/minirel.h	/^} RECID;$/;"	t	typeref:struct:_hf_record_identification
-RECNUM	./h/hf.h	77;"	d
-RECORDVAL	./hf/hftest.c	12;"	d	file:
-RECSIZE	./hf/hftest.c	9;"	d	file:
-RELCATNAME	./h/catalog.h	17;"	d
-RELCAT_NATTRS	./h/catalog.h	35;"	d
-RELDESCSIZE	./h/catalog.h	34;"	d
-RELDESCTYPE	./h/catalog.h	/^} RELDESCTYPE;$/;"	t	typeref:struct:_relation_desc
-REL_ATTR	./h/fe.h	/^} REL_ATTR;$/;"	t	typeref:struct:__anon3
-RecPage	./h/hf.h	/^    int RecPage;                 \/* Number of records per page *\/$/;"	m	struct:__anon5
-RecSize	./h/hf.h	/^    int RecSize;                 \/* Record size *\/$/;"	m	struct:__anon5
-SRCS	./am/Makefile	/^SRCS	= $/;"	m
-SRCS	./bf/Makefile	/^SRCS	= bf.c bf_component.c$/;"	m
-SRCS	./fe/Makefile	/^SRCS	= $/;"	m
-SRCS	./hf/Makefile	/^SRCS	= $/;"	m
-SRCS	./pf/Makefile	/^SRCS	= $/;"	m
-STRING_TYPE	./h/minirel.h	20;"	d
-STRSIZE	./am/amtest.c	20;"	d	file:
-STRSIZE	./hf/hftest.c	10;"	d	file:
-STUDREL	./fe/fetest-ddl.c	18;"	d	file:
-STUDREL	./fe/fetest-dml.c	18;"	d	file:
-STUD_FILE	./fe/studprofdb-schema.h	3;"	d
-STUD_LOADFILE	./fe/fetest-ddl.c	22;"	d	file:
-STUD_NUM	./fe/studprofdb-schema.h	4;"	d
-STUD_NUM_ATTRS	./fe/studprofdb-schema.h	5;"	d
-TESTDB	./fe/fetest-ddl.c	17;"	d	file:
-TESTDB	./fe/fetest-dml.c	17;"	d	file:
-TESTS	./am/Makefile	/^TESTS	= amtest.c$/;"	m
-TESTS	./bf/Makefile	/^TESTS	= bftest.c$/;"	m
-TESTS	./fe/Makefile	/^TESTS	= fetest-ddl.c fetest-dml.c$/;"	m
-TESTS	./hf/Makefile	/^TESTS	= hftest.c$/;"	m
-TESTS	./pf/Makefile	/^TESTS	= pftest.c$/;"	m
-TOTALTESTS	./am/amtest.c	21;"	d	file:
-TRUE	./h/minirel.h	/^typedef enum { FALSE = 0, TRUE } bool_t;$/;"	e	enum:__anon1
-TYPE_TYPE	./h/catalog.h	72;"	d
-__AM_H__	./h/am.h	2;"	d
-__BF_COMPONENT_H	./bf/bf_component.h	2;"	d
-__BF_H__	./h/bf.h	2;"	d
-__CATALOG_H__	./h/catalog.h	6;"	d
-__FE_H__	./h/fe.h	2;"	d
-__HF_H__	./h/hf.h	2;"	d
-__MINIREL_H__	./h/minirel.h	2;"	d
-__PF_H__	./h/pf.h	2;"	d
-_attribute_desc	./h/catalog.h	/^typedef struct _attribute_desc {$/;"	s
-_buffer_request_control	./h/minirel.h	/^typedef struct _buffer_request_control {$/;"	s
-_hf_record_identification	./h/minirel.h	/^typedef  struct _hf_record_identification {$/;"	s
-_relation_desc	./h/catalog.h	/^typedef struct _relation_desc {$/;"	s
-advisor	./fe/studprofdb-schema.h	/^	int	advisor;$/;"	m	struct:student_rec
-age	./fe/studprofdb-schema.h	/^	int	age;$/;"	m	struct:student_rec
-amtest1	./am/amtest.c	/^void amtest1()$/;"	f
-amtest2	./am/amtest.c	/^void amtest2()$/;"	f
-amtest3	./am/amtest.c	/^void amtest3()$/;"	f
-attrCatOffset	./h/catalog.h	53;"	d
-attrLen	./h/fe.h	/^    int attrLen;	\/* length of attribute	*\/$/;"	m	struct:__anon2
-attrName	./h/fe.h	/^    char *attrName;	\/* attribute name	*\/$/;"	m	struct:__anon3
-attrName	./h/fe.h	/^    char *attrName;	\/* attribute name	*\/$/;"	m	struct:__anon4
-attrName	./h/fe.h	/^    char *attrName;	\/* relation name	*\/$/;"	m	struct:__anon2
-attrType	./h/fe.h	/^    int attrType;	\/* type of attribute	*\/$/;"	m	struct:__anon2
-attrcnt	./h/catalog.h	/^    int  attrcnt;		\/* number of attributes			*\/$/;"	m	struct:_relation_desc
-attrlen	./h/catalog.h	/^    int  attrlen;		\/* attribute length			*\/$/;"	m	struct:_attribute_desc
-attrname	./h/catalog.h	/^    char attrname[MAXNAME];	\/* attribute name			*\/$/;"	m	struct:_attribute_desc
-attrno	./h/catalog.h	/^    int  attrno;		\/* attr number (used in index name)	*\/$/;"	m	struct:_attribute_desc
-attrtype	./h/catalog.h	/^    int  attrtype;		\/* attribute type			*\/$/;"	m	struct:_attribute_desc
-bfpage_clean_val	./bf/bf_component.c	/^void bfpage_clean_val(BFpage *bfpage) {$/;"	f
-bool_t	./h/minirel.h	/^typedef enum { FALSE = 0, TRUE } bool_t;$/;"	t	typeref:enum:__anon1
-bpage	./bf/bf_component.h	/^  struct BFpage *bpage;               \/* ptr to buffer holding this page *\/$/;"	m	struct:BFhash_entry	typeref:struct:BFhash_entry::BFpage
-breq	./bf/bftest.c	/^static BFreq	breq;$/;"	v	file:
-cleanup	./am/amtest.c	/^void cleanup(void)$/;"	f
-cleanup	./fe/fetest-ddl.c	/^void cleanup(void)$/;"	f
-cleanup	./fe/fetest-dml.c	/^void cleanup(void)$/;"	f
-count	./bf/bf_component.h	/^  short          count;       \/* pin count associated with the page      *\/$/;"	m	struct:BFpage
-create_professor	./fe/fetest-ddl.c	/^void create_professor()$/;"	f
-create_professor	./fe/fetest-dml.c	/^void create_professor()$/;"	f
-create_student	./fe/fetest-ddl.c	/^void create_student()$/;"	f
-create_student	./fe/fetest-dml.c	/^void create_student()$/;"	f
-delete_professor	./fe/fetest-dml.c	/^void delete_professor()$/;"	f
-delete_student	./fe/fetest-dml.c	/^void delete_student()$/;"	f
-destroy_table	./fe/fetest-ddl.c	/^void destroy_table(const char *relname)$/;"	f
-dirty	./bf/bf_component.h	/^  bool_t         dirty;       \/* TRUE if page is dirty                   *\/$/;"	m	struct:BFpage
-dirty	./h/minirel.h	/^    bool_t      dirty;                  \/* TRUE if page is dirty *\/$/;"	m	struct:_buffer_request_control
-dropindex_professor	./fe/fetest-ddl.c	/^void dropindex_professor()$/;"	f
-dropindex_student	./fe/fetest-ddl.c	/^void dropindex_student()$/;"	f
-faculty_rec	./fe/studprofdb-schema.h	/^typedef struct faculty_rec {$/;"	s
-fd	./bf/bf_component.h	/^  int            fd;          \/* PF file descriptor of this page         *\/$/;"	m	struct:BFpage
-fd	./bf/bf_component.h	/^  int fd;                             \/* file descriptor                 *\/$/;"	m	struct:BFhash_entry
-fd	./h/minirel.h	/^    int         fd;                     \/* PF file descriptor *\/$/;"	m	struct:_buffer_request_control
-float_val	./hf/hftest.c	/^   float float_val;$/;"	m	struct:rec_struct	file:
-fname	./pf/pf.c	/^	char		*fname;		\/* file name				*\/$/;"	m	struct:PFftab_ele	file:
-fpage	./bf/bf_component.h	/^  PFpage         fpage;       \/* page data from the file                 *\/$/;"	m	struct:BFpage
-gpa	./fe/studprofdb-schema.h	/^	float	gpa;$/;"	m	struct:student_rec
-handle_error	./bf/bf.c	11;"	d	file:
-handle_error	./bf/bf_component.c	8;"	d	file:
-hash_entries	./bf/bf_component.h	/^  BFhash_entry  **hash_entries;$/;"	m	struct:Hash_Table
-head	./bf/bf_component.h	/^  BFpage        *head;        \/* head|most recent page *\/$/;"	m	struct:LRU_List
-head	./bf/bf_component.h	/^  BFpage        *head;        \/* points to head page of the Free list *\/$/;"	m	struct:Free_List
-header	./bf/bftest.c	/^static char	header[PAGE_SIZE];$/;"	v	file:
-hftest1	./hf/hftest.c	/^void hftest1()$/;"	f
-hftest2	./hf/hftest.c	/^void hftest2()$/;"	f
-hftest3	./hf/hftest.c	/^void hftest3() $/;"	f
-index_professor	./fe/fetest-ddl.c	/^void index_professor()$/;"	f
-index_professor	./fe/fetest-dml.c	/^void index_professor()$/;"	f
-index_student	./fe/fetest-ddl.c	/^void index_student()$/;"	f
-index_student	./fe/fetest-dml.c	/^void index_student()$/;"	f
-indexcnt	./h/catalog.h	/^    int  indexcnt;		\/* number of indexed attributes		*\/$/;"	m	struct:_relation_desc
-indexed	./h/catalog.h	/^    bool_t  indexed;		\/* if the field is indexed or not       *\/$/;"	m	struct:_attribute_desc
-inode	./pf/pf.c	/^	ino_t		inode;		\/* inode number of the file 		*\/$/;"	m	struct:PFftab_ele	file:
-insert_professor	./fe/fetest-dml.c	/^void insert_professor()$/;"	f
-insert_struc_recs	./hf/hftest.c	/^int insert_struc_recs(const char *filename)$/;"	f
-insert_student	./fe/fetest-dml.c	/^void insert_student()$/;"	f
-int_val	./hf/hftest.c	/^   int int_val;$/;"	m	struct:rec_struct	file:
-join_student_prof	./fe/fetest-dml.c	/^void join_student_prof(char *resRel)$/;"	f
-load_professor	./fe/fetest-ddl.c	/^void load_professor()$/;"	f
-load_student	./fe/fetest-ddl.c	/^void load_student()$/;"	f
-main	./am/amtest.c	/^int main(int argc, char *argv[])$/;"	f
-main	./bf/bftest.c	/^int main()$/;"	f
-main	./fe/fetest-ddl.c	/^int main(int argc, char *argv[])$/;"	f
-main	./fe/fetest-dml.c	/^int main(int argc, char *argv[])$/;"	f
-main	./hf/hftest.c	/^int main()$/;"	f
-main	./pf/pftest.c	/^int main()$/;"	f
-make_attrDesc	./fe/fetest-ddl.c	/^void make_attrDesc(ATTR_DESCR *attr, const char *name, char type, int len)$/;"	f
-make_attrDesc	./fe/fetest-dml.c	/^void make_attrDesc(ATTR_DESCR *attr, const char *name, char type, int len)$/;"	f
-make_attrVal	./fe/fetest-dml.c	/^void make_attrVal(ATTR_VAL *aval, const char *name, char type, int len)$/;"	f
-make_relAttr	./fe/fetest-dml.c	/^void make_relAttr(REL_ATTR *ra, const char *relname, const char *attrname)$/;"	f
-max_bfpage	./bf/bf_component.h	/^  int           max_bfpage;   \/* maximum number of free pages *\/$/;"	m	struct:Free_List
-nextentry	./bf/bf_component.h	/^  struct BFhash_entry *nextentry;     \/* next hash table element or NULL *\/$/;"	m	struct:BFhash_entry	typeref:struct:BFhash_entry::BFhash_entry
-nextpage	./bf/bf_component.h	/^  struct BFpage  *nextpage;   \/* next in the linked list of buffer pages *\/$/;"	m	struct:BFpage	typeref:struct:BFpage::BFpage
-numpages	./pf/pf.c	/^	int 	numpages;	\/* number of pages in the file *\/$/;"	m	struct:PFhdr_str	file:
-office	./fe/studprofdb-schema.h	/^	int	office;$/;"	m	struct:faculty_rec
-offset	./h/catalog.h	/^    int  offset;		\/* attribute offset in tuple		*\/$/;"	m	struct:_attribute_desc
-offsetof	./hf/hftest.c	17;"	d	file:
-pagebuf	./h/minirel.h	/^    char pagebuf[PAGE_SIZE];		\/* actual page data             *\/$/;"	m	struct:PFpage
-pagenum	./bf/bf_component.h	/^  int            pagenum;     \/* page number of this page                *\/$/;"	m	struct:BFpage
-pagenum	./bf/bf_component.h	/^  int pagenum;                        \/* page number                     *\/$/;"	m	struct:BFhash_entry
-pagenum	./h/minirel.h	/^	int	pagenum;$/;"	m	struct:_hf_record_identification
-pagenum	./h/minirel.h	/^    int         pagenum;                \/* Page number in the file *\/$/;"	m	struct:_buffer_request_control
-pid	./fe/studprofdb-schema.h	/^	int	pid;$/;"	m	struct:faculty_rec
-pname	./fe/studprofdb-schema.h	/^	char	pname[MAXSTRLEN];$/;"	m	struct:faculty_rec
-preventry	./bf/bf_component.h	/^  struct BFhash_entry *preventry;     \/* prev hash table element or NULL *\/$/;"	m	struct:BFhash_entry	typeref:struct:BFhash_entry::BFhash_entry
-prevpage	./bf/bf_component.h	/^  struct BFpage  *prevpage;   \/* prev in the linked list of buffer pages *\/$/;"	m	struct:BFpage	typeref:struct:BFpage::BFpage
-primattr	./h/catalog.h	/^    char primattr[MAXNAME];	\/* name of primary attribute		*\/$/;"	m	struct:_relation_desc
-printfile	./bf/bftest.c	/^void printfile(const char *fname)$/;"	f
-printfile	./pf/pftest.c	/^void printfile(int fd)$/;"	f
-professor	./fe/studprofdb-schema.h	/^} professor;$/;"	t	typeref:struct:faculty_rec
-read_string_recs	./hf/hftest.c	/^int read_string_recs(const char *filename)$/;"	f
-read_struc_recs	./hf/hftest.c	/^int read_struc_recs(const char *filename)$/;"	f
-readfile	./bf/bftest.c	/^void readfile(const char *fname)$/;"	f
-readfile	./pf/pftest.c	/^void readfile(const char *fname)$/;"	f
-real	./h/minirel.h	/^typedef float  real;$/;"	t
-rec_struct	./hf/hftest.c	/^struct rec_struct$/;"	s	file:
-recnum	./h/minirel.h	/^	int	recnum;$/;"	m	struct:_hf_record_identification
-relCatOffset	./h/catalog.h	36;"	d
-relName	./h/fe.h	/^    char *relName;	\/* relation name	*\/$/;"	m	struct:__anon3
-relname	./h/catalog.h	/^    char relname[MAXNAME];	\/* relation name			*\/$/;"	m	struct:_attribute_desc
-relname	./h/catalog.h	/^    char relname[MAXNAME];	\/* relation name			*\/$/;"	m	struct:_relation_desc
-relwid	./h/catalog.h	/^    int  relwid;		\/* tuple width (in bytes)		*\/$/;"	m	struct:_relation_desc
-select_professor	./fe/fetest-dml.c	/^void select_professor()$/;"	f
-select_student	./fe/fetest-dml.c	/^void select_student()$/;"	f
-show_catalogs	./fe/fetest-ddl.c	/^void show_catalogs()$/;"	f
-show_catalogs	./fe/fetest-dml.c	/^void show_catalogs()$/;"	f
-show_table	./fe/fetest-ddl.c	/^void show_table(const char *relname)$/;"	f
-show_table	./fe/fetest-dml.c	/^void show_table(const char *relname)$/;"	f
-sid	./fe/studprofdb-schema.h	/^	int	sid;$/;"	m	struct:student_rec
-size	./bf/bf_component.h	/^  int           size;         \/* total number of pages in LRU *\/$/;"	m	struct:LRU_List
-size	./bf/bf_component.h	/^  int           size;         \/* total number of pages in the list *\/$/;"	m	struct:Free_List
-size	./bf/bf_component.h	/^  int           size;$/;"	m	struct:Hash_Table
-sname	./fe/studprofdb-schema.h	/^	char	sname[MAXSTRLEN];$/;"	m	struct:student_rec
-string_val	./hf/hftest.c	/^   char string_val[STRSIZE];$/;"	m	struct:rec_struct	file:
-student	./fe/studprofdb-schema.h	/^} student;$/;"	t	typeref:struct:student_rec
-student_rec	./fe/studprofdb-schema.h	/^typedef struct student_rec {$/;"	s
-tail	./bf/bf_component.h	/^  BFpage        *tail;        \/* tail|most old page *\/$/;"	m	struct:LRU_List
-testbf1	./bf/bftest.c	/^void testbf1(void)$/;"	f
-testpf1	./pf/pftest.c	/^void testpf1(void)$/;"	f
-tests	./am/amtest.c	/^void (*tests[])() = {amtest1, amtest2, amtest3, cleanup};$/;"	v
-unixfd	./bf/bf_component.h	/^  int            unixfd;      \/* Unix file descriptor of this page       *\/$/;"	m	struct:BFpage
-unixfd	./h/minirel.h	/^    int         unixfd;                 \/* Unix file descriptor *\/$/;"	m	struct:_buffer_request_control
-unixfd	./pf/pf.c	/^	int 		unixfd;		\/* Unix file descriptor			*\/$/;"	m	struct:PFftab_ele	file:
-valLength	./h/fe.h	/^    int valLength;	\/* length if type = STRING_TYPE *\/$/;"	m	struct:__anon4
-valType	./h/fe.h	/^    int valType;	\/* type of value	*\/$/;"	m	struct:__anon4
-valid	./pf/pf.c	/^	bool_t		valid;		\/* set to TRUE when a file is open 	*\/$/;"	m	struct:PFftab_ele	file:
-value	./h/fe.h	/^    char *value;	\/* value for attribute	*\/$/;"	m	struct:__anon4
-writeback	./bf/bf.c	/^static writeback(BFpage* victim) {$/;"	f	file:
-writefile	./bf/bftest.c	/^void writefile(const char *fname)$/;"	f
-writefile	./pf/pftest.c	/^void writefile(const char *fname)$/;"	f
+ALL	h/catalog.h	60;"	d
+ALL_OP	h/minirel.h	31;"	d
+AME_ATTRTYPE	am/am.c	29;"	d	file:
+AME_DUPLICATEKEY	h/am.h	66;"	d
+AME_DUPLICATEOPEN	h/am.h	46;"	d
+AME_DUPLICATERECID	h/am.h	51;"	d
+AME_EOF	h/am.h	40;"	d
+AME_FD	h/am.h	43;"	d
+AME_FULLTABLE	h/am.h	41;"	d
+AME_INDEXNOTOPEN	am/am.c	27;"	d	file:
+AME_INVALIDATTR	h/am.h	61;"	d
+AME_INVALIDATTRLENGTH	h/am.h	53;"	d
+AME_INVALIDATTRTYPE	h/am.h	42;"	d
+AME_INVALIDOP	h/am.h	44;"	d
+AME_INVALIDPARA	h/am.h	45;"	d
+AME_INVALIDRECORD	h/am.h	63;"	d
+AME_INVALIDSCANDESC	h/am.h	48;"	d
+AME_KEYNOTFOUND	h/am.h	65;"	d
+AME_NOMEM	h/am.h	62;"	d
+AME_OK	h/am.h	38;"	d
+AME_PF	h/am.h	39;"	d
+AME_RECNOTFOUND	h/am.h	50;"	d
+AME_ROOTNULL	h/am.h	59;"	d
+AME_SCANNOTOPEN	am/am.c	33;"	d	file:
+AME_SCANOPEN	h/am.h	52;"	d
+AME_SCANTABLEFULL	h/am.h	47;"	d
+AME_TOOMANYRECSPERKEY	h/am.h	64;"	d
+AME_TREETOODEEP	h/am.h	60;"	d
+AME_UNABLETOSCAN	h/am.h	49;"	d
+AME_UNIX	h/am.h	58;"	d
+AME_WRONGROOT	am/am.c	28;"	d	file:
+AM_CheckPointer	am/am.c	/^int AM_CheckPointer(int pos, int fanout, char* value, char attrType, int attrLength,char* pagebuf){$/;"	f
+AM_CloseIndex	am/am.c	/^int AM_CloseIndex(int AM_fd) {$/;"	f
+AM_CloseIndexScan	am/am.c	/^int AM_CloseIndexScan(int scanDesc) {$/;"	f
+AM_CreateIndex	am/am.c	/^int AM_CreateIndex(const char *fileName, int indexNo, char attrType, int attrLength, bool_t isUnique) {$/;"	f
+AM_DeleteEntry	am/am.c	/^int AM_DeleteEntry(int AM_fd, char *value, RECID recId) {$/;"	f
+AM_DestroyIndex	am/am.c	/^int AM_DestroyIndex(const char *fileName, int indexNo) {$/;"	f
+AM_FindLeaf	am/am.c	/^int AM_FindLeaf(int idesc, char* value, int* tab){$/;"	f
+AM_FindNextEntry	am/am.c	/^RECID AM_FindNextEntry(int scanDesc) {$/;"	f
+AM_Header	am/am.c	/^typedef struct AM_Header{ \/* AM B+tree index table's header (different from node's header *\/$/;"	s	file:
+AM_Header	am/am.c	/^} AM_Header;$/;"	t	typeref:struct:AM_Header	file:
+AM_ITAB_SIZE	h/am.h	6;"	d
+AM_Init	am/am.c	/^void AM_Init(void) {$/;"	f
+AM_InsertEntry	am/am.c	/^int AM_InsertEntry(int AM_fd, char *value, RECID recId) {$/;"	f
+AM_KeyPos	am/am.c	/^int AM_KeyPos(int pos, int fanout, char* value, char attrType, int attrLength, char* pagebuf) {$/;"	f
+AM_NERRORS	h/am.h	33;"	d
+AM_OpenIndex	am/am.c	/^int AM_OpenIndex(const char *fileName, int indexNo) {$/;"	f
+AM_OpenIndexScan	am/am.c	/^int AM_OpenIndexScan(int AM_fd, int op, char *value) {$/;"	f
+AM_PrintTable	am/am.c	/^void AM_PrintTable(void){$/;"	f
+AM_iscantab	am/am.c	/^static AM_iscan_entry *AM_iscantab;$/;"	v	file:
+AM_iscantab_length	am/am.c	/^static size_t AM_iscantab_length;$/;"	v	file:
+AM_itab	am/am.c	/^static AM_itab_entry *AM_itab;$/;"	v	file:
+AM_itab_entry	am/am.c	/^typedef struct AM_itab_entry {$/;"	s	file:
+AM_itab_entry	am/am.c	/^} AM_itab_entry;$/;"	t	typeref:struct:AM_itab_entry	file:
+AM_itab_length	am/am.c	/^static size_t AM_itab_length;$/;"	v	file:
+AM_scantab_entry	am/am.c	/^typedef struct AM_scantab_entry {$/;"	s	file:
+AM_scantab_entry	am/am.c	/^} AM_scantab_entry;$/;"	t	typeref:struct:AM_scantab_entry	file:
+AMfd	am/am.c	/^  int     AMfd;           $/;"	m	struct:AM_scantab_entry	file:
+ATTRCATNAME	h/catalog.h	18;"	d
+ATTRCAT_NATTRS	h/catalog.h	52;"	d
+ATTRDESCSIZE	h/catalog.h	51;"	d
+ATTRDESCTYPE	h/catalog.h	/^} ATTRDESCTYPE;$/;"	t	typeref:struct:_attribute_desc
+ATTR_DESCR	h/fe.h	/^} ATTR_DESCR;$/;"	t	typeref:struct:__anon3
+ATTR_VAL	h/fe.h	/^} ATTR_VAL;$/;"	t	typeref:struct:__anon5
+BFE_HASHNOTFOUND	h/bf.h	47;"	d
+BFE_HASHPAGEEXIST	h/bf.h	48;"	d
+BFE_INCOMPLETEREAD	h/bf.h	43;"	d
+BFE_INCOMPLETEWRITE	h/bf.h	42;"	d
+BFE_INVALIDTID	h/bf.h	45;"	d
+BFE_MISSDIRTY	h/bf.h	44;"	d
+BFE_MSGERR	h/bf.h	46;"	d
+BFE_NOBUF	h/bf.h	37;"	d
+BFE_NOMEM	h/bf.h	36;"	d
+BFE_OK	h/bf.h	35;"	d
+BFE_PAGEINBUF	h/bf.h	40;"	d
+BFE_PAGENOTINBUF	h/bf.h	41;"	d
+BFE_PAGEPINNED	h/bf.h	38;"	d
+BFE_PAGEUNPINNED	h/bf.h	39;"	d
+BFE_UNIX	h/bf.h	53;"	d
+BF_AllocBuf	bf/bf.c	/^int BF_AllocBuf(BFreq bq, PFpage **fpage) {$/;"	f
+BF_FlushBuf	bf/bf.c	/^int BF_FlushBuf(int fd) {$/;"	f
+BF_GetBuf	bf/bf.c	/^int BF_GetBuf(BFreq bq, PFpage **fpage) {$/;"	f
+BF_HASH_TBL_SIZE	h/bf.h	16;"	d
+BF_Init	bf/bf.c	/^void BF_Init(void) {$/;"	f
+BF_MAX_BUFS	h/bf.h	11;"	d
+BF_NERRORS	h/bf.h	33;"	d
+BF_PrintError	bf/bf.c	/^void BF_PrintError(const char *s) {$/;"	f
+BF_ShowBuf	bf/bf.c	/^void BF_ShowBuf(void) {$/;"	f
+BF_TouchBuf	bf/bf.c	/^int BF_TouchBuf(BFreq bq) {$/;"	f
+BF_UnpinBuf	bf/bf.c	/^int BF_UnpinBuf(BFreq bq) {$/;"	f
+BFerrno	bf/bf_component.h	/^int BFerrno;$/;"	v
+BFhash_entry	bf/bf_component.h	/^typedef struct BFhash_entry {$/;"	s
+BFhash_entry	bf/bf_component.h	/^} BFhash_entry;$/;"	t	typeref:struct:BFhash_entry
+BFpage	bf/bf_component.h	/^typedef struct BFpage {$/;"	s
+BFpage	bf/bf_component.h	/^} BFpage;$/;"	t	typeref:struct:BFpage
+BFreq	h/minirel.h	/^} BFreq;$/;"	t	typeref:struct:_buffer_request_control
+BOOL_TYPE	h/catalog.h	71;"	d
+CC	am/Makefile	/^CC	= gcc$/;"	m
+CC	bf/Makefile	/^CC	= gcc$/;"	m
+CC	fe/Makefile	/^CC	= gcc$/;"	m
+CC	hf/Makefile	/^CC	= gcc$/;"	m
+CC	pf/Makefile	/^CC	= gcc$/;"	m
+CFLAGS	am/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
+CFLAGS	bf/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
+CFLAGS	fe/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
+CFLAGS	hf/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
+CFLAGS	pf/Makefile	/^CFLAGS	= -g -ansi -pedantic$/;"	m
+CLOSE_SUCCESS	pf/ref2.c	14;"	d	file:
+DEBUG	bf/bf_component.c	9;"	d	file:
+EQ_OP	h/minirel.h	25;"	d
+FALSE	h/minirel.h	/^typedef enum { FALSE = 0, TRUE } bool_t;$/;"	e	enum:__anon1
+FD1	bf/bftest.c	17;"	d	file:
+FD1	bf/bftestPerso.c	14;"	d	file:
+FD1	pf/bftestPerso.c	14;"	d	file:
+FD2	bf/bftestPerso.c	17;"	d	file:
+FD2	pf/bftestPerso.c	17;"	d	file:
+FEE_ALREADYINDEXED	h/fe.h	119;"	d
+FEE_AM	h/fe.h	155;"	d
+FEE_ATTRNAMETOOLONG	h/fe.h	120;"	d
+FEE_CATALOGCHANGE	h/fe.h	145;"	d
+FEE_DUPLATTR	h/fe.h	121;"	d
+FEE_EOF	h/fe.h	144;"	d
+FEE_HF	h/fe.h	154;"	d
+FEE_INCOMPATJOINTYPES	h/fe.h	122;"	d
+FEE_INCORRECTNATTRS	h/fe.h	123;"	d
+FEE_INTERNAL	h/fe.h	124;"	d
+FEE_INVALIDOP	h/fe.h	150;"	d
+FEE_INVALIDSCAN	h/fe.h	148;"	d
+FEE_INVALIDSCANDESC	h/fe.h	149;"	d
+FEE_INVATTRTYPE	h/fe.h	125;"	d
+FEE_INVNBUCKETS	h/fe.h	126;"	d
+FEE_NOMEM	h/fe.h	143;"	d
+FEE_NOSUCHATTR	h/fe.h	128;"	d
+FEE_NOSUCHDB	h/fe.h	129;"	d
+FEE_NOSUCHREL	h/fe.h	130;"	d
+FEE_NOTFROMJOINREL	h/fe.h	127;"	d
+FEE_NOTINDEXED	h/fe.h	131;"	d
+FEE_OK	h/fe.h	118;"	d
+FEE_PARTIAL	h/fe.h	132;"	d
+FEE_PF	h/fe.h	156;"	d
+FEE_PRIMARYINDEX	h/fe.h	133;"	d
+FEE_RELCAT	h/fe.h	134;"	d
+FEE_RELEXISTS	h/fe.h	135;"	d
+FEE_RELNAMETOOLONG	h/fe.h	136;"	d
+FEE_RELNOTSAME	h/fe.h	142;"	d
+FEE_SAMEJOINEDREL	h/fe.h	137;"	d
+FEE_SCANTABLEFULL	h/fe.h	147;"	d
+FEE_SELINTOSRC	h/fe.h	138;"	d
+FEE_STRTOOLONG	h/fe.h	146;"	d
+FEE_THISATTRTWICE	h/fe.h	139;"	d
+FEE_UNIONCOMPAT	h/fe.h	140;"	d
+FEE_UNIX	h/fe.h	153;"	d
+FEE_WRONGVALTYPE	h/fe.h	141;"	d
+FE_NERRORS	h/fe.h	116;"	d
+FILE1	am/amtest.c	19;"	d	file:
+FILE1	bf/bftest.c	16;"	d	file:
+FILE1	bf/bftestPerso.c	13;"	d	file:
+FILE1	hf/hftest.c	13;"	d	file:
+FILE1	pf/bftestPerso.c	13;"	d	file:
+FILE1	pf/pftest.c	14;"	d	file:
+FILE2	bf/bftestPerso.c	16;"	d	file:
+FILE2	hf/hftest.c	14;"	d	file:
+FILE2	pf/bftestPerso.c	16;"	d	file:
+FILE_BEGINNING	pf/ref2.c	24;"	d	file:
+FILE_CREATE_MASK	bf/bftest.c	11;"	d	file:
+FILE_CREATE_MASK	bf/bftestPerso.c	11;"	d	file:
+FILE_CREATE_MASK	pf/bftestPerso.c	11;"	d	file:
+FILE_CREATE_MASK	pf/pf.c	12;"	d	file:
+FIRST_LEAF	am/am.c	24;"	d	file:
+FNAME_INVALID	pf/ref2.c	19;"	d	file:
+FOPEN_NOFILE	pf/ref2.c	12;"	d	file:
+FRL	bf/bf.c	/^static Free_List *FRL;$/;"	v	file:
+F_add_free	bf/bf_component.c	/^int F_add_free(Free_List *FRL, BFpage *bfpage) {$/;"	f
+F_remove_free	bf/bf_component.c	/^BFpage* F_remove_free(Free_List *FRL) {$/;"	f
+F_show	bf/bf_component.c	/^void F_show(Free_List *FRL) {$/;"	f
+Free_List	bf/bf_component.h	/^typedef struct Free_List {    \/* Singly? Liked List. added & removed at the head *\/$/;"	s
+Free_List	bf/bf_component.h	/^} Free_List;$/;"	t	typeref:struct:Free_List
+Free_List_Init	bf/bf_component.c	/^void Free_List_Init(Free_List *FRL, int max_bfpage) {$/;"	f
+Free_List_delete	bf/bf_component.c	/^void Free_List_delete(Free_List *FRL) { \/* JM_edit *\/$/;"	f
+Ftable_Check	pf/pf.c	/^int Ftable_Check(const char *filename)$/;"	f
+GE_OP	h/minirel.h	29;"	d
+GT_OP	h/minirel.h	27;"	d
+HFE_ATTRLENGTH	h/hf.h	56;"	d
+HFE_ATTROFFSET	h/hf.h	57;"	d
+HFE_ATTRTYPE	h/hf.h	55;"	d
+HFE_EOF	h/hf.h	49;"	d
+HFE_FD	h/hf.h	46;"	d
+HFE_FILE	h/hf.h	59;"	d
+HFE_FILENOTOPEN	h/hf.h	53;"	d
+HFE_FILEOPEN	h/hf.h	51;"	d
+HFE_FTABFULL	h/hf.h	44;"	d
+HFE_INTERNAL	h/hf.h	60;"	d
+HFE_INVALIDRECORD	h/hf.h	48;"	d
+HFE_INVALIDSTATS	h/hf.h	65;"	d
+HFE_OK	h/hf.h	42;"	d
+HFE_OPERATOR	h/hf.h	58;"	d
+HFE_PAGE	h/hf.h	62;"	d
+HFE_PF	h/hf.h	43;"	d
+HFE_RECSIZE	h/hf.h	50;"	d
+HFE_SCANNOTOPEN	h/hf.h	54;"	d
+HFE_SCANOPEN	h/hf.h	52;"	d
+HFE_SD	h/hf.h	47;"	d
+HFE_STABFULL	h/hf.h	45;"	d
+HFHeader	h/hf.h	/^} HFHeader;$/;"	t	typeref:struct:__anon2
+HF_FTAB_SIZE	h/hf.h	6;"	d
+HF_NERRORS	h/hf.h	40;"	d
+HT	bf/bf.c	/^static Hash_Table *HT;$/;"	v	file:
+H_add_page	bf/bf_component.c	/^int H_add_page(Hash_Table *HT, BFpage *add_page) {$/;"	f
+H_get_entry	bf/bf_component.c	/^BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pagenum) {$/;"	f
+H_get_index	bf/bf_component.c	/^int H_get_index(Hash_Table *HT, int fd, int pagenum) {$/;"	f
+H_remove_page	bf/bf_component.c	/^int H_remove_page(Hash_Table *HT, int fd, int pagenum) {$/;"	f
+Hash_Table	bf/bf_component.h	/^typedef struct Hash_Table {$/;"	s
+Hash_Table	bf/bf_component.h	/^} Hash_Table;$/;"	t	typeref:struct:Hash_Table
+Hash_Table_Init	bf/bf_component.c	/^void Hash_Table_Init(Hash_Table *HT, int hash_size) {$/;"	f
+Hash_Table_delete	bf/bf_component.c	/^void Hash_Table_delete(Hash_Table *HT) { \/* JM_edit *\/$/;"	f
+INCDIR	am/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
+INCDIR	bf/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
+INCDIR	fe/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
+INCDIR	hf/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
+INCDIR	pf/Makefile	/^INCDIR	= ${MINIREL_HOME}\/h$/;"	m
+INCS	am/Makefile	/^INCS	= $/;"	m
+INCS	bf/Makefile	/^INCS	= $/;"	m
+INCS	fe/Makefile	/^INCS	= $/;"	m
+INCS	hf/Makefile	/^INCS	= $/;"	m
+INCS	pf/Makefile	/^INCS	= $/;"	m
+INDEXED	h/catalog.h	61;"	d
+INODE_INVALID	pf/ref2.c	18;"	d	file:
+INT_SIZE	h/fe.h	159;"	d
+INT_TYPE	h/minirel.h	18;"	d
+LAST_LEAF	am/am.c	25;"	d	file:
+LE_OP	h/minirel.h	28;"	d
+LIB	am/Makefile	/^LIB	= am$/;"	m
+LIB	bf/Makefile	/^LIB	= bf$/;"	m
+LIB	fe/Makefile	/^LIB	= fe$/;"	m
+LIB	hf/Makefile	/^LIB	= hf$/;"	m
+LIB	pf/Makefile	/^LIB	= pf$/;"	m
+LIBS	am/Makefile	/^LIBS	= lib${LIB}.a ..\/pf\/libpf.a ..\/hf\/libhf.a ..\/bf\/libbf.a$/;"	m
+LIBS	bf/Makefile	/^LIBS	= lib${LIB}.a$/;"	m
+LIBS	fe/Makefile	/^LIBS	= lib${LIB}.a ..\/am\/libam.a ..\/hf\/libhf.a ..\/pf\/libpf.a ..\/bf\/libbf.a$/;"	m
+LIBS	hf/Makefile	/^LIBS	= lib${LIB}.a ..\/pf\/libpf.a ..\/bf\/libbf.a$/;"	m
+LIBS	pf/Makefile	/^LIBS	= lib${LIB}.a ..\/bf\/libbf.a$/;"	m
+LRU	bf/bf.c	/^static LRU_List *LRU;$/;"	v	file:
+LRU_List	bf/bf_component.h	/^typedef struct LRU_List {     \/* LRU's head is the most recent & tail the oldest *\/$/;"	s
+LRU_List	bf/bf_component.h	/^} LRU_List;$/;"	t	typeref:struct:LRU_List
+LRU_List_Init	bf/bf_component.c	/^void LRU_List_Init(LRU_List *LRU) {$/;"	f
+LRU_delete	bf/bf_component.c	/^void LRU_delete(LRU_List *LRU) { \/* JM_edit *\/$/;"	f
+LT_OP	h/minirel.h	26;"	d
+L_add_page	bf/bf_component.c	/^int L_add_page(LRU_List *LRU, BFpage *bfpage) {$/;"	f
+L_detach_page	bf/bf_component.c	/^BFpage* L_detach_page(LRU_List *LRU, BFpage *bfpage) {$/;"	f
+L_find_victim	bf/bf_component.c	/^BFpage* L_find_victim(LRU_List *LRU) {$/;"	f
+L_make_head	bf/bf_component.c	/^int L_make_head(LRU_List *LRU, BFpage *target_page) {$/;"	f
+L_show	bf/bf_component.c	/^void L_show(LRU_List *LRU) {$/;"	f
+MAXISCANS	h/am.h	7;"	d
+MAXNAME	h/catalog.h	22;"	d
+MAXNAME	h/fe.h	11;"	d
+MAXOPENFILES	h/minirel.h	36;"	d
+MAXSCANS	h/hf.h	7;"	d
+MAXSTRINGLEN	h/fe.h	17;"	d
+MAXSTRLEN	fe/studprofdb-schema.h	1;"	d
+MINIREL_HOME	bf/Makefile	/^MINIREL_HOME = ..\/$/;"	m
+MINIREL_HOME	pf/Makefile	/^MINIREL_HOME = ..\/$/;"	m
+NE_OP	h/minirel.h	30;"	d
+NTYPES	h/minirel.h	17;"	d
+NUMBER	hf/hftest.c	11;"	d	file:
+NumFrPgFile	h/hf.h	/^    int NumFrPgFile;             \/* Number of free pages in the file *\/ $/;"	m	struct:__anon2
+NumPg	h/hf.h	/^    int NumPg;                   \/* Number of pages in file *\/$/;"	m	struct:__anon2
+OBJS	am/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
+OBJS	bf/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
+OBJS	fe/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
+OBJS	hf/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
+OBJS	pf/Makefile	/^OBJS	= ${SRCS:.c=.o}$/;"	m
+OffsetLeafCouple	am/am.c	23;"	d	file:
+OffsetLeafNumKeys	am/am.c	22;"	d	file:
+OffsetNodeCouple	am/am.c	21;"	d	file:
+OffsetNodeLastPointer	am/am.c	20;"	d	file:
+OffsetNodeNumKeys	am/am.c	19;"	d	file:
+PAGENUM	h/hf.h	76;"	d
+PAGENUM_MINIMUM	pf/ref2.c	23;"	d	file:
+PAGE_SIZE	h/minirel.h	39;"	d
+PFE_EOF	h/pf.h	46;"	d
+PFE_FD	h/pf.h	45;"	d
+PFE_FILENOTOPEN	h/pf.h	48;"	d
+PFE_FILEOPEN	h/pf.h	47;"	d
+PFE_FTABFULL	h/pf.h	44;"	d
+PFE_HDRREAD	h/pf.h	49;"	d
+PFE_HDRWRITE	h/pf.h	50;"	d
+PFE_INVALIDPAGE	h/pf.h	43;"	d
+PFE_MSGERR	h/pf.h	53;"	d
+PFE_NOUSERS	h/pf.h	52;"	d
+PFE_OK	h/pf.h	42;"	d
+PFE_PAGEFREE	h/pf.h	51;"	d
+PFE_UNIX	h/pf.h	58;"	d
+PFHDR_HDRC_INVALID	pf/ref2.c	22;"	d	file:
+PFHDR_PNUM_INIT	pf/ref2.c	13;"	d	file:
+PFHDR_PNUM_INVALID	pf/ref2.c	21;"	d	file:
+PF_AllocPage	pf/pf.c	/^int PF_AllocPage (int fd, int *pagenum, char **pagebuf)$/;"	f
+PF_AllocPage	pf/ref.c	/^int PF_AllocPage (int fd, int *pagenum, char **pagebuf) {$/;"	f
+PF_AllocPage	pf/ref2.c	/^int  PF_AllocPage	(int fd, int *pagenum, char **pagebuf) {$/;"	f
+PF_CloseFile	pf/pf.c	/^int PF_CloseFile(int fd)$/;"	f
+PF_CloseFile	pf/ref.c	/^int PF_CloseFile (int fd) {$/;"	f
+PF_CloseFile	pf/ref2.c	/^int  PF_CloseFile	(int fd) {$/;"	f
+PF_CreateFile	pf/pf.c	/^int PF_CreateFile(const char *filename)$/;"	f
+PF_CreateFile	pf/ref.c	/^int PF_CreateFile(char *filename){$/;"	f
+PF_CreateFile	pf/ref2.c	/^int  PF_CreateFile	(char *filename) {$/;"	f
+PF_DestroyFile	pf/pf.c	/^int PF_DestroyFile(const char *filename)$/;"	f
+PF_DestroyFile	pf/ref.c	/^int PF_DestroyFile (char *filename) {$/;"	f
+PF_DestroyFile	pf/ref2.c	/^int  PF_DestroyFile	(char *filename) {$/;"	f
+PF_DirtyPage	pf/pf.c	/^int  PF_DirtyPage	(int fd, int pagenum)$/;"	f
+PF_DirtyPage	pf/ref.c	/^int PF_DirtyPage(int fd, int pageNum) {$/;"	f
+PF_DirtyPage	pf/ref2.c	/^int  PF_DirtyPage	(int fd, int pagenum) {$/;"	f
+PF_ErrorHandler	pf/ref.c	/^void PF_ErrorHandler(int error){$/;"	f
+PF_FTAB_SIZE	h/pf.h	11;"	d
+PF_GetFirstPage	pf/pf.c	/^int  PF_GetFirstPage (int fd, int *pagenum, char **pagebuf)$/;"	f
+PF_GetFirstPage	pf/ref.c	/^int PF_GetFirstPage (int fd, int *pageNum, char **pagebuf){$/;"	f
+PF_GetFirstPage	pf/ref2.c	/^int  PF_GetFirstPage	(int fd, int *pagenum, char **pagebuf) {$/;"	f
+PF_GetNextPage	pf/pf.c	/^int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf)$/;"	f
+PF_GetNextPage	pf/ref.c	/^int PF_GetNextPage (int fd, int *pageNum, char **pagebuf){$/;"	f
+PF_GetNextPage	pf/ref2.c	/^int  PF_GetNextPage	(int fd, int *pagenum, char **pagebuf) {$/;"	f
+PF_GetNumPages	pf/ref2.c	/^int PF_GetNumPages(int fd, int* pagenum){$/;"	f
+PF_GetThisPage	pf/pf.c	/^int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf)$/;"	f
+PF_GetThisPage	pf/ref.c	/^int PF_GetThisPage (int fd, int pageNum, char **pagebuf){$/;"	f
+PF_GetThisPage	pf/ref2.c	/^int  PF_GetThisPage	(int fd, int pagenum, char **pagebuf) {$/;"	f
+PF_Init	pf/pf.c	/^void PF_Init(void)$/;"	f
+PF_Init	pf/ref.c	/^void PF_Init(void){$/;"	f
+PF_Init	pf/ref2.c	/^void PF_Init		(void) {$/;"	f
+PF_IsValidPage	pf/ref2.c	/^int PF_IsValidPage(int fd, int pagenum){$/;"	f
+PF_NERRORS	h/pf.h	40;"	d
+PF_OpenFile	pf/pf.c	/^int PF_OpenFile(const char *filename)$/;"	f
+PF_OpenFile	pf/ref.c	/^int PF_OpenFile (char *filename) {$/;"	f
+PF_OpenFile	pf/ref2.c	/^int  PF_OpenFile	(char *filename) {$/;"	f
+PF_PAGE_SIZE	h/minirel.h	40;"	d
+PF_PAGE_SIZE	h/pf.h	17;"	d
+PF_PrintError	pf/pf.c	/^void PF_PrintError(const char *errString)$/;"	f
+PF_PrintError	pf/ref.c	/^void PF_PrintError (char* error){$/;"	f
+PF_PrintTable	pf/ref.c	/^void PF_PrintTable(void){$/;"	f
+PF_UnpinPage	pf/pf.c	/^int  PF_UnpinPage	(int fd, int pagenum, int dirty)$/;"	f
+PF_UnpinPage	pf/ref.c	/^int PF_UnpinPage(int fd, int pageNum, int dirty) {	$/;"	f
+PF_UnpinPage	pf/ref2.c	/^int  PF_UnpinPage	(int fd, int pagenum, int dirty) {$/;"	f
+PFerrno	pf/pf.c	/^int PFerrno;$/;"	v
+PFftab	pf/ref.c	/^PFftab_ele *PFftab; $/;"	v
+PFftab_ele	pf/pf.c	/^typedef struct PFftab_ele {$/;"	s	file:
+PFftab_ele	pf/pf.c	/^} PFftab_ele;$/;"	t	typeref:struct:PFftab_ele	file:
+PFftab_length	pf/pf.c	/^size_t PFftab_length;$/;"	v
+PFftab_length	pf/ref.c	/^size_t PFftab_length;$/;"	v
+PFftable	pf/pf.c	/^PFftab_ele *PFftable; $/;"	v
+PFhdr_str	pf/pf.c	/^typedef struct PFhdr_str {$/;"	s	file:
+PFhdr_str	pf/pf.c	/^} PFhdr_str;$/;"	t	typeref:struct:PFhdr_str	file:
+PFpage	h/minirel.h	/^typedef struct PFpage {$/;"	s
+PFpage	h/minirel.h	/^} PFpage;$/;"	t	typeref:struct:PFpage
+PROFREL	fe/fetest-ddl.c	19;"	d	file:
+PROFREL	fe/fetest-dml.c	19;"	d	file:
+PROF_FILE	fe/studprofdb-schema.h	14;"	d
+PROF_LOADFILE	fe/fetest-ddl.c	23;"	d	file:
+PROF_NUM	fe/studprofdb-schema.h	15;"	d
+PROF_NUM_ATTRS	fe/studprofdb-schema.h	16;"	d
+READ_FAILURE	pf/ref2.c	17;"	d	file:
+REAL_SIZE	h/fe.h	160;"	d
+REAL_TYPE	h/minirel.h	19;"	d
+RECID	h/minirel.h	/^} RECID;$/;"	t	typeref:struct:_hf_record_identification
+RECNUM	h/hf.h	77;"	d
+RECORDVAL	hf/hftest.c	12;"	d	file:
+RECSIZE	hf/hftest.c	9;"	d	file:
+RELCATNAME	h/catalog.h	17;"	d
+RELCAT_NATTRS	h/catalog.h	35;"	d
+RELDESCSIZE	h/catalog.h	34;"	d
+RELDESCTYPE	h/catalog.h	/^} RELDESCTYPE;$/;"	t	typeref:struct:_relation_desc
+REL_ATTR	h/fe.h	/^} REL_ATTR;$/;"	t	typeref:struct:__anon4
+REMOVE_SUCCESS	pf/ref2.c	16;"	d	file:
+RecPage	h/hf.h	/^    int RecPage;                 \/* Number of records per page *\/$/;"	m	struct:__anon2
+RecSize	h/hf.h	/^    int RecSize;                 \/* Record size *\/$/;"	m	struct:__anon2
+SAME_STRING	pf/ref2.c	25;"	d	file:
+SRCS	am/Makefile	/^SRCS	= $/;"	m
+SRCS	bf/Makefile	/^SRCS	= bf.c bf_component.c$/;"	m
+SRCS	fe/Makefile	/^SRCS	= $/;"	m
+SRCS	hf/Makefile	/^SRCS	= $/;"	m
+SRCS	pf/Makefile	/^SRCS	= pf.c$/;"	m
+STAT_SUCCESS	pf/ref2.c	15;"	d	file:
+STRING_TYPE	h/minirel.h	20;"	d
+STRSIZE	am/amtest.c	20;"	d	file:
+STRSIZE	hf/hftest.c	10;"	d	file:
+STUDREL	fe/fetest-ddl.c	18;"	d	file:
+STUDREL	fe/fetest-dml.c	18;"	d	file:
+STUD_FILE	fe/studprofdb-schema.h	3;"	d
+STUD_LOADFILE	fe/fetest-ddl.c	22;"	d	file:
+STUD_NUM	fe/studprofdb-schema.h	4;"	d
+STUD_NUM_ATTRS	fe/studprofdb-schema.h	5;"	d
+Show_Hash	bf/bf_component.c	/^void Show_Hash(Hash_Table *HT) {$/;"	f
+TESTDB	fe/fetest-ddl.c	17;"	d	file:
+TESTDB	fe/fetest-dml.c	17;"	d	file:
+TESTS	am/Makefile	/^TESTS	= amtest.c$/;"	m
+TESTS	bf/Makefile	/^TESTS	= bftest.c$/;"	m
+TESTS	fe/Makefile	/^TESTS	= fetest-ddl.c fetest-dml.c$/;"	m
+TESTS	hf/Makefile	/^TESTS	= hftest.c$/;"	m
+TESTS	pf/Makefile	/^TESTS	= pftest.c$/;"	m
+TOTALTESTS	am/amtest.c	21;"	d	file:
+TRUE	h/minirel.h	/^typedef enum { FALSE = 0, TRUE } bool_t;$/;"	e	enum:__anon1
+TYPE_TYPE	h/catalog.h	72;"	d
+UNIXFD_INVALID	pf/ref2.c	20;"	d	file:
+__AM_H__	h/am.h	2;"	d
+__BF_COMPONENT_H	bf/bf_component.h	2;"	d
+__BF_H__	h/bf.h	2;"	d
+__CATALOG_H__	h/catalog.h	6;"	d
+__FE_H__	h/fe.h	2;"	d
+__HF_H__	h/hf.h	2;"	d
+__MINIREL_H__	h/minirel.h	2;"	d
+__PF_H__	h/pf.h	2;"	d
+_attribute_desc	h/catalog.h	/^typedef struct _attribute_desc {$/;"	s
+_buffer_request_control	h/minirel.h	/^typedef struct _buffer_request_control {$/;"	s
+_hf_record_identification	h/minirel.h	/^typedef  struct _hf_record_identification {$/;"	s
+_relation_desc	h/catalog.h	/^typedef struct _relation_desc {$/;"	s
+advisor	fe/studprofdb-schema.h	/^	int	advisor;$/;"	m	struct:student_rec
+age	fe/studprofdb-schema.h	/^	int	age;$/;"	m	struct:student_rec
+amtest1	am/amtest.c	/^void amtest1()$/;"	f
+amtest2	am/amtest.c	/^void amtest2()$/;"	f
+amtest3	am/amtest.c	/^void amtest3()$/;"	f
+attrCatOffset	h/catalog.h	53;"	d
+attrLen	h/fe.h	/^    int attrLen;	\/* length of attribute	*\/$/;"	m	struct:__anon3
+attrLength	am/am.c	/^	int   attrLength;      $/;"	m	struct:AM_Header	file:
+attrName	h/fe.h	/^    char *attrName;	\/* attribute name	*\/$/;"	m	struct:__anon4
+attrName	h/fe.h	/^    char *attrName;	\/* attribute name	*\/$/;"	m	struct:__anon5
+attrName	h/fe.h	/^    char *attrName;	\/* relation name	*\/$/;"	m	struct:__anon3
+attrType	am/am.c	/^	char  attrType;         $/;"	m	struct:AM_Header	file:
+attrType	h/fe.h	/^    int attrType;	\/* type of attribute	*\/$/;"	m	struct:__anon3
+attrcnt	h/catalog.h	/^    int  attrcnt;		\/* number of attributes			*\/$/;"	m	struct:_relation_desc
+attrlen	h/catalog.h	/^    int  attrlen;		\/* attribute length			*\/$/;"	m	struct:_attribute_desc
+attrname	h/catalog.h	/^    char attrname[MAXNAME];	\/* attribute name			*\/$/;"	m	struct:_attribute_desc
+attrno	h/catalog.h	/^    int  attrno;		\/* attr number (used in index name)	*\/$/;"	m	struct:_attribute_desc
+attrtype	h/catalog.h	/^    int  attrtype;		\/* attribute type			*\/$/;"	m	struct:_attribute_desc
+bfpage_clean_val	bf/bf_component.c	/^void bfpage_clean_val(BFpage *bfpage) {$/;"	f
+bool_t	h/minirel.h	/^typedef enum { FALSE = 0, TRUE } bool_t;$/;"	t	typeref:enum:__anon1
+bpage	bf/bf_component.h	/^  struct BFpage *bpage;               \/* ptr to buffer holding this page *\/$/;"	m	struct:BFhash_entry	typeref:struct:BFhash_entry::BFpage
+breq	bf/bftest.c	/^static BFreq	breq;$/;"	v	file:
+breq	bf/bftestPerso.c	/^static BFreq breq;$/;"	v	file:
+breq	pf/bftestPerso.c	/^static BFreq breq;$/;"	v	file:
+ccouple	am/am.c	/^typedef struct ccouple {$/;"	s	file:
+ccouple	am/am.c	/^} ccouple;$/;"	t	typeref:struct:ccouple	file:
+ccoupleLeaf	am/am.c	/^typedef struct ccoupleLeaf {$/;"	s	file:
+ccoupleLeaf	am/am.c	/^} ccoupleLeaf;$/;"	t	typeref:struct:ccoupleLeaf	file:
+char_comparison	am/am.c	/^static bool_t char_comparison(char* a, char* b, int op, int len) {$/;"	f	file:
+cleaf	am/am.c	/^typedef struct cleaf {$/;"	s	file:
+cleaf	am/am.c	/^} cleaf;$/;"	t	typeref:struct:cleaf	file:
+cleanup	am/amtest.c	/^void cleanup(void)$/;"	f
+cleanup	fe/fetest-ddl.c	/^void cleanup(void)$/;"	f
+cleanup	fe/fetest-dml.c	/^void cleanup(void)$/;"	f
+cnode	am/am.c	/^typedef struct cnode {$/;"	s	file:
+cnode	am/am.c	/^} cnode;$/;"	t	typeref:struct:cnode	file:
+count	bf/bf_component.h	/^  short          count;       \/* pin count associated with the page      *\/$/;"	m	struct:BFpage
+couple	am/am.c	/^  ccouple* couple;$/;"	m	struct:cnode	file:
+couple	am/am.c	/^  ccoupleLeaf* couple;     $/;"	m	struct:cleaf	file:
+couple	am/am.c	/^  fcouple* couple;   $/;"	m	struct:fnode	file:
+couple	am/am.c	/^  fcoupleLeaf* couple;     $/;"	m	struct:fleaf	file:
+couple	am/am.c	/^  icouple* couple;$/;"	m	struct:inode	file:
+couple	am/am.c	/^  icoupleLeaf* couple;    $/;"	m	struct:ileaf	file:
+create_professor	fe/fetest-ddl.c	/^void create_professor()$/;"	f
+create_professor	fe/fetest-dml.c	/^void create_professor()$/;"	f
+create_student	fe/fetest-ddl.c	/^void create_student()$/;"	f
+create_student	fe/fetest-dml.c	/^void create_student()$/;"	f
+current_key	am/am.c	/^  int     current_key;  $/;"	m	struct:AM_scantab_entry	file:
+current_num_keys	am/am.c	/^  int     current_num_keys;$/;"	m	struct:AM_scantab_entry	file:
+current_page	am/am.c	/^  int     current_page;  $/;"	m	struct:AM_scantab_entry	file:
+delete_professor	fe/fetest-dml.c	/^void delete_professor()$/;"	f
+delete_student	fe/fetest-dml.c	/^void delete_student()$/;"	f
+destroy_table	fe/fetest-ddl.c	/^void destroy_table(const char *relname)$/;"	f
+dirty	am/am.c	/^  bool_t    dirty;   $/;"	m	struct:AM_itab_entry	file:
+dirty	bf/bf_component.h	/^  bool_t         dirty;       \/* TRUE if page is dirty                   *\/$/;"	m	struct:BFpage
+dirty	h/minirel.h	/^    bool_t      dirty;                  \/* TRUE if page is dirty *\/$/;"	m	struct:_buffer_request_control
+dropindex_professor	fe/fetest-ddl.c	/^void dropindex_professor()$/;"	f
+dropindex_student	fe/fetest-ddl.c	/^void dropindex_student()$/;"	f
+faculty_rec	fe/studprofdb-schema.h	/^typedef struct faculty_rec {$/;"	s
+fanout	am/am.c	/^  int       fanout;             $/;"	m	struct:AM_itab_entry	file:
+fanout_leaf	am/am.c	/^  int       fanout_leaf;    $/;"	m	struct:AM_itab_entry	file:
+fcouple	am/am.c	/^typedef struct fcouple {$/;"	s	file:
+fcouple	am/am.c	/^} fcouple;$/;"	t	typeref:struct:fcouple	file:
+fcoupleLeaf	am/am.c	/^typedef struct fcoupleLeaf {$/;"	s	file:
+fcoupleLeaf	am/am.c	/^} fcoupleLeaf;$/;"	t	typeref:struct:fcoupleLeaf	file:
+fd	am/am.c	/^  int       fd;     $/;"	m	struct:AM_itab_entry	file:
+fd	bf/bf_component.h	/^  int            fd;          \/* PF file descriptor of this page         *\/$/;"	m	struct:BFpage
+fd	bf/bf_component.h	/^  int fd;                             \/* file descriptor                 *\/$/;"	m	struct:BFhash_entry
+fd	h/minirel.h	/^    int         fd;                     \/* PF file descriptor *\/$/;"	m	struct:_buffer_request_control
+fleaf	am/am.c	/^typedef struct fleaf {$/;"	s	file:
+fleaf	am/am.c	/^} fleaf;$/;"	t	typeref:struct:fleaf	file:
+float_comparison	am/am.c	/^static bool_t float_comparison(float a, float b, int op) {$/;"	f	file:
+float_val	hf/hftest.c	/^   float float_val;$/;"	m	struct:rec_struct	file:
+fname	pf/pf.c	/^	char		*fname;		\/* file name				*\/$/;"	m	struct:PFftab_ele	file:
+fnode	am/am.c	/^typedef struct fnode {$/;"	s	file:
+fnode	am/am.c	/^} fnode;$/;"	t	typeref:struct:fnode	file:
+fpage	bf/bf_component.h	/^  PFpage         fpage;       \/* page data from the file                 *\/$/;"	m	struct:BFpage
+gpa	fe/studprofdb-schema.h	/^	float	gpa;$/;"	m	struct:student_rec
+handle_error	bf/bf.c	11;"	d	file:
+handle_error	bf/bf_component.c	11;"	d	file:
+hash_entries	bf/bf_component.h	/^  BFhash_entry  **hash_entries;$/;"	m	struct:Hash_Table
+hdr	pf/pf.c	/^	PFhdr_str	hdr;		\/* file header				*\/$/;"	m	struct:PFftab_ele	file:
+hdrchanged	pf/pf.c	/^	short		hdrchanged;	\/* TRUE if file header has changed 	*\/$/;"	m	struct:PFftab_ele	file:
+head	bf/bf_component.h	/^  BFpage        *head;        \/* head|most recent page *\/$/;"	m	struct:LRU_List
+head	bf/bf_component.h	/^  BFpage        *head;        \/* points to head page of the Free list *\/$/;"	m	struct:Free_List
+header	am/am.c	/^  AM_Header header;  $/;"	m	struct:AM_itab_entry	file:
+header	bf/bftest.c	/^static char	header[PAGE_SIZE];$/;"	v	file:
+header	bf/bftestPerso.c	/^char header[PAGE_SIZE];$/;"	v
+header	pf/bftestPerso.c	/^char header[PAGE_SIZE];$/;"	v
+height_tree	am/am.c	/^	int   height_tree;    $/;"	m	struct:AM_Header	file:
+hftest1	hf/hftest.c	/^void hftest1()$/;"	f
+hftest2	hf/hftest.c	/^void hftest2()$/;"	f
+hftest3	hf/hftest.c	/^void hftest3() $/;"	f
+icouple	am/am.c	/^typedef struct icouple {$/;"	s	file:
+icouple	am/am.c	/^} icouple;$/;"	t	typeref:struct:icouple	file:
+icoupleLeaf	am/am.c	/^typedef struct icoupleLeaf {$/;"	s	file:
+icoupleLeaf	am/am.c	/^} icoupleLeaf;$/;"	t	typeref:struct:icoupleLeaf	file:
+ileaf	am/am.c	/^typedef struct ileaf {$/;"	s	file:
+ileaf	am/am.c	/^} ileaf;$/;"	t	typeref:struct:ileaf	file:
+iname	am/am.c	/^  char      iname[255+4];      $/;"	m	struct:AM_itab_entry	file:
+indexNo	am/am.c	/^	int   indexNo;           $/;"	m	struct:AM_Header	file:
+index_professor	fe/fetest-ddl.c	/^void index_professor()$/;"	f
+index_professor	fe/fetest-dml.c	/^void index_professor()$/;"	f
+index_student	fe/fetest-ddl.c	/^void index_student()$/;"	f
+index_student	fe/fetest-dml.c	/^void index_student()$/;"	f
+indexcnt	h/catalog.h	/^    int  indexcnt;		\/* number of indexed attributes		*\/$/;"	m	struct:_relation_desc
+indexed	h/catalog.h	/^    bool_t  indexed;		\/* if the field is indexed or not       *\/$/;"	m	struct:_attribute_desc
+inode	am/am.c	/^typedef struct inode {$/;"	s	file:
+inode	am/am.c	/^} inode;$/;"	t	typeref:struct:inode	file:
+inode	pf/pf.c	/^	ino_t		inode;		\/* inode number of the file 		*\/$/;"	m	struct:PFftab_ele	file:
+insert_professor	fe/fetest-dml.c	/^void insert_professor()$/;"	f
+insert_struc_recs	hf/hftest.c	/^int insert_struc_recs(const char *filename)$/;"	f
+insert_student	fe/fetest-dml.c	/^void insert_student()$/;"	f
+int_comparison	am/am.c	/^static bool_t int_comparison(int a, int b, int op) {$/;"	f	file:
+int_val	hf/hftest.c	/^   int int_val;$/;"	m	struct:rec_struct	file:
+is_leaf	am/am.c	/^  bool_t is_leaf;            $/;"	m	struct:cnode	file:
+is_leaf	am/am.c	/^  bool_t is_leaf;         $/;"	m	struct:cleaf	file:
+is_leaf	am/am.c	/^  bool_t is_leaf;   $/;"	m	struct:fleaf	file:
+is_leaf	am/am.c	/^  bool_t is_leaf;   $/;"	m	struct:fnode	file:
+is_leaf	am/am.c	/^  bool_t is_leaf;   $/;"	m	struct:ileaf	file:
+is_leaf	am/am.c	/^  bool_t is_leaf;   $/;"	m	struct:inode	file:
+join_student_prof	fe/fetest-dml.c	/^void join_student_prof(char *resRel)$/;"	f
+key	am/am.c	/^     int key;$/;"	m	struct:icoupleLeaf	file:
+key	am/am.c	/^   char* key;$/;"	m	struct:ccoupleLeaf	file:
+key	am/am.c	/^   float  key;$/;"	m	struct:fcoupleLeaf	file:
+key	am/am.c	/^  char* key; $/;"	m	struct:ccouple	file:
+key	am/am.c	/^  float key;$/;"	m	struct:fcouple	file:
+key	am/am.c	/^  int key;$/;"	m	struct:icouple	file:
+last_pt	am/am.c	/^  int last_pt;   $/;"	m	struct:cnode	file:
+last_pt	am/am.c	/^  int last_pt;   $/;"	m	struct:fnode	file:
+last_pt	am/am.c	/^  int last_pt;   $/;"	m	struct:inode	file:
+load_professor	fe/fetest-ddl.c	/^void load_professor()$/;"	f
+load_student	fe/fetest-ddl.c	/^void load_student()$/;"	f
+main	am/amtest.c	/^int main(int argc, char *argv[])$/;"	f
+main	bf/bftest.c	/^int main()$/;"	f
+main	bf/bftestPerso.c	/^int main(void){$/;"	f
+main	fe/fetest-ddl.c	/^int main(int argc, char *argv[])$/;"	f
+main	fe/fetest-dml.c	/^int main(int argc, char *argv[])$/;"	f
+main	hf/hftest.c	/^int main()$/;"	f
+main	pf/bftestPerso.c	/^int main(void){$/;"	f
+main	pf/pftest.c	/^int main()$/;"	f
+make_attrDesc	fe/fetest-ddl.c	/^void make_attrDesc(ATTR_DESCR *attr, const char *name, char type, int len)$/;"	f
+make_attrDesc	fe/fetest-dml.c	/^void make_attrDesc(ATTR_DESCR *attr, const char *name, char type, int len)$/;"	f
+make_attrVal	fe/fetest-dml.c	/^void make_attrVal(ATTR_VAL *aval, const char *name, char type, int len)$/;"	f
+make_relAttr	fe/fetest-dml.c	/^void make_relAttr(REL_ATTR *ra, const char *relname, const char *attrname)$/;"	f
+max_bfpage	bf/bf_component.h	/^  int           max_bfpage;   \/* maximum number of free pages *\/$/;"	m	struct:Free_List
+max_size	bf/bf_component.h	/^  int           max_size;$/;"	m	struct:LRU_List
+nb_leaf	am/am.c	/^	int   nb_leaf;        \/* number of leaf *\/$/;"	m	struct:AM_Header	file:
+next	am/am.c	/^  int next; $/;"	m	struct:cleaf	file:
+next	am/am.c	/^  int next; $/;"	m	struct:ileaf	file:
+next	am/am.c	/^  int next;$/;"	m	struct:fleaf	file:
+nextentry	bf/bf_component.h	/^  struct BFhash_entry *nextentry;     \/* next hash table element or NULL *\/$/;"	m	struct:BFhash_entry	typeref:struct:BFhash_entry::BFhash_entry
+nextpage	bf/bf_component.h	/^  struct BFpage  *nextpage;   \/* next in the linked list of buffer pages *\/$/;"	m	struct:BFpage	typeref:struct:BFpage::BFpage
+num_keys	am/am.c	/^  int num_keys;   $/;"	m	struct:cnode	file:
+num_keys	am/am.c	/^  int num_keys;   $/;"	m	struct:fleaf	file:
+num_keys	am/am.c	/^  int num_keys;   $/;"	m	struct:fnode	file:
+num_keys	am/am.c	/^  int num_keys;   $/;"	m	struct:ileaf	file:
+num_keys	am/am.c	/^  int num_keys;   $/;"	m	struct:inode	file:
+num_keys	am/am.c	/^  int num_keys; $/;"	m	struct:cleaf	file:
+num_pages	am/am.c	/^  int   num_pages;      \/* number of page\/node *\/$/;"	m	struct:AM_Header	file:
+numpages	pf/pf.c	/^	int 	numpages;	\/* number of pages in the file *\/$/;"	m	struct:PFhdr_str	file:
+office	fe/studprofdb-schema.h	/^	int	office;$/;"	m	struct:faculty_rec
+offset	h/catalog.h	/^    int  offset;		\/* attribute offset in tuple		*\/$/;"	m	struct:_attribute_desc
+offsetof	hf/hftest.c	17;"	d	file:
+op	am/am.c	/^  int     op;           $/;"	m	struct:AM_scantab_entry	file:
+pagebuf	h/minirel.h	/^    char pagebuf[PAGE_SIZE];		\/* actual page data             *\/$/;"	m	struct:PFpage
+pagenum	am/am.c	/^  int pagenum;$/;"	m	struct:ccouple	file:
+pagenum	am/am.c	/^  int pagenum;$/;"	m	struct:fcouple	file:
+pagenum	am/am.c	/^  int pagenum;$/;"	m	struct:icouple	file:
+pagenum	bf/bf_component.h	/^  int            pagenum;     \/* page number of this page                *\/$/;"	m	struct:BFpage
+pagenum	bf/bf_component.h	/^  int pagenum;                        \/* page number                     *\/$/;"	m	struct:BFhash_entry
+pagenum	h/minirel.h	/^	int	pagenum;$/;"	m	struct:_hf_record_identification
+pagenum	h/minirel.h	/^    int         pagenum;                \/* Page number in the file *\/$/;"	m	struct:_buffer_request_control
+pid	fe/studprofdb-schema.h	/^	int	pid;$/;"	m	struct:faculty_rec
+pname	fe/studprofdb-schema.h	/^	char	pname[MAXSTRLEN];$/;"	m	struct:faculty_rec
+preventry	bf/bf_component.h	/^  struct BFhash_entry *preventry;     \/* prev hash table element or NULL *\/$/;"	m	struct:BFhash_entry	typeref:struct:BFhash_entry::BFhash_entry
+previous	am/am.c	/^  int previous;  $/;"	m	struct:fleaf	file:
+previous	am/am.c	/^  int previous;  $/;"	m	struct:ileaf	file:
+previous	am/am.c	/^  int previous;$/;"	m	struct:cleaf	file:
+prevpage	bf/bf_component.h	/^  struct BFpage  *prevpage;   \/* prev in the linked list of buffer pages *\/$/;"	m	struct:BFpage	typeref:struct:BFpage::BFpage
+primattr	h/catalog.h	/^    char primattr[MAXNAME];	\/* name of primary attribute		*\/$/;"	m	struct:_relation_desc
+printfile	bf/bftest.c	/^void printfile(const char *fname)$/;"	f
+printfile	bf/bftestPerso.c	/^void printfile(char *fname){$/;"	f
+printfile	pf/bftestPerso.c	/^void printfile(char *fname){$/;"	f
+printfile	pf/pftest.c	/^void printfile(int fd)$/;"	f
+professor	fe/studprofdb-schema.h	/^} professor;$/;"	t	typeref:struct:faculty_rec
+racine_page	am/am.c	/^  int   racine_page;    \/* *\/$/;"	m	struct:AM_Header	file:
+read_string_recs	hf/hftest.c	/^int read_string_recs(const char *filename)$/;"	f
+read_struc_recs	hf/hftest.c	/^int read_struc_recs(const char *filename)$/;"	f
+readfile	bf/bftest.c	/^void readfile(const char *fname)$/;"	f
+readfile	pf/pftest.c	/^void readfile(const char *fname)$/;"	f
+readfiles	bf/bftestPerso.c	/^void readfiles(char *fname1, char *fname2){$/;"	f
+readfiles	pf/bftestPerso.c	/^void readfiles(char *fname1, char *fname2){$/;"	f
+real	h/minirel.h	/^typedef float  real;$/;"	t
+rec_struct	hf/hftest.c	/^struct rec_struct$/;"	s	file:
+recid	am/am.c	/^  RECID recid;$/;"	m	struct:ccoupleLeaf	file:
+recid	am/am.c	/^  RECID recid;$/;"	m	struct:fcoupleLeaf	file:
+recid	am/am.c	/^  RECID recid;$/;"	m	struct:icoupleLeaf	file:
+recnum	h/minirel.h	/^	int	recnum;$/;"	m	struct:_hf_record_identification
+relCatOffset	h/catalog.h	36;"	d
+relName	h/fe.h	/^    char *relName;	\/* relation name	*\/$/;"	m	struct:__anon4
+relname	h/catalog.h	/^    char relname[MAXNAME];	\/* relation name			*\/$/;"	m	struct:_attribute_desc
+relname	h/catalog.h	/^    char relname[MAXNAME];	\/* relation name			*\/$/;"	m	struct:_relation_desc
+relwid	h/catalog.h	/^    int  relwid;		\/* tuple width (in bytes)		*\/$/;"	m	struct:_relation_desc
+select_professor	fe/fetest-dml.c	/^void select_professor()$/;"	f
+select_student	fe/fetest-dml.c	/^void select_student()$/;"	f
+set_current_iscantab_value	am/am.c	/^static void set_current_iscantab_value(int &current_key, int &current_page, int &current_num_keys,$/;"	f	file:
+set_recid	am/am.c	/^static void set_recid(RECID &recid, int AM_ERROR_CODE) {$/;"	f	file:
+show_catalogs	fe/fetest-ddl.c	/^void show_catalogs()$/;"	f
+show_catalogs	fe/fetest-dml.c	/^void show_catalogs()$/;"	f
+show_table	fe/fetest-ddl.c	/^void show_table(const char *relname)$/;"	f
+show_table	fe/fetest-dml.c	/^void show_table(const char *relname)$/;"	f
+sid	fe/studprofdb-schema.h	/^	int	sid;$/;"	m	struct:student_rec
+size	bf/bf_component.h	/^  int           size;         \/* total number of pages in LRU *\/$/;"	m	struct:LRU_List
+size	bf/bf_component.h	/^  int           size;         \/* total number of pages in the list *\/$/;"	m	struct:Free_List
+size	bf/bf_component.h	/^  int           size;$/;"	m	struct:Hash_Table
+sname	fe/studprofdb-schema.h	/^	char	sname[MAXSTRLEN];$/;"	m	struct:student_rec
+string_val	hf/hftest.c	/^   char string_val[STRSIZE];$/;"	m	struct:rec_struct	file:
+student	fe/studprofdb-schema.h	/^} student;$/;"	t	typeref:struct:student_rec
+student_rec	fe/studprofdb-schema.h	/^typedef struct student_rec {$/;"	s
+tail	bf/bf_component.h	/^  BFpage        *tail;        \/* tail|most old page *\/$/;"	m	struct:LRU_List
+testbf1	bf/bftest.c	/^void testbf1(void)$/;"	f
+testbf2	bf/bftestPerso.c	/^void testbf2(void){$/;"	f
+testbf2	pf/bftestPerso.c	/^void testbf2(void){$/;"	f
+testpf1	pf/pftest.c	/^void testpf1(void)$/;"	f
+tests	am/amtest.c	/^void (*tests[])() = {amtest1, amtest2, amtest3, cleanup};$/;"	v
+unixfd	bf/bf_component.h	/^  int            unixfd;      \/* Unix file descriptor of this page       *\/$/;"	m	struct:BFpage
+unixfd	h/minirel.h	/^    int         unixfd;                 \/* Unix file descriptor *\/$/;"	m	struct:_buffer_request_control
+unixfd	pf/pf.c	/^	int 		unixfd;		\/* Unix file descriptor			*\/$/;"	m	struct:PFftab_ele	file:
+valLength	h/fe.h	/^    int valLength;	\/* length if type = STRING_TYPE *\/$/;"	m	struct:__anon5
+valType	h/fe.h	/^    int valType;	\/* type of value	*\/$/;"	m	struct:__anon5
+valid	am/am.c	/^  bool_t    valid;     $/;"	m	struct:AM_itab_entry	file:
+valid	am/am.c	/^  bool_t  valid;           $/;"	m	struct:AM_scantab_entry	file:
+valid	pf/pf.c	/^	bool_t		valid;		\/* set to TRUE when a file is open 	*\/$/;"	m	struct:PFftab_ele	file:
+value	am/am.c	/^  char    value[255]; $/;"	m	struct:AM_scantab_entry	file:
+value	h/fe.h	/^    char *value;	\/* value for attribute	*\/$/;"	m	struct:__anon5
+writeback	bf/bf.c	/^static writeback(BFpage* victim) {$/;"	f	file:
+writefile	bf/bftest.c	/^void writefile(const char *fname)$/;"	f
+writefile	pf/pftest.c	/^void writefile(const char *fname)$/;"	f
+writefiles	bf/bftestPerso.c	/^void writefiles(char *fname1, char *fname2){$/;"	f
+writefiles	pf/bftestPerso.c	/^void writefiles(char *fname1, char *fname2){$/;"	f
