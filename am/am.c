@@ -227,7 +227,7 @@ int AM_CreateIndex(const char *fileName, int indexNo, char attrType, int attrLen
 
 	/* allocate the header, using the PF_AllocPage */
   if ( (error = PF_AllocPage(AM_itab_iter->PF_fd, &pagenum, &header_buf)) != PFE_OK) { PFerrno=error; PF_PrintError("CreateIndex");}
-  if (pagenum != 1) return AME_PF;
+  if (pagenum != 0) return AME_PF;
 
 	/* transfer the AM_itab_entry's header meta data to the actual header page / header_buf */
   memcpy((char*) (header_buf), (int*) &AM_itab_iter->header.indexNo, sizeof(int));
@@ -288,7 +288,7 @@ int AM_OpenIndex(const char *fileName, int indexNo) {
 	/* open the file using the PF_OpenFile */
   if ( (PF_fd = PF_OpenFile(open_treefile_name)) < 0) {PFerrno=0; PF_PrintError("OpenIndex, PF_OpenFile");}
 	/* read the header page using the PF_GetThisPage */
-  if ( (error = PF_GetThisPage(PF_fd, 1, &header_buf)) != PFE_OK) {PFerrno=error; PF_PrintError("OpenIndex");}
+  if ( (error = PF_GetThisPage(PF_fd, 0, &header_buf)) != PFE_OK) {PFerrno=error; PF_PrintError("OpenIndex");}
 
   /* set the metadata for the AM_itab_entry, that the opened treefile will be placed */
   AM_itab_iter = AM_itab + AM_itab_length;
@@ -314,7 +314,7 @@ int AM_OpenIndex(const char *fileName, int indexNo) {
   AM_itab_length ++;
   AM_fd = AM_itab_length -1;
   /* unpin the page, using the PF_UnpinPage */
-  if ( (error = PF_UnpinPage(AM_itab_iter->PF_fd, 1, 1)) != PFE_OK) {PFerrno=error; PF_PrintError("OpenIndex");}
+  if ( (error = PF_UnpinPage(AM_itab_iter->PF_fd, 0, 1)) != PFE_OK) {PFerrno=error; PF_PrintError("OpenIndex");}
 
 	/* properly opened the treefile */
   free(open_treefile_name);
@@ -747,7 +747,7 @@ int AM_InsertEntry(int AM_fd, char *value, RECID recId) {
     }
 
     /* set AM_itab_iter's metadata (B+tree's header metadata) */
-    AM_itab_iter->header.racine_page = 2;
+    AM_itab_iter->header.racine_page = 1;
     AM_itab_iter->header.height_tree = 1;
     AM_itab_iter->header.nb_leaf = 1;
     AM_itab_iter->header.num_pages++;
@@ -1369,7 +1369,7 @@ int Find_leaf_keypos(int idesc, char* value, int* tab){
 
   tab[0]=pt->header.racine_page;
 
-  if(tab[0]<=1) return AME_WRONGROOT;
+  if(tab[0]<=0) return AME_WRONGROOT;
 
   for (i = 0; i < (pt->header.height_tree); i++) {
 
