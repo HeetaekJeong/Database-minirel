@@ -8,25 +8,9 @@
 #include "minirel.h"
 #include "bf.h"
 #include "pf.h"
+#include "def.h"
 
 #define FILE_CREATE_MASK (S_IRUSR|S_IWUSR|S_IRGRP)
-int PFerrno;
-typedef struct PFhdr_str {
-	int 	numpages;	/* number of pages in the file */
-} PFhdr_str;
-
-typedef struct PFftab_ele {
-	bool_t		valid;		/* set to TRUE when a file is open 	*/
-	ino_t		inode;		/* inode number of the file 		*/
-	char		*fname;		/* file name				*/
-	int 		unixfd;		/* Unix file descriptor			*/
-	PFhdr_str	hdr;		/* file header				*/
-	short		hdrchanged;	/* TRUE if file header has changed 	*/
-} PFftab_ele;
-
-PFftab_ele *PFftable; 
-size_t PFftab_length;
-
 int Ftable_Check(const char *filename)
 {
 	int i, found;
@@ -57,7 +41,7 @@ void PF_Init(void)
 	BF_Init();
 
 	/* Create the file table */
-	PFftable = malloc(sizeof(PFftab_ele)*PF_FTAB_SIZE);
+	PFftable = malloc(sizeof(PFftab_ele) * PF_FTAB_SIZE);
 
 	/*Initialize the file table */
 	for(i = 0; i < PF_FTAB_SIZE; i++){
@@ -135,7 +119,10 @@ int PF_DestroyFile(const char *filename)
 			break;
 		}
 	}
-
+    remove(filename);
+/*    if (remove(filename) != 0) {
+        printf("remove failed\n");
+    }*/
 	return PFE_OK;
 }
 
@@ -203,7 +190,6 @@ int PF_CloseFile(int fd)
 	int error;
 	PFhdr_str header;
 	char **pagebuf;
-
 	/* Invalid PF file descriptor */
 	if(fd < 0 || fd > PF_FTAB_SIZE-1){
 		printf("\nInvalid PF file descriptor\n");
@@ -304,6 +290,7 @@ int PF_AllocPage (int fd, int *pagenum, char **pagebuf)
 
 	/* Set the return argument */
 	*pagenum = bq.pagenum;
+	pfpage->pagebuf[0] = 0x00;
 	*(pagebuf) = pfpage->pagebuf;
 	current_pfftab->hdrchanged = TRUE;
 	current_pfftab->hdr.numpages++;
@@ -480,7 +467,7 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty)
 
     bq.fd = fd;
     bq.unixfd = current_pfftab->unixfd;
-    bq.dirty = TRUE;
+    bq.dirty = dirty;
     bq.pagenum = pagenum;
     
     if (dirty){
@@ -503,6 +490,7 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty)
 void PF_PrintError(const char *errString)
 {
 	switch(PFerrno){
+        case PFE_OK: return;break;
 		case PFE_INVALIDPAGE: printf("PF: PFE_INVALIDPAGE\n"); break;
 		case PFE_FTABFULL: printf("PF: PFE_FTABFULL\n");break;
 		case PFE_FD: printf("PF: PFE_FD\n");break;
@@ -515,9 +503,8 @@ void PF_PrintError(const char *errString)
         case PFE_NOUSERS:printf("PF: PFE_NOUSERS\n");break;
         case PFE_MSGERR:printf("PF: PFE_MSGERR\n");break;
 		case PFE_UNIX: printf("PF: PFE_UNIX)\n");break;
-		case PFE_OK: printf("PF: PFE_OK\n "); break;
 
-		default: printf( "PF: unknown error code: %d \n", PFerrno);
+		default: printf("PF: unknown error code: %d \n", PFerrno);
 	}
 	printf("PF Error : %s", errString);
 	exit(1);
