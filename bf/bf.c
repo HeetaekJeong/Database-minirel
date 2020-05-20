@@ -130,7 +130,6 @@ int BF_AllocBuf(BFreq bq, PFpage **fpage) {
   if (H_add_page(HT, bfpage_ptr) != BFE_OK) {
     BFerrno = BFE_PAGENOTINBUF; return BFE_PAGENOTINBUF;
   }
-
   *fpage = &(bfpage_ptr->fpage);
   return BFE_OK;
 }
@@ -207,6 +206,7 @@ int BF_FlushBuf(int fd) {
       L_detach_page(LRU, bfpage_ptr);                                     /* remove from LRU*/ 
       LRU->size--;
       if (bfpage_ptr->dirty == TRUE) writeback(bfpage_ptr);               /* writeback if dirty */
+      memset(bfpage_ptr->fpage.pagebuf, 0, PAGE_SIZE);
       if ((res = H_remove_page(HT, bfpage_ptr->fd, bfpage_ptr->pagenum))  /* remove from HT */
           != BFE_OK) { BFerrno = res; return res; }
       if ((res = F_add_free(FRL, bfpage_ptr))                             /* add to FRL */

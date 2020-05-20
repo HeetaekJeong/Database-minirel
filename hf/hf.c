@@ -10,7 +10,7 @@
 #include "pf.h"
 #include "hf.h"
 #include "def.h"
-
+int fileread = 0;
 /* 
  flag --> 0: header to page
           1: page to header
@@ -51,7 +51,6 @@ void 	HF_Init(void){
 }
 
 int 	HF_CreateFile(const char *fileName, int RecSize){
-    PFftab_ele *PFftable;
     HFHeader hfh;
     int pffd;
     if (RecSize <= 0 || (RecSize >= (PF_PAGE_SIZE - sizeof(int)))) {
@@ -83,6 +82,7 @@ int 	HF_CreateFile(const char *fileName, int RecSize){
         return HFE_PF;
     }
 
+    fileread = 1;
     return HFE_OK;
 }
 
@@ -106,7 +106,7 @@ int 	HF_OpenFile(const char *fileName) {
     for (hffd = 0; hffd < HF_FTAB_SIZE; hffd++) {
         HFftable_cur = &HFftable[hffd];
         if(HFftable_cur->valid == FALSE) {
-            if(CopyHeader(pffd, &(HFftable_cur->hfh), 1) || HFftable_cur->hfh.RecSize <= 0 || HFftable_cur->hfh.RecPage <= 0 ) { /* CCC*/
+            if(CopyHeader(pffd, &(HFftable_cur->hfh), 1) < 0 || HFftable_cur->hfh.RecSize <= 0 || HFftable_cur->hfh.RecPage <= 0 ) { /* CCC*/
                 PF_CloseFile(pffd);
                 HFerrno = HFE_PF;
                 return HFE_PF;
@@ -122,21 +122,21 @@ int 	HF_OpenFile(const char *fileName) {
     return HFE_FTABFULL;
 }
 int	HF_CloseFile(int HFfd) {
-    int pffd, i;
+    int i;
     char *pagebuf;
     int error;
     HFftab_ele *HFftable_cur;
     HFstab_ele *HFstable_cur; 
-
+    
+    HFftable_cur = &(HFftable[HFfd]);
     if (HFfd < 0 || HFfd >= HF_FTAB_SIZE) {
         HFerrno = HFE_FD;
         return HFE_FD;
     }
-    if( CopyHeader(HFftable_cur->pffd, &(HFftable_cur->hfh), 0) != HFE_OK) {
+    if(CopyHeader(HFftable_cur->pffd, &(HFftable_cur->hfh), 0) != HFE_OK) {
         return HFE_PF;
     }
 
-    HFftable_cur = &(HFftable[HFfd]);
 
     if (HFftable_cur->valid != TRUE) {
         HFerrno = HFE_FILENOTOPEN;
@@ -183,6 +183,7 @@ RECID	HF_InsertRec(int HFfd, char *record) {
     recid.recnum = HFE_PF;
     while (1) {
         error = PF_GetNextPage(HFftable_cur->pffd, &pagenum, &pagebuf);
+/*        printf("error: %d\n", error);*/
         if (error == PFE_EOF){
            error = PF_AllocPage(HFftable_cur->pffd, &pagenum, &pagebuf);
            if (error != PFE_OK || PF_UnpinPage(HFftable_cur->pffd, pagenum, 1) != PFE_OK) {
@@ -198,17 +199,18 @@ RECID	HF_InsertRec(int HFfd, char *record) {
         for (recnum = 0; recnum < HFftable_cur->hfh.RecPage; recnum++) {
             nbyte = recnum / 8;
             nbit = recnum % 8;
-
             directory = pagebuf[recsize * HFftable_cur->hfh.RecPage + nbyte];
 
-/*            printf("directory : %d, nbyte: %d, nbit: %d\n", directory, nbyte, nbit);*/
+
+/*            printf("directory : %x, nbyte: %d, nbit: %d\n", directory & 0xff, nbyte, nbit);*/
             if (((directory >> nbit) & 0x01) == 0) {
+/*                printf("insert: pagenum: %d, recnum: %d, record: %s\n", pagenum, recnum, record);*/
                 if (memcpy(pagebuf + recsize * recnum, record, recsize) == NULL) {
                     PF_UnpinPage(HFftable_cur->pffd, pagenum, 0);
                     return recid;
                 }
 /*                printf("insert: %x-->%x, recnum: %d\n", directory & 0xff, directory | (0x01 << nbit), recnum); */
-                pagebuf[recsize * HFftable_cur->hfh.RecPage +nbyte] = directory | (0x01 << nbit);
+                pagebuf[recsize * HFftable_cur->hfh.RecPage + nbyte] = directory | (0x01 << nbit);
                 error = PF_UnpinPage(HFftable_cur->pffd, pagenum, 1);
 /*                printf("error: %d\n", error);*/
                 if (error == PFE_OK) {
@@ -273,7 +275,6 @@ RECID	HF_GetNextRec(int HFfd, RECID recId, char *record) {
     char directory;
     int error;
     RECID recid;
-    printf("hffd: %d, nextrec\n", HFfd);
     if (record == NULL) {
         recid.recnum = HFE_INVALIDRECORD;
         recid.pagenum = -1;
@@ -300,6 +301,7 @@ RECID	HF_GetNextRec(int HFfd, RECID recId, char *record) {
     pagenum = recId.pagenum - 1;
     HFftable_cur = &(HFftable[HFfd]);
     recsize = HFftable_cur->hfh.RecSize;
+/*    printf("recnum local: %d, input: %d\n", recnum, recId.recnum);*/
     while(1) {
         error = PF_GetNextPage(HFftable_cur->pffd, &pagenum, &pagebuf);
 /*        printf("error: %d, pffd: %d\n", error, HFftable_cur->pffd);*/
@@ -319,8 +321,7 @@ RECID	HF_GetNextRec(int HFfd, RECID recId, char *record) {
         else {
             recnum = 0;
         }
-
-        if (first) {
+        if (first == 1) {
             first = 0;
             recnum = 0;
         }
@@ -457,31 +458,28 @@ RECID	HF_FindNextRec(int scanDesc, char *record){
 
     RECID recid_cur, recid;
 
-    if (record == NULL) {
-        recid.recnum = HFE_INVALIDRECORD;
-        recid.pagenum = -1;
-        return recid;
-    }
     op = HFstable[scanDesc].op;
     value = HFstable[scanDesc].value;
-    recid = HFstable[scanDesc].recid_cur;
+    recid_cur = HFstable[scanDesc].recid_cur;
     flag = 0;
 
     recid.pagenum = -1;
     recid.recnum = HFE_INTERNAL;
    
     if (recid_cur.pagenum < 0) {
-        recid.pagenum = 0;
+        recid_cur.pagenum = 0;
         first = 1;
     }
-
     while (!flag){
-        recid_cur = HF_GetNextRec(HFstable[scanDesc].hffd, recid, record);
-        
-        if (recid.pagenum < 0) return recid;
+        recid_cur = HF_GetNextRec(HFstable[scanDesc].hffd, recid_cur, record);
+/*        printf("recnum: %d, pagenum: %d, record: %s\n", recid_cur.recnum, recid_cur.pagenum, record); */
+        if (recid_cur.pagenum < 0) {
+            return recid_cur;
+        }
         
         attrOffset = HFstable[scanDesc].attrOffset;
         attrLength = HFstable[scanDesc].attrLength;
+/*        printf("offset: %d, length: %d\n", attrOffset, attrLength);*/
         if (value == NULL) flag = 1;
         else if (HFstable[scanDesc].attrType == INT_TYPE) {
             if (memcpy(&attr_int, record + attrOffset, attrLength) == NULL || memcpy(&val_int, value, attrLength)) {
@@ -497,7 +495,9 @@ RECID	HF_FindNextRec(int scanDesc, char *record){
             else return recid;
         }
         else if (HFstable[scanDesc].attrType == REAL_TYPE) {
-            if (memcpy(&attr_float, record + attrOffset, attrLength) == NULL || memcpy(&val_float, value, attrLength)) {
+            if (memcpy(&attr_float, record + attrOffset, attrLength) == NULL || memcpy(&val_float, value, attrLength) == NULL) {
+/*                printf("%p, %p\n", memcpy(&attr_float, record + attrOffset, attrLength), memcpy(&val_float, value, attrLength));
+                printf("3\n");*/
                 return recid;
             }
 
@@ -523,8 +523,8 @@ RECID	HF_FindNextRec(int scanDesc, char *record){
         else return recid;
     }
 
-    HFstable[scanDesc].recid_cur = recid;
-    return recid;
+    HFstable[scanDesc].recid_cur = recid_cur;
+    return recid_cur;
 
 }
 
@@ -577,7 +577,7 @@ bool_t         HF_ValidRecId(int HFfd, RECID recid){
     numpg = HFftable[HFfd].hfh.NumPg;
     recpg = HFftable[HFfd].hfh.RecPage;
     if (recid.pagenum < 0 || recid.recnum < 0 || recid.pagenum >= numpg || recid.recnum >= recpg) {
-        printf("valid, pagenum: %d, recnum: %d, numpg: %d, recpage: %d, \n", recid.pagenum, recid.recnum, numpg, recpg);
+/*        printf("valid, pagenum: %d, recnum: %d, numpg: %d, recpage: %d, \n", recid.pagenum, recid.recnum, numpg, recpg);*/
         return FALSE;
     }
     return TRUE;}
