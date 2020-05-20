@@ -69,11 +69,13 @@ int L_make_head(LRU_List *LRU, BFpage *target_page) {
   BFpage *bfpage_ptr;
   bfpage_ptr = target_page;
 
-  /* check if "bfpage" is in hash, but not in LRU? */
+  /* check if "bfpage" is in hash, but not in LRU? 
   if ((bfpage_ptr->nextpage == NULL || bfpage_ptr->prevpage == NULL)
-      && (LRU->head != bfpage_ptr && LRU->tail == bfpage_ptr))
+      && (LRU->head != bfpage_ptr && LRU->tail == bfpage_ptr)){
+    printf("nextpage: %p, prevpage %p, LRU->head: %p, LRU->tail: %p, bfpage: %p\n", bfpage_ptr->nextpage, bfpage_ptr->prevpage, LRU->head, LRU->tail, bfpage_ptr);
     handle_error("L_make_head error. in HT, but not in LRU");
-
+  }
+*/
   if (bfpage_ptr == LRU->head) return BFE_OK;
 
   /* fix the location of the bfpage to the head */
@@ -263,7 +265,7 @@ int H_get_index(Hash_Table *HT, int fd, int pagenum) {
 
 int H_add_page(Hash_Table *HT, BFpage *add_page) {
 #if DEBUG == 2
-  printf("\nH_add_page\n");
+  printf("\nH_add_page, pagenum : %d\n", add_page->pagenum);
   Show_Hash(HT); /*JM_EDIT*/
 #endif
   int hash_index;
@@ -326,6 +328,8 @@ BFhash_entry* H_get_entry(Hash_Table *HT, int fd, int pagenum) {
   }
   else {
     while(1) {
+
+/*      printf("hashentry --> fd: %d, pagenum: %d\n input --> fd: %d, pagenum: %d\n", hash_entry_ptr->fd, hash_entry_ptr->pagenum, fd, pagenum);*/
       if (hash_entry_ptr->fd == fd && hash_entry_ptr->pagenum == pagenum) {
         return hash_entry_ptr;
       }

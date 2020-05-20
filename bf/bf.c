@@ -55,8 +55,10 @@ int BF_GetBuf(BFreq bq, PFpage **fpage) {
   get_entry = H_get_entry(HT, bq.fd, bq.pagenum);
   if (get_entry != NULL) {
     get_entry->bpage->count++;
+    (*fpage) = &(get_entry->bpage->fpage);
     res = L_make_head(LRU, get_entry->bpage);
     if (res != 0) { BFerrno = res; return res; }
+    return BFE_OK;
   }
    
   /* if not resident in LRU, get new page from freelist. */
