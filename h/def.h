@@ -51,3 +51,12 @@ int first;
 HFftab_ele *HFftable;
 HFstab_ele *HFstable;
 int	HFerrno;
+
+/* Definitions for FE layer */
+int relcatFd, attrcatFd;
+int FEerrno;
+char *db;
+
+#ifndef offsetof
+#define offsetof(type, field)   ((size_t)&(((type *)0) -> field))
+#endif

@@ -1,8 +1,9 @@
 # Makefile for FE layer
+MINIREL_HOME =../
 LIB	= fe
 INCDIR	= ${MINIREL_HOME}/h
 INCS	= 
-SRCS	= 
+SRCS	= fe.c 
 TESTS	= fetest-ddl.c fetest-dml.c
 OBJS	= ${SRCS:.c=.o}
 LIBS	= lib${LIB}.a ../am/libam.a ../hf/libhf.a ../pf/libpf.a ../bf/libbf.a
