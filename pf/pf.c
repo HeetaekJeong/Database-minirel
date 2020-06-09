@@ -67,7 +67,6 @@ int PF_CreateFile(const char *filename)
         PFerrno = PFE_FD;
         return PFerrno; /* Already exists */
 	}
-
 	/* Create the file */
 	if((unixfd = open(filename, O_RDWR|O_CREAT, FILE_CREATE_MASK)) < 0){
         PFerrno = PFE_UNIX;
@@ -180,6 +179,8 @@ int PF_OpenFile(const char *filename)
 	PFftable[PFfdsc].hdr.numpages = header.numpages;
 	PFftable[PFfdsc].hdrchanged = FALSE;
 
+    printf("fname: %s\n", filename);
+    printf("fname: %s\n", PFftable[PFfdsc].fname);
 	/* Return the PF file descriptor */
 	return PFfdsc;
 }
@@ -461,6 +462,7 @@ int  PF_UnpinPage	(int fd, int pagenum, int dirty)
 
 	/* Invalid page number */
     if (pagenum >= current_pfftab->hdr.numpages || pagenum < 0){
+        printf("fd: %d, pagenum: %d, current: %d\n", fd, pagenum, current_pfftab->hdr.numpages);
         PFerrno = PFE_INVALIDPAGE;
         return PFerrno;
     }

@@ -53,28 +53,32 @@ void amtest1()
    /* making sure FILE1 index is not present */
    sprintf(files_to_delete, "rm -f %s*", FILE1);
    system(files_to_delete);
-
+   printf("11\n");
    /* Creating HF file to insert records */
    if (HF_CreateFile(FILE1, STRSIZE) != HFE_OK) {
       HF_PrintError("Problem creating HF file");
       exit(1);
    }
 
+   printf("2\n");
    /* Opening HF file so that below we can insert records inmediately */
    if ((hf_fd = HF_OpenFile(FILE1)) < 0) {
       HF_PrintError("Problem opening");
       exit(1);
    }
 
+   printf("33\n");
    if (AM_CreateIndex(FILE1, 1, STRING_TYPE, STRSIZE, FALSE) != AME_OK) {
       AM_PrintError("Problem creating");
       exit(1);
    }
+   printf("4\n");
    if ((am_fd = AM_OpenIndex(FILE1,1)) < 0) {
       AM_PrintError("Problem opening");
       exit(1);
    }
 
+   printf("5\n");
    /* Inserting value in the HF file and the B+ Tree */
       value = 10;
       while (value < 100)
@@ -88,11 +92,13 @@ void amtest1()
 
          /* Inserting the record in the HF file */
          recid = HF_InsertRec(hf_fd, string_val);
+         printf("value: %d, numpage:%d\n", value, recid.pagenum);
          if (!HF_ValidRecId(hf_fd,recid)){
             HF_PrintError("Problem inserting record in HF file");
             exit(1);
          }
      
+         printf("6\n");
          /* Inserting the record in the B+ Tree */
          if (AM_InsertEntry(am_fd, (char *)&string_val, recid) != AME_OK) {
              AM_PrintError("Problem Inserting rec");

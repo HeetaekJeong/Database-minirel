@@ -45,6 +45,7 @@ typedef struct  HFstab_ele {
     char *value;
     RECID recid_cur;
 } HFstab_ele;
+
 int CopyHeader(int pffd, HFHeader *hfh, int flag);
 
 int first;

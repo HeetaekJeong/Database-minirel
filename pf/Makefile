@@ -20,6 +20,9 @@ all: lib${LIB}.a ${LIB}test
 ${LIB}test: ${LIB}test.o ${LIBS}
 	$(CC) $(CFLAGS) -o $@ $< ${LIBS}
 
+${LIB}test2: ${LIB}test2.o ${LIBS}
+	$(CC) $(CFLAGS) -o $@ $< ${LIBS}
+
 lib${LIB}.a:$(OBJS)
 	ar cr lib${LIB}.a $(OBJS)
 	ranlib lib${LIB}.a

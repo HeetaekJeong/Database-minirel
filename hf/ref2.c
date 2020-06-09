@@ -191,7 +191,7 @@ RECID HF_InsertRec(int HFfd, char *record) {
     pagenum = -1;
     while (1) {
         int err = PF_GetNextPage(hfte->pfd, &pagenum, &pagebuf);
-
+        printf("err: %d, pagenum: %d, max: %d\n", err, pagenum, hfte->hfheader.NumPg);
         if (err == PFE_EOF) {
             if (PF_AllocPage (hfte->pfd, &pagenum, &pagebuf) != PFE_OK || PF_UnpinPage(hfte->pfd, pagenum, 1) != PFE_OK) {
                 return recid;
@@ -217,7 +217,7 @@ RECID HF_InsertRec(int HFfd, char *record) {
                     return recid;
                 }
 
-                /* printf("insert %s at %d, %d. map changes from %x, to %x\n", record, pagenum, recnum, map & 0xFF, map | (0x01 << bit)); */
+                printf("insert %s at %d, %d. map changes from %x, to %x\n", record, pagenum, recnum, map & 0xFF, map | (0x01 << bit)); 
 
                 pagebuf[recSize * hfte->hfheader.RecPage + byte] = map | (0x01 << bit);
 
@@ -259,7 +259,7 @@ int HF_DeleteRec(int HFfd, RECID recId) {
     map = pagebuf[recSize * hfte->hfheader.RecPage + byte];
     pagebuf[recSize * hfte->hfheader.RecPage + byte] = map & (0xFF - (0x01 << bit));
 
-    /* printf("delete %d, %d. map changes from %x, to %x\n", recId.pagenum, recId.recnum, map & 0xFF, map & (0xFF - (0x01 << bit))); */
+    printf("delete %d, %d. map changes from %x, to %x\n", recId.pagenum, recId.recnum, map & 0xFF, map & (0xFF - (0x01 << bit)));
 
     return PF_UnpinPage(hfte->pfd, recId.pagenum, 1) == PFE_OK ? HFE_OK : HFE_PF;
 }
@@ -515,6 +515,8 @@ void HF_PrintError(char *errString) {
 */
 bool_t HF_ValidRecId(int HFfd, RECID recid) {
     HFHeader h = hft[HFfd].hfheader;
+
+    printf("recid--> recnum : %d, pagenum: %d \n cur--> recnum: %d, numpage: %d\n", recid.recnum, recid.pagenum, h.RecPage, h.NumPg);
 
     return recid.pagenum >= 0 && recid.recnum >= 0 && recid.pagenum < h.NumPg && recid.recnum < h.RecPage ? TRUE : FALSE;
 }

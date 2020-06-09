@@ -10,7 +10,7 @@
 #define STRSIZE 80
 #define NUMBER  100
 #define RECORDVAL 77
-#define FILE1 "recfile"
+#define FILE1 "recfile.1"
 #define FILE2 "compfile"
 
 #ifndef offsetof
@@ -68,14 +68,14 @@ void hftest1()
   }   
 
   /* Getting the records */
-
+  
   next_recid = HF_GetFirstRec(fd, record);
+  printf("hftest: first recnum: %d\n", next_recid.recnum);
   if (!HF_ValidRecId(fd,next_recid))
   {
       HF_PrintError("Problem getting first record.\n");
       exit(1);
   }
-   
   i = 0;
   while (HF_ValidRecId(fd,next_recid))
   {
@@ -97,7 +97,6 @@ void hftest1()
     HF_PrintError("Problem closing file.\n");
     exit(1);
   }
-
   read_string_recs(FILE1);
 }
 
