@@ -125,6 +125,7 @@ void DBcreate (const char *dbname) {
     relcat.relwid = RELDESCSIZE;
     relcat.attrcnt = 5;
     relcat.indexcnt = 0;
+    sprintf(relcat.primattr, "%s", "relname");
 
     recid = HF_InsertRec(fd, (char *)(&relcat));
     if (!HF_ValidRecId(fd, recid)) {
@@ -138,6 +139,7 @@ void DBcreate (const char *dbname) {
     relcat.relwid = ATTRDESCSIZE;
     relcat.attrcnt = 7;
     relcat.indexcnt = 0;
+    sprintf(relcat.primattr, "%s", "relname");
 
     recid = HF_InsertRec(fd, (char *) &relcat);
     if (!HF_ValidRecId(fd, recid)) {
@@ -609,6 +611,7 @@ int  HelpTable(const char *relName) {	/* name of relation		*/
     RELDESCTYPE relcat;
     ATTRDESCTYPE attrcat;
     RECID recid;
+    char *attrtype;
 
     if ((relcat_scanDesc = HF_OpenFileScan(relcatFd, STRING_TYPE, MAXNAME, offsetof(RELDESCTYPE, relname), EQ_OP, relName)) < 0) {
         FEerrno = FEE_HF;
@@ -627,7 +630,16 @@ int  HelpTable(const char *relName) {	/* name of relation		*/
         recid = HF_FindNextRec(attrcat_scanDesc, (char *)(&attrcat));
         
         while (HF_ValidRecId(attrcatFd, recid)) {
-            printf ("| %s\t| %d\t\t| %d\t| %c\t| %s\t| %d\t|\n", attrcat.attrname, attrcat.offset, attrcat.attrlen, attrcat.attrtype, attrcat.indexed ? "yes" : "no", attrcat.attrno);
+            if(attrcat.attrtype == 99){
+                sprintf(attrtype, "%s", "string");
+            }
+            else if(attrcat.attrtype == 105){
+                sprintf(attrtype, "%s", "integer");
+            }
+            else if(attrcat.attrtype == 102){
+                sprintf(attrtype, "%s", "real");
+            }
+            printf ("|%-14s|%14d|%14d|%-14s|%-14s|%14d|\n", attrcat.attrname, attrcat.offset, attrcat.attrlen, attrtype, attrcat.indexed ? "yes" : "no", attrcat.attrno);
 
             recid = HF_FindNextRec(attrcat_scanDesc, (char *)(&attrcat));
         }
@@ -681,7 +693,13 @@ int  PrintTable(const char *relName) {	/* name of relation to print	*/
     record = (char *) malloc(sizeof(char) * relcat.relwid);
 
     printf("Relation  %s:\n", relName);
-    printf ("+--------------+--------------+--------------+--------------+--------------+--------------+\n");
+    if(!strcmp(relName, RELCATNAME)) {
+        printf ("+--------------+--------------+--------------+--------------+--------------+\n");
+    }
+    else {
+        printf ("+--------------+--------------+--------------+--------------+--------------+--------------+--------------+\n");
+
+    }
     
     if (scanDesc = HF_OpenFileScan(attrcatFd, STRING_TYPE, MAXNAME, 0, EQ_OP, relName) < 0) {
         FEerrno = FEE_HF;
@@ -690,7 +708,16 @@ int  PrintTable(const char *relName) {	/* name of relation to print	*/
     printf("|");
     /* Attr names */
     while (HF_ValidRecId(attrcatFd, HF_FindNextRec(scanDesc, (char *)(&attrcat)))) {
-        printf(" %s\t|", attrcat.attrname);        
+        printf("%-14s", attrcat.attrname);        
+        printf("|");
+    }
+    printf ("\n");
+    if(!strcmp(relName, RELCATNAME)) {
+        printf ("+--------------+--------------+--------------+--------------+--------------+\n");
+    }
+    else {
+        printf ("+--------------+--------------+--------------+--------------+--------------+--------------+--------------+\n");
+
     }
     
     if (HF_CloseFileScan(scanDesc) != HFE_OK) {
@@ -717,13 +744,13 @@ int  PrintTable(const char *relName) {	/* name of relation to print	*/
 
         while (HF_ValidRecId(attrcatFd, HF_FindNextRec(scanDesc, (char *)(&attrcat)))) {
             if (attrcat.attrtype == INT_TYPE) {
-                printf(" %d\t|", *((int *) (record + attrcat.offset)));
+                printf("%14d|", *((int *) (record + attrcat.offset)));
             }
             else if (attrcat.attrtype == REAL_TYPE) {
-                printf(" %f\t|", *((float *) (record + attrcat.offset)));
+                printf("%14f|", *((float *) (record + attrcat.offset)));
             }
             else if (attrcat.attrtype == STRING_TYPE) {
-                printf(" %s\t|", record + attrcat.offset);
+                printf("%-14s|", record + attrcat.offset);
             }
         }
 
@@ -735,7 +762,13 @@ int  PrintTable(const char *relName) {	/* name of relation to print	*/
 
         recid = HF_GetNextRec(fd, recid, record);
     }
-    printf ("+--------------+--------------+--------------+--------------+--------------+--------------+\n");
+    if(!strcmp(relName, RELCATNAME)) {
+        printf ("+--------------+--------------+--------------+--------------+--------------+\n");
+    }
+    else {
+        printf ("+--------------+--------------+--------------+--------------+--------------+--------------+--------------+\n");
+
+    }
   
     if (HF_CloseFile(fd) != HFE_OK) {
         FEerrno = FEE_HF;
