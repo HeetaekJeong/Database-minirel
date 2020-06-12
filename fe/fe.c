@@ -71,7 +71,7 @@ int rmdirs(const char *path, int force) {
 
 void closeHF (void *filename, int fd) {
     if (filename != NULL) {
-        free(filename);
+        /*free(filename);*/
     }
 
     if (fd > 0) {
@@ -204,8 +204,8 @@ void DBcreate (const char *dbname) {
         return;
     }
 
-    free(filename);
-    free(filename2);
+    /*free(filename);*/
+    /*free(filename2);*/
     return;
 }
 
@@ -247,7 +247,7 @@ void DBconnect (const char *dbname) {
 }
 
 void DBclose (const char *dbname) {
-    free(db);
+    /*free(db);*/
 
     if (HF_CloseFile(relcatFd) != HFE_OK || HF_CloseFile(attrcatFd != HFE_OK)) {
         FEerrno = FEE_HF;
@@ -295,9 +295,9 @@ int CreateTable(const char *relName,	      /* name	of relation to create	*/
   printf("CreateTable HF_CreateFile, filename: %s\n",filename); /* DEBUG */
   /* db name이랑, relName으로 HF_File을 새로 만듬. e.g. prof.sid, student.sid ...  */
   if (HF_CreateFile(filename, file_len) != HFE_OK) {
-    free(filename); return FEE_HF;
+    /*free(filename);*/ return FEE_HF;
   }
-  free(filename);
+  /*free(filename);*/
 
   /* recID 를 생성, 이를 HF_InsertRec로 HF_File에 넣음. */
   sprintf(rel_temp.relname, "%s",relName);
@@ -459,9 +459,9 @@ EXIT_AM:
   return FEE_AM;
 
 EXIT:
-  free(file_name);
-  free(cur_value);
-  free(cur_record);
+  /*free(file_name);*/
+  /*free(cur_value);*/
+  /*free(cur_record);*/
   if (AM_CloseIndex(AMfd) != AME_OK) return FEE_AM;
   if (HF_CloseFileScan(HF_scan_desc) != HFE_OK) return FEE_HF;
   if (HF_CloseFile(HFfd) != HFE_OK) return FEE_HF;
@@ -544,7 +544,7 @@ int DropIndex(const char *relname,	  /* relation name		*/
     recId = HF_FindNextRec(HF_scan_desc, (char*) &attr_temp);
   }
 
-  free(file_name);
+  /*free(file_name);*/
   HF_CLOSEFILESCAN(HF_scan_desc);
 
   return FEE_OK;
@@ -598,9 +598,9 @@ int LoadTable(const char *relName,	  /* name of target relation	*/
   /* exit */
   if (HF_CloseFile(HFfd) != HFE_OK) return FEE_HF;
   if (attr_temp.indexed && AM_CloseIndex(AMfd) != AME_OK) return FEE_AM;
-  if (attr_temp.indexed) free(cur_value);
-  free(cur_record);
-  free(file_name);
+  if (attr_temp.indexed) /*free(cur_value);*/
+  /*free(cur_record);*/
+  /*free(file_name);*/
   fclose(file_ptr);
 
   return FEE_OK;

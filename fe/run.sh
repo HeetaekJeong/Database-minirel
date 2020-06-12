@@ -10,4 +10,5 @@ make
 cd ../fe
 make clean
 make
+#./fetest-ddl 2>&1 | tee ./log
 ./fetest-ddl

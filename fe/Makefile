@@ -30,7 +30,7 @@ lib${LIB}.a: $(OBJS)
 $(OBJS): ${INCS}
 
 clean:
-	rm -f lib${LIB}.a *.o ${LIB}test *.bak *~
+	rm -f lib${LIB}.a *.o ${LIB}test-ddl ${LIB}test-dml *.bak *~
 
 .c.o:; $(CC) $(CFLAGS) -c $< -I. -I$(INCDIR)
 

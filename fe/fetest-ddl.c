@@ -43,6 +43,7 @@ void show_catalogs()
    PrintTable("relcat");
    printf("Print the attribute catalog\n"); 
    PrintTable("attrcat");
+   fflush(stdout);
 }
 
 /***********************************/
@@ -238,11 +239,13 @@ int main(int argc, char *argv[])
   cleanup();
   DBcreate(TESTDB);
   printf(">>> Database %s has been created\n", TESTDB);
+  fflush(stdout);
 
   DBconnect(TESTDB);
   show_catalogs();
 
   printf(">>> Creating tables for students and professors ...\n");
+  fflush(stdout);
   create_student();
   create_professor();
   show_catalogs();
@@ -257,16 +260,19 @@ int main(int argc, char *argv[])
   show_catalogs();
 
   printf(">>> Loading and indexing professors ...\n");
+  fflush(stdout);
   load_professor();
   index_professor();
   show_table(PROFREL);
 
   printf(">>> Dropping indexes of students and professors ...\n");
+  fflush(stdout);
   dropindex_student();
   dropindex_professor();
   show_catalogs();
-
+  
   printf(">>> Destroying tables of students and professors ...\n");
+  fflush(stdout);
   destroy_table(STUDREL);
   destroy_table(PROFREL);
   show_catalogs();
