@@ -23,6 +23,7 @@ int Ftable_Check(const char *filename)
 			continue;
 		
 		if(!strcmp(PFftable[i].fname, filename)){
+/*            printf("table check, origin: %s, new: %s, i: %d, valid: %d\n", PFftable[i].fname, filename, i, PFftable[i].valid);*/
 				found = 1;
 				break;
 		}
@@ -135,8 +136,10 @@ int PF_OpenFile(const char *filename)
 	struct stat fileStat;
     int i;
 
+/*    printf("PF_Openfile,, filename: %s\n", filename);*/
 	/* Check whether the file is already open */
 	if(Ftable_Check(filename)){
+        printf("fileopen\n");
         PFerrno = PFE_FILEOPEN;
         return PFerrno;
     }
@@ -171,7 +174,11 @@ int PF_OpenFile(const char *filename)
         PFerrno = PFE_UNIX;
         return PFerrno;
 	}
-
+    /*
+    if(PFfdsc == 0 && filenum == 1) {
+            PFfdsc = PFfdsc + 1;
+    }
+    */
 	/* Fill the file table entries accordingly */
 	PFftable[PFfdsc].valid = TRUE;
 	PFftable[PFfdsc].inode = fileStat.st_ino;
@@ -180,7 +187,9 @@ int PF_OpenFile(const char *filename)
 	PFftable[PFfdsc].hdr.numpages = header.numpages;
 	PFftable[PFfdsc].hdrchanged = FALSE;
 
-	/* Return the PF file descriptor */
+	/* Return the PF file descriptor 
+    printf("filenum: %d, PFDesc: %d, fname: %s\n", filenum, PFfdsc, PFftable[0].fname);
+    */
 	return PFfdsc;
 }
 
@@ -190,6 +199,7 @@ int PF_CloseFile(int fd)
 	int error;
 	PFhdr_str header;
 	char **pagebuf;
+
 	/* Invalid PF file descriptor */
 	if(fd < 0 || fd > PF_FTAB_SIZE-1){
 		printf("\nInvalid PF file descriptor\n");
@@ -236,8 +246,8 @@ int PF_CloseFile(int fd)
 	}
 
 	/* Invalid the corresponding entry */
+/*    printf("pfclose fd: %d, valid: %d\n",fd, PFftable[fd].valid);*/
 	PFftable[fd].valid = FALSE;
-
 	return PFE_OK;
 }
 

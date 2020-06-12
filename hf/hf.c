@@ -63,7 +63,7 @@ int 	HF_CreateFile(const char *fileName, int RecSize){
         return HFE_PF;
     }
 
-    if ((pffd = PF_OpenFile(fileName) < 0)) {
+    if ((pffd = PF_OpenFile(fileName)) < 0) {
         HFerrno = HFE_PF;
         return HFE_PF;
     }
@@ -76,8 +76,8 @@ int 	HF_CreateFile(const char *fileName, int RecSize){
         HFerrno = HFE_PF;
         return HFE_PF;
     }
-
     if (PF_CloseFile(pffd) != PFE_OK) {
+
         HFerrno = HFE_PF;
         return HFE_PF;
     }
@@ -97,6 +97,7 @@ int 	HF_DestroyFile(const char *fileName) {
 int 	HF_OpenFile(const char *fileName) {
     HFftab_ele *HFftable_cur; 
     int pffd, hffd;
+/*    printf("HF_OpenFile,, filename: %s\n", fileName);*/
     pffd = PF_OpenFile(fileName);
     if(pffd < 0) {
         HFerrno = HFE_PF;
@@ -177,6 +178,7 @@ RECID	HF_InsertRec(int HFfd, char *record) {
 
     HFftable_cur = &(HFftable[HFfd]);
     recsize = HFftable_cur->hfh.RecSize;
+/*    printf("recsize: %d, recPage: %d\n", recsize, HFftable->hfh.RecPage);*/
 
     pagenum = -1;
     recid.pagenum = pagenum;
@@ -278,21 +280,18 @@ RECID	HF_GetNextRec(int HFfd, RECID recId, char *record) {
     if (record == NULL) {
         recid.recnum = HFE_INVALIDRECORD;
         recid.pagenum = -1;
-        printf("nextrec 111\n");
         return recid;
     }
     
     if (HFfd >= HF_FTAB_SIZE || HFfd < 0) {
         recid.recnum = HFE_FD;
         recid.pagenum = -1;
-        printf("nextrec 222\n");
         return recid;
     }
 
     if (HF_ValidRecId(HFfd, recId) != TRUE){
         recid.recnum = HFE_INVALIDRECORD;
         recid.pagenum = -1;
-        printf("nextrec 3333333\n");
         return recid;
     }
     recid.pagenum = -1;
@@ -301,6 +300,7 @@ RECID	HF_GetNextRec(int HFfd, RECID recId, char *record) {
     pagenum = recId.pagenum - 1;
     HFftable_cur = &(HFftable[HFfd]);
     recsize = HFftable_cur->hfh.RecSize;
+/*    printf("recsize: %d, recPage: %d\n", recsize, HFftable_cur->hfh.RecPage);*/
 /*    printf("recnum local: %d, input: %d\n", recnum, recId.recnum);*/
     while(1) {
         error = PF_GetNextPage(HFftable_cur->pffd, &pagenum, &pagebuf);
@@ -329,7 +329,7 @@ RECID	HF_GetNextRec(int HFfd, RECID recId, char *record) {
         for (; recnum < HFftable_cur->hfh.RecPage; recnum++) {
             nbyte = recnum / 8;
             nbit = recnum % 8;
-            directory = pagebuf[recsize * HFftable->hfh.RecPage + nbyte];
+            directory = pagebuf[recsize * HFftable_cur->hfh.RecPage + nbyte];
 /*            printf("recnum: %d, directory: %x, nbyte: %d, nbit: %d\n", recId.recnum, directory & 0xff, nbyte, nbit);*/
             if (((directory >> nbit) & 0x01) == 1) {
                 if (memcpy(record, pagebuf + recsize * recnum, recsize) == NULL) {
@@ -344,7 +344,6 @@ RECID	HF_GetNextRec(int HFfd, RECID recId, char *record) {
                 return recid;
             }
         }
-
         if (PF_UnpinPage(HFftable_cur->pffd, pagenum, 0) != PFE_OK) {
             return recid;
         }
@@ -472,7 +471,7 @@ RECID	HF_FindNextRec(int scanDesc, char *record){
     }
     while (!flag){
         recid_cur = HF_GetNextRec(HFstable[scanDesc].hffd, recid_cur, record);
-/*        printf("recnum: %d, pagenum: %d, record: %s\n", recid_cur.recnum, recid_cur.pagenum, record); */
+/*        printf("hffd:%d, recnum: %d, pagenum: %d, record: %s\n",HFstable[scanDesc].hffd, recid_cur.recnum, recid_cur.pagenum, record); */
         if (recid_cur.pagenum < 0) {
             return recid_cur;
         }
@@ -509,9 +508,9 @@ RECID	HF_FindNextRec(int scanDesc, char *record){
             else if (op == NE_OP) flag = (attr_float != val_float);
             else return recid;
         }
-        else if (HFstable[scanDesc].attrType == REAL_TYPE) {
+        else if (HFstable[scanDesc].attrType == STRING_TYPE) {
             tmp = strncmp(record + attrOffset, value, attrLength);
-
+/*            printf("find string, temp: %d\n", tmp);*/
             if (op == EQ_OP) flag = (tmp == 0);
             else if (op == LT_OP) flag = (tmp < 0);
             else if (op == GT_OP) flag = (tmp > 0);
