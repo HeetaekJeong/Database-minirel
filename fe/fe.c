@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <dirent.h>
 #include "minirel.h"
 #include "hf.h"
 #include "am.h"
@@ -41,6 +42,32 @@ static int undo_replace(ATTRDESCTYPE* attr, RECID newRecId, char* record) {
   replace_record(attrcatFd, newRecId, record, NULL);
 }
 
+int rmdirs(const char *path, int force) { 
+        DIR * dir_ptr = NULL;
+        struct dirent *file = NULL;
+        struct stat buf; 
+        char filename[1024];
+        if((dir_ptr = opendir(path)) == NULL) { 
+                return unlink(path); 
+        } 
+        while((file = readdir(dir_ptr)) != NULL) { 
+                if(strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0) { 
+                        continue; 
+                } 
+                sprintf(filename, "%s/%s", path, file->d_name); 
+                if(lstat(filename, &buf) == -1) { 
+                        continue; 
+                } 
+                if(S_ISDIR(buf.st_mode)) { 
+                        if(rmdirs(filename, force) == -1 && !force) { return -1; } 
+                } 
+                else if(S_ISREG(buf.st_mode) || S_ISLNK(buf.st_mode)) { 
+                        if(unlink(filename) == -1 && !force) { return -1; } 
+                } 
+        } 
+        closedir(dir_ptr); 
+        return rmdir(path); 
+}
 
 void closeHF (void *filename, int fd) {
     if (filename != NULL) {
@@ -119,7 +146,6 @@ void DBcreate (const char *dbname) {
         return;
     }
 
-    filenum = 1;
     /*printf("PFftable[0] fname22: %s\n", PFftable[0].fname);*/
     /* Create attrcat relation */
     filename2 = (char *) malloc(sizeof(char) * (strlen(dbname) + strlen(ATTRCATNAME) + 2));
@@ -178,7 +204,6 @@ void DBcreate (const char *dbname) {
 
     free(filename);
     free(filename2);
-    filenum = 0;
     return;
 }
 
@@ -758,6 +783,5 @@ int  Delete(const char *relName,	/* target relation name         */
 void FE_PrintError(const char *errmsg){	/* error message		*/
 }
 void FE_Init(void){			/* FE initialization		*/
-    filenum = -1;
     AM_Init();
 }
