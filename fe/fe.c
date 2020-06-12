@@ -56,11 +56,11 @@ void closeHF (void *filename, int fd) {
 }
 
 void DBcreate (const char *dbname) {
-    char *filename;
+    char *filename, *filename2;
     RELDESCTYPE relcat;
     ATTRDESCTYPE attrcat;
     RECID recid;
-    int fd, i;
+    int fd, fd2, i, err;
     char *relcat_attrname[5] = {"relname", "relwid", "attrcnt", "indexcnt", "primattr"};
     int relcat_offset[5] = {offsetof(RELDESCTYPE, relname), offsetof(RELDESCTYPE, relwid), offsetof(RELDESCTYPE, attrcnt), offsetof(RELDESCTYPE, indexcnt), offsetof(RELDESCTYPE, primattr)};
     int relcat_attrlen[5] = {sizeof(char) * MAXNAME, sizeof(int), sizeof(int), sizeof(int), sizeof(char) * MAXNAME };
@@ -78,6 +78,7 @@ void DBcreate (const char *dbname) {
         return;
     }
 
+    unlink(filename);
     /* Create relcat relation */
     filename = (char *) malloc(sizeof(char) * (strlen(dbname) + strlen(RELCATNAME) + 2));
     sprintf(filename, "%s/%s", dbname, RELCATNAME);
@@ -86,13 +87,11 @@ void DBcreate (const char *dbname) {
         closeHF(filename, -1);
         return;
     }
-
     fd = HF_OpenFile(filename);
     if (fd < 0) {
         closeHF(filename, -1);
         return;
     }
-    free(filename);
 
     /* for RELDESCTYPE */
     sprintf(relcat.relname, RELCATNAME);
@@ -102,6 +101,7 @@ void DBcreate (const char *dbname) {
 
     recid = HF_InsertRec(fd, (char *)(&relcat));
     if (!HF_ValidRecId(fd, recid)) {
+        printf("invalid\n");
         closeHF(NULL, fd);
         return;
     }
@@ -114,31 +114,26 @@ void DBcreate (const char *dbname) {
 
     recid = HF_InsertRec(fd, (char *) &relcat);
     if (!HF_ValidRecId(fd, recid)) {
+        printf("invalid\n");
         closeHF(NULL, fd);
         return;
     }
 
-    if (HF_CloseFile(fd) != HFE_OK) {
-        FEerrno = FEE_HF;
-        return;
-    }
-
+    filenum = 1;
+    /*printf("PFftable[0] fname22: %s\n", PFftable[0].fname);*/
     /* Create attrcat relation */
-    filename = (char *) malloc(sizeof(char) * (strlen(dbname) + strlen(ATTRCATNAME) + 2));
-    sprintf(filename, "%s/%s", dbname, ATTRCATNAME);
-
-    if (HF_CreateFile(filename, ATTRDESCSIZE) != HFE_OK) {
-        closeHF(filename, -1);
+    filename2 = (char *) malloc(sizeof(char) * (strlen(dbname) + strlen(ATTRCATNAME) + 2));
+    sprintf(filename2, "%s/%s", dbname, ATTRCATNAME);
+    if ((err=HF_CreateFile(filename2, ATTRDESCSIZE)) != HFE_OK) {
+        closeHF(filename2, -1);
         return;
     }
 
-    fd = HF_OpenFile(filename);
-    if (fd < 0) {
-        closeHF(filename, -1);
+    fd2 = HF_OpenFile(filename2);
+    if (fd2 < 0) {
+        closeHF(filename2, -1);
         return;
     }
-    free(filename);
-
     /* for RELDESCTYPE */
     sprintf(attrcat.relname, RELCATNAME);
     for (i = 0; i < 5; i++) {
@@ -149,8 +144,8 @@ void DBcreate (const char *dbname) {
         attrcat.indexed = FALSE;
         attrcat.attrno = i;
 
-        if (!HF_ValidRecId(fd, HF_InsertRec(fd, (char *)(&attrcat)))) {
-            closeHF(NULL, fd);
+        if (!HF_ValidRecId(fd2, HF_InsertRec(fd2, (char *)(&attrcat)))) {
+            closeHF(NULL, fd2);
             return;
         }
     }
@@ -165,17 +160,25 @@ void DBcreate (const char *dbname) {
         attrcat.indexed = FALSE;
         attrcat.attrno = i;
 
-        if (!HF_ValidRecId(fd, HF_InsertRec(fd, (char *)(&attrcat)))) {
-            closeHF(NULL, fd);
+        if (!HF_ValidRecId(fd2, HF_InsertRec(fd2, (char *)(&attrcat)))) {
+            closeHF(NULL, fd2);
             return;
         }
     }
 
-    if(HF_CloseFile(fd) != HFE_OK) {
+    if (HF_CloseFile(fd) != HFE_OK) {
+        printf("invalid\n");
+        FEerrno = FEE_HF;
+        return;
+    }
+    if(HF_CloseFile(fd2) != HFE_OK) {
         FEerrno = FEE_HF;
         return;
     }
 
+    free(filename);
+    free(filename2);
+    filenum = 0;
     return;
 }
 
@@ -187,11 +190,11 @@ void DBdestroy (const char *dbname) {
 }
 
 void DBconnect (const char *dbname) {
-    char *filename;
+    char *filename, *filename2;
 
     db = (char *) malloc(sizeof(char) * strlen(dbname) + 1);
     sprintf(db, "%s", dbname);
-
+    
     /* for Relcat */
     filename = (char *) malloc(sizeof(char) * (strlen(dbname) + strlen(RELCATNAME) + 2));
     sprintf(filename, "%s/%s", dbname, RELCATNAME);
@@ -200,17 +203,18 @@ void DBconnect (const char *dbname) {
         closeHF(filename, relcatFd);        
         return;
     }
-    free(filename);
-
+/*    printf("rel numpg: %d\n", HFftable[relcatFd].hfh.NumPg);*/
+    
     /* for Attrcat */
-    filename = (char *) malloc(sizeof(char) * (strlen(dbname) + strlen(ATTRCATNAME) + 2));
-    sprintf(filename, "%s/%s", dbname, ATTRCATNAME);
+    filename2 = (char *) malloc(sizeof(char) * (strlen(dbname) + strlen(ATTRCATNAME) + 2));
+    sprintf(filename2, "%s/%s", dbname, ATTRCATNAME);
 
-    if((attrcatFd = HF_OpenFile(filename)) < 0) {
-        closeHF(filename, attrcatFd);        
+    if((attrcatFd = HF_OpenFile(filename2)) < 0) {
+        printf("attrcatfd: %d\n", attrcatFd);
+        closeHF(filename2, attrcatFd);        
         return;
     }
-    free(filename);
+    printf("attr numpg: %d\n", HFftable[attrcatFd].hfh.NumPg);
 
     return;
 }
@@ -581,14 +585,15 @@ int  HelpTable(const char *relName) {	/* name of relation		*/
     ATTRDESCTYPE attrcat;
     RECID recid;
 
-    if ((relcat_scanDesc = HF_OpenFileScan(relcatFd, STRING_TYPE, MAXNAME, 0, EQ_OP, relName)) < 0) {
+    if ((relcat_scanDesc = HF_OpenFileScan(relcatFd, STRING_TYPE, MAXNAME, offsetof(RELDESCTYPE, relname), EQ_OP, relName)) < 0) {
         FEerrno = FEE_HF;
         return FEE_HF;
     }
+    
     recid = HF_FindNextRec(relcat_scanDesc, (char *) &relcat);
     while (HF_ValidRecId(relcatFd, recid)) {
-        printf("Relateion\t%s\n", relcat.relname);
-        printf ("	Prim Attr:  relname	No of Attrs:  %d	Tuple width:  %d	No of Indices:  %d\nAttributes:\n+--------------+--------------+--------------+--------------+--------------+--------------+\n| attrname     | offset       | length       | type         | indexed      | attrno       |\n+--------------+--------------+--------------+--------------+--------------+--------------+\n", relcat.attrcnt, relcat.relwid, relcat.indexcnt);
+        printf("Relateion  %s:\n", relcat.relname);
+        printf ("    Prim Attr:  relname\tNo of Attrs:  %d\tTuple width:  %d\tNo of Indices:  %d\nAttributes:\n+--------------+--------------+--------------+--------------+--------------+--------------+\n| attrname     | offset       | length       | type         | indexed      | attrno       |\n+--------------+--------------+--------------+--------------+--------------+--------------+\n", relcat.attrcnt, relcat.relwid, relcat.indexcnt);
 
         if((attrcat_scanDesc = HF_OpenFileScan(attrcatFd, STRING_TYPE, MAXNAME, 0, EQ_OP, relName)) < 0) {
             FEerrno = FEE_HF;
@@ -597,7 +602,7 @@ int  HelpTable(const char *relName) {	/* name of relation		*/
         recid = HF_FindNextRec(attrcat_scanDesc, (char *)(&attrcat));
         
         while (HF_ValidRecId(attrcatFd, recid)) {
-            printf ("| %s\t| %d\t| %d\t| %c\t| %s\t| %d\t|\n", attrcat.attrname, attrcat.offset, attrcat.attrlen, attrcat.attrtype, attrcat.indexed ? "yes" : "no", attrcat.attrno);
+            printf ("| %s\t| %d\t\t| %d\t| %c\t| %s\t| %d\t|\n", attrcat.attrname, attrcat.offset, attrcat.attrlen, attrcat.attrtype, attrcat.indexed ? "yes" : "no", attrcat.attrno);
 
             recid = HF_FindNextRec(attrcat_scanDesc, (char *)(&attrcat));
         }
@@ -753,5 +758,6 @@ int  Delete(const char *relName,	/* target relation name         */
 void FE_PrintError(const char *errmsg){	/* error message		*/
 }
 void FE_Init(void){			/* FE initialization		*/
+    filenum = -1;
     AM_Init();
 }
