@@ -655,41 +655,43 @@ int  PrintTable(const char *relName) {	/* name of relation to print	*/
     RELDESCTYPE relcat;
     ATTRDESCTYPE attrcat;
     RECID recid;
-
+/*
     if ((scanDesc = HF_OpenFileScan(relcatFd, STRING_TYPE, MAXNAME, 0, EQ_OP, relName)) < 0) {
+        printf("11\n");
         FEerrno = FEE_HF;
         return FEE_HF;
     }
 
     recid = HF_FindNextRec(scanDesc, (char *)(&relcat));
     if (!HF_ValidRecId(relcatFd, recid)) {
+        printf("33\n");
         FEerrno = FEE_HF;
         return FEE_HF;
     }
 
     if (!HF_CloseFileScan(scanDesc) != HFE_OK) {
+        printf("22\n");
         FEerrno = FEE_HF;
         return FEE_HF;
     }
-    
+ */   
     filename = (char *) malloc(sizeof(char) * (strlen(db) + strlen(relName) + 2));
     sprintf(filename, "%s/%s", db, relName);
     
     record = (char *) malloc(sizeof(char) * relcat.relwid);
 
-    printf("Relation\t%s\n", relName);
+    printf("Relation  %s:\n", relName);
     printf ("+--------------+--------------+--------------+--------------+--------------+--------------+\n");
     
     if (scanDesc = HF_OpenFileScan(attrcatFd, STRING_TYPE, MAXNAME, 0, EQ_OP, relName) < 0) {
         FEerrno = FEE_HF;
         return FEE_HF;
     }
-
+    printf("|");
     /* Attr names */
     while (HF_ValidRecId(attrcatFd, HF_FindNextRec(scanDesc, (char *)(&attrcat)))) {
         printf(" %s\t|", attrcat.attrname);        
     }
-    printf ("+--------------+--------------+--------------+--------------+--------------+--------------+\n");
     
     if (HF_CloseFileScan(scanDesc) != HFE_OK) {
         FEerrno = FEE_HF;
